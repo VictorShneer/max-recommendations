@@ -1,0 +1,14 @@
+
+{% extends "base.html" %}
+
+{% block app_content %}
+
+<h1 class="title">
+Прошу проверить настройки:
+</h1>
+<span> </span>
+<form action="/profile/settings" method="get">
+<button class="button">Настройки аккаунта</button>
+</form>
+
+{% endblock %}

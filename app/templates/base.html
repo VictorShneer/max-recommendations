@@ -1,0 +1,79 @@
+<!-- templates/base.html -->
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
+        {% if title %}{{ title }} - Max Metrika{% else %}Max Metrika{% endif %}
+{% endblock %}
+
+{% block navbar %}
+  <nav class="navbar navbar-default">
+      <div class="container">
+      <ul class="nav navbar-nav navbar-left">
+        <li>
+          <a class="navbar-brand" href="{{ url_for('main.index') }}">
+          <img src="https://ffb2efd5105ff0aedbc9-9cdacdeebf0faa19b665bf427f0c8092.ssl.cf1.rackcdn.com/img/getresponse.png" width="30" height="30" alt="Logo">
+          </a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        {% if current_user.is_anonymous %}
+        <li>
+          <a href="{{ url_for('auth.login') }}" class="navbar-item">
+            Войти
+          </a>
+        </li>
+        <li>
+        <a href="{{ url_for('auth.register') }}" class="navbar-item">
+            Зарегистрироваться
+        </a>
+        </li>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <li>
+        <a href="{{ url_for('main.profile') }}" class="navbar-item">
+            Профиль
+        </a>
+        </li>
+        {% endif %}
+        {% if current_user.email == 'george@mail.ru' %}
+        <li>
+        <a href="{{ url_for('main.admin') }}" class="navbar-item">
+            Админка
+        </a>
+        </li>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <li>
+        <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+            Выйти
+        </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+</nav>
+        {% endblock %}
+        {% block content %}
+            <div class="container">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-info" role="alert">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                {# application content needs to be provided in the app_content block #}
+                {% block app_content %}{% endblock %}
+            </div>
+        {% endblock %}
+{% block scripts %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/loader.js"></script>
+<link id="load-css-0" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/core/tooltip.css">
+<link id="load-css-1" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/util/util.css">
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_format_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_default_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_ui_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_corechart_module.js"></script>
+{% endblock %}

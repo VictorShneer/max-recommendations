@@ -1,0 +1,20 @@
+<tr>
+    <td>
+       <h3>{{integration.integration_name}}</h3>
+    </td>
+
+    <td>
+      <a class="btn btn-link"
+      href="{{url_for('main.edit_integration', integration_name = integration.integration_name) }}"
+      role="button">
+        Настроить интеграцию
+      </a>
+    </td>
+    <td>
+      <a class="btn btn-link"
+      href="{{url_for('metrika.metrika', integration_name = integration.integration_name) }}"
+      role="button">
+        Посмотреть конверсию
+      </a>
+    </td>
+</tr>
