@@ -17,6 +17,7 @@ def send_transac(json):
 def get_from_field():
     url = ROOT + '/from-fields'
     headers = {"X-Domain" : "test.getresponseservices.ru","X-Auth-Token":"api-key {}".format(current_app._get_current_object().config['KEY'])}
+    print(headers)
     r = requests.get(url, headers=headers)
     print(r,'\n',r.json())
     return r.json()[0]['fromFieldId']
