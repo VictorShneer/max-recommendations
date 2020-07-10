@@ -5,7 +5,7 @@ from flask import current_app
 
 def send_password_reset_email(user):
     token = user.get_reset_password_token()
-    send_email('[Crypto monitor] Reset Your Password',
+    send_email('[Max Metrika] Reset Your Password',
                sender=current_app.config['ADMINS'][0],
                recipients=[user.email],
                text_body=render_template('email/reset_password.txt',
