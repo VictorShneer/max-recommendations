@@ -71,3 +71,9 @@ sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed
 [SQL: INSERT INTO integration (user_id, integration_name, api_key, user_domain, metrika_key, metrika_counter_id, clickhouse_login, clickhouse_password, clickhouse_host, clickhouse_db) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
 [parameters: (1, 'test', '', '', '', 23456, '12345', '2345', '2345', '345')]
 (Background on this error at: http://sqlalche.me/e/gkpj)
+2020-07-13 21:44:03,984 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 21:44:03,985 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:44:03,985 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:44:31,064 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 21:44:31,067 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:44:31,067 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
