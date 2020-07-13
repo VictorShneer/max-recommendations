@@ -68,6 +68,7 @@
             </div>
         {% endblock %}
 {% block scripts %}
+{{ super() }}
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/loader.js"></script>
 <link id="load-css-0" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/core/tooltip.css">
@@ -76,4 +77,17 @@
 <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_default_module.js"></script>
 <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_ui_module.js"></script>
 <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_corechart_module.js"></script>
+<script>
+    function delete_integration(integration_name){
+
+        $.post('/delete_integration', {
+            integration_name : integration_name,
+        }).done(function(response) {
+            $('#'+integration_name).hide(1500);
+        }).fail(function() {
+            $('#'+integration_name).show(1500);
+            location.reload()
+        });
+    }
+</script>
 {% endblock %}

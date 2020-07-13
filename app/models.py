@@ -58,3 +58,7 @@ class Integration(UserMixin,db.Model):
     clickhouse_db = db.Column(db.String(200))
 
     __table_args__ = (db.UniqueConstraint('user_id', 'integration_name'),)
+
+    def delete_myself(self):
+        db.session.delete(self)
+        db.session.commit()

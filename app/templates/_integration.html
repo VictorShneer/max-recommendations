@@ -1,4 +1,4 @@
-<tr>
+<tr id='{{integration.integration_name}}'>
     <td>
        <h3>{{integration.integration_name}}</h3>
     </td>
@@ -16,5 +16,8 @@
       role="button">
         Посмотреть конверсию
       </a>
+    </td>
+    <td>
+      <a href="javascript:delete_integration('{{ integration.integration_name }}')">{{ ('Удалить интеграцию') }}</a>
     </td>
 </tr>

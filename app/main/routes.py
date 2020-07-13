@@ -1,6 +1,6 @@
 # main.py
 
-from flask import Blueprint, render_template, redirect, url_for, flash,request
+from flask import Blueprint, render_template, redirect, url_for, flash,request, abort
 from flask_login import login_required, current_user
 from app.models import User
 import pandas as pd
@@ -8,6 +8,19 @@ from app.main import bp
 from app.main.forms import EditIntegration
 from app.models import Integration, User
 from app import db
+
+
+@bp.route('/delete_integration', methods=['GET','POST'])
+@login_required
+def delete_integration():
+    integration_name = request.form['integration_name']
+    integration = Integration.query.filter_by(integration_name=integration_name).first_or_404()
+    if User.query.filter_by(id = integration.user_id).first() != current_user:
+        flash("It's not your integration!")
+        abort(403)
+    integration.delete_myself()
+
+    return '<200>'
 
 @bp.route('/')
 @bp.route('/index')
@@ -66,12 +79,6 @@ def create_integration():
         return redirect(url_for('main.user_integrations'))
 
     return render_template('create_integration.html', form=form)
-
-
-@bp.route('/delete_integration', methods=['GET','POST'])
-@login_required
-def delete_integration():
-    pass
 
 
 
