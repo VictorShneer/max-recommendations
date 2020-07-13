@@ -45,9 +45,9 @@ def load_user(id):
 
 
 class Integration(UserMixin,db.Model):
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    integration_name = db.Column(db.String(100), unique=True)
+    integration_name = db.Column(db.String(100)) # no unique=True, fix
     api_key = db.Column(db.String(100))
     user_domain = db.Column(db.String(100))
     metrika_key = db.Column(db.String(100))
