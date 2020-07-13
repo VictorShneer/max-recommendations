@@ -3,10 +3,11 @@
 
 {% block app_content %}
   <div class="row">
+    {% if title %} <h2>{{title}}</h2> {% endif %}
       <div class="col-md-4">
           {{ wtf.quick_form(form) }}
-          <a class="btn btn-info" href="{{url_for('main.profile')}}">Назад</a>
       </div>
+      <a class="btn btn-info" href="{{url_for('main.user_integrations')}}">Назад</a>
   </div>
 
 {% endblock %}

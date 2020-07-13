@@ -78,14 +78,14 @@
 <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_ui_module.js"></script>
 <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_corechart_module.js"></script>
 <script>
-    function delete_integration(integration_name){
+    function delete_integration(integration_id){
 
         $.post('/delete_integration', {
-            integration_name : integration_name,
+            integration_id : integration_id,
         }).done(function(response) {
-            $('#'+integration_name).hide(1500);
+            $('#'+integration_id).hide(1500);
         }).fail(function() {
-            $('#'+integration_name).show(1500);
+            $('#'+integration_id).show(1500);
             location.reload()
         });
     }

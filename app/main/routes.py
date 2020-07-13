@@ -13,10 +13,10 @@ from app import db
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
 def delete_integration():
-    integration_name = request.form['integration_name']
-    integration = Integration.query.filter_by(integration_name=integration_name).first_or_404()
+    integration_id = request.form['integration_id']
+    integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if User.query.filter_by(id = integration.user_id).first() != current_user:
-        flash("It's not your integration!")
+        flash("Ошибка")
         abort(403)
     integration.delete_myself()
 
@@ -82,15 +82,15 @@ def create_integration():
 
 
 
-@bp.route('/edit_integration/<integration_name>', methods = ['GET','POST'])
+@bp.route('/edit_integration/<integration_id>', methods = ['GET','POST'])
 @login_required
-def edit_integration(integration_name):
+def edit_integration(integration_id):
     form = EditIntegration()
-    integration = Integration.query.filter_by(integration_name=integration_name).first_or_404()
-    # TODO: test it :) !!!!!!
+    integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if integration.user!=current_user:
         abort(404)
 
+    title = integration.integration_name
     if form.validate_on_submit():
         integration.integration_name = form.integration_name.data
         integration.api_key = form.api_key.data
@@ -112,23 +112,8 @@ def edit_integration(integration_name):
         form.clickhouse_password.data = integration.clickhouse_password
         form.clickhouse_host.data = integration.clickhouse_host
         form.clickhouse_db.data = integration.clickhouse_db
-    return render_template("create_integration.html", form=form)
+    return render_template("create_integration.html", form=form, title=title)
 
-@bp.route('/settings', methods = ['GET'])
-@login_required
-def setup():
-    setup_already = Integration.query.filter_by(user_id=current_user.get_id()).first()
-    if setup_already:
-        api = setup_already.api_key
-        domain = setup_already.user_domain
-        metrika_key = setup_already.metrika_key
-        metrika_counter_id = setup_already.metrika_counter_id
-        clickhouse_login = setup_already.clickhouse_login
-        clickhouse_password = setup_already.clickhouse_password
-        clickhouse_host = setup_already.clickhouse_host
-        clickhouse_db = setup_already.clickhouse_db
-        return render_template('yoursettings.html', api=api, domain=domain, metrika_key=metrika_key, metrika_counter_id=metrika_counter_id, clickhouse_login=clickhouse_login, clickhouse_password=clickhouse_password, clickhouse_host=clickhouse_host, clickhouse_db=clickhouse_db)
-    return render_template('settings.html')
 
 @bp.route('/link_creation', methods=['GET','POST'])
 @login_required

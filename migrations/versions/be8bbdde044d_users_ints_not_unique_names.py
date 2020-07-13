@@ -1,8 +1,8 @@
-"""user, integrations tables, unique constraint for interation names
+"""users, ints, not unique names
 
-Revision ID: 8b89101e556d
+Revision ID: be8bbdde044d
 Revises: 
-Create Date: 2020-07-09 03:59:38.630097
+Create Date: 2020-07-14 01:37:08.382905
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8b89101e556d'
+revision = 'be8bbdde044d'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -40,9 +40,7 @@ def upgrade():
     sa.Column('clickhouse_host', sa.String(length=200), nullable=True),
     sa.Column('clickhouse_db', sa.String(length=200), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('integration_name'),
-    sa.UniqueConstraint('user_id', 'integration_name')
+    sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###
 

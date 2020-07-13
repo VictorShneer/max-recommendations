@@ -35,10 +35,10 @@ def goalId_count(el):
 def utm_source_handler(el):
     return ', '.join(set(el))
 
-@bp.route('/metrika/<integration_name>', methods = ['POST','GET'])
+@bp.route('/metrika/<integration_id>', methods = ['POST','GET'])
 @login_required
-def metrika(integration_name):
-    integration = Integration.query.filter_by(integration_name=integration_name).first_or_404()
+def metrika(integration_id):
+    integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if current_user != integration.user:
         abort(404)
     try:
