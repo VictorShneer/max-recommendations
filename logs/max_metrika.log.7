@@ -1,13 +1,4 @@
-2020-07-13 21:22:18,963 ERROR: Exception on /index [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
-Traceback (most recent call last):
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1283, in _execute_context
-    self.dialect.do_execute(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 590, in do_execute
-    cursor.execute(statement, parameters)
-sqlite3.OperationalError: no such table: user
-
-The above exception was the direct cause of the following exception:
-
+2020-07-13 19:31:03,971 ERROR: Exception on /profile [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
 Traceback (most recent call last):
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
     response = self.full_dispatch_request()
@@ -21,53 +12,98 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1936, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 28, in index
-    return render_template('index.html')
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/templating.py", line 136, in render_template
-    ctx.app.update_template_context(context)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 838, in update_template_context
-    context.update(func())
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 379, in _user_context_processor
-    return dict(current_user=_get_user())
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 346, in _get_user
-    current_app.login_manager._load_user()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/login_manager.py", line 318, in _load_user
-    user = self._user_callback(user_id)
-  File "/Users/gyakovlev/Desktop/max-recommendations/app/models.py", line 45, in load_user
-    return User.query.get(int(id))
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 1021, in get
-    return self._get_impl(ident, loading.load_on_pk_identity)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 1138, in _get_impl
-    return db_load_fn(self, primary_key_identity)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/loading.py", line 287, in load_on_pk_identity
-    return q.one()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 3436, in one
-    ret = self.one_or_none()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 3405, in one_or_none
-    ret = list(self)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 3481, in __iter__
-    return self._execute_and_instances(context)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 3506, in _execute_and_instances
-    result = conn.execute(querycontext.statement, self._params)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1020, in execute
-    return meth(self, multiparams, params)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 298, in _execute_on_connection
-    return connection._execute_clauseelement(self, multiparams, params)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1133, in _execute_clauseelement
-    ret = self._execute_context(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1323, in _execute_context
-    self._handle_dbapi_exception(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1517, in _handle_dbapi_exception
-    util.raise_(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 178, in raise_
-    raise exception
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1283, in _execute_context
-    self.dialect.do_execute(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 590, in do_execute
-    cursor.execute(statement, parameters)
-sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: user
-[SQL: SELECT user.id AS user_id, user.email AS user_email, user.password_hash AS user_password_hash, user.name AS user_name 
-FROM user 
-WHERE user.id = ?]
-[parameters: (4,)]
-(Background on this error at: http://sqlalche.me/e/e3q8)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 33, in profile
+    return render_template('profile.html', name=current_user.name)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/templating.py", line 137, in render_template
+    return _render(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/templating.py", line 120, in _render
+    rv = template.render(context)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/jinja2/environment.py", line 1090, in render
+    self.environment.handle_exception()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/templates/profile.html", line 3, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/templates/base.html", line 2, in top-level template code
+    {% extends 'bootstrap/base.html' %}
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 1, in top-level template code
+    {% block doc -%}
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 4, in block "doc"
+    {%- block html %}
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 20, in block "html"
+    {% block body -%}
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 23, in block "body"
+    {% block content -%}
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/templates/base.html", line 67, in block "content"
+    {% block app_content %}{% endblock %}
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/templates/profile.html", line 8, in block "app_content"
+    <!-- <a class="btn btn-primary" href="{{url_for('main.link_creation')}}" role="button">Создать ссылку</a>
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/helpers.py", line 370, in url_for
+    return appctx.app.handle_url_build_error(error, endpoint, values)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2216, in handle_url_build_error
+    reraise(exc_type, exc_value, tb)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/helpers.py", line 357, in url_for
+    rv = url_adapter.build(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/werkzeug/routing.py", line 2179, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.BuildError: Could not build url for endpoint 'main.link_creation'. Did you mean 'main.delete_integration' instead?
+2020-07-13 19:31:44,417 ERROR: Exception on /profile [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 33, in profile
+    return render_template('profile.html', name=current_user.name)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/templating.py", line 137, in render_template
+    return _render(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/templating.py", line 120, in _render
+    rv = template.render(context)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/jinja2/environment.py", line 1090, in render
+    self.environment.handle_exception()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/templates/profile.html", line 3, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/templates/base.html", line 2, in top-level template code
+    {% extends 'bootstrap/base.html' %}
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 1, in top-level template code
+    {% block doc -%}
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 4, in block "doc"
+    {%- block html %}
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 20, in block "html"
+    {% block body -%}
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 23, in block "body"
+    {% block content -%}
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/templates/base.html", line 67, in block "content"
+    {% block app_content %}{% endblock %}
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/templates/profile.html", line 8, in block "app_content"
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/helpers.py", line 370, in url_for
+    return appctx.app.handle_url_build_error(error, endpoint, values)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2216, in handle_url_build_error
+    reraise(exc_type, exc_value, tb)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/helpers.py", line 357, in url_for
+    rv = url_adapter.build(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/werkzeug/routing.py", line 2179, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.BuildError: Could not build url for endpoint 'main.link_creation'. Did you mean 'main.delete_integration' instead?
