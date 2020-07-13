@@ -4,13 +4,13 @@ from wtforms.validators import DataRequired
 from app.models import User
 
 class EditIntegration(FlaskForm):
-    integration_name = StringField("integration_name", validators=[DataRequired()])
-    api_key = StringField('API')
-    user_domain = StringField('Domain')
-    metrika_key = StringField('metrika_key')
-    metrika_counter_id = IntegerField('metrika_counter_id')
-    clickhouse_login = StringField('clickhouse_login', validators=[DataRequired()])
-    clickhouse_password = StringField('clickhouse_password', validators=[DataRequired()])
-    clickhouse_host = StringField('clickhouse_host', validators=[DataRequired()])
-    clickhouse_db = StringField('clickhouse_db', validators=[DataRequired()])
-    submit = SubmitField("Submit")
+    integration_name = StringField("Название интеграции", validators=[DataRequired()])
+    api_key = StringField('API ключ GetReponse')
+    user_domain = StringField('Домен GetReponse')
+    metrika_key = StringField('Ключ Яндекс Метрики')
+    metrika_counter_id = IntegerField('ID счетчика Яндекс Метрики')
+    clickhouse_login = StringField('Логин Базы Данных', validators=[DataRequired()])
+    clickhouse_password = StringField('Пароль Базы Данных', validators=[DataRequired()])
+    clickhouse_host = StringField('Хост Базы Данных', validators=[DataRequired()])
+    clickhouse_db = StringField('Имя Базы Данных', validators=[DataRequired()])
+    submit = SubmitField("Отправить")

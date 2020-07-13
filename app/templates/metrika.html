@@ -1,18 +1,26 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<div class="box">
-  <article class="media">
-    <div class="media-content">
-      <div class="content">
-          {% for table in tables %}
-            {{titles[loop.index]}}
-            {{ table|safe }}
-          {% endfor %}
-      </div>
-    </div>
-  </article>
-</div>
+  <table class="table table-striped table-dark table-bordered">
+    <thead class="thead-dark">
+      <tr>
+      {% for column in titles%}
+        <th scope="col">{{column}}</th>
+      {% endfor %}
+
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for key,value in table.iterrows() %}
+          <tr>
+            {% for td in value %}
+            <td>{{td}}</td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 <!-- первый график - зависимость конверсии от общего количества визитов - с email и без email -->
 <div id="chart_div1" style="width: 1000px; height: 500px;"></div>
 <br>

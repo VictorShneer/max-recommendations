@@ -5,7 +5,7 @@ import numpy as np
 import requests
 import json
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 import pandas as pd
 from app.models import User, Integration
@@ -110,6 +110,8 @@ def metrika(integration_name):
     max_df['Email power proportion'].replace(np.nan, 0, regex=True, inplace=True)
     max_df['Email power proportion'] =  max_df['Email power proportion'].astype(int)
 
+    max_for_3graph = [ [max_row['Visits with email'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ]
+
     max_no_email_2graph = [ [max_row['NO-Email visits share'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['NO-Email visits share','Conversion (TG/TV)']].iterrows() ] # 2 график - без email
     max_email_2graph = [ [max_row['Email visits share'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Email visits share','Conversion (TG/TV)']].iterrows() ] # 2 график - с email
 
@@ -117,4 +119,4 @@ def metrika(integration_name):
     max_email_1graph = [ [max_row['Visits with email'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
 
     front_end_df = max_df[['ClientID', 'Client identities', 'Total goals complited', 'Total visits', 'Visits with email','Goals complited via email', 'Conversion (TG/TV)', 'Email power proportion']]
-    return render_template('metrika.html', tables=[front_end_df.to_html(classes='data', index=True)], titles=front_end_df.columns.values, graph_1=max_email_1graph, graph_1_no_email=max_no_email_1graph, graph_2=max_email_2graph, graph_2_no_email=max_no_email_2graph)
+    return render_template('metrika.html', table=front_end_df, titles=front_end_df.columns.values, graph_1=max_email_1graph, graph_1_no_email=max_no_email_1graph, graph_2=max_email_2graph, graph_2_no_email=max_no_email_2graph, graph_3=max_for_3graph)
