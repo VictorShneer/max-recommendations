@@ -13,10 +13,9 @@ from app import db
 from app.metrika import bp
 
 
-def made_url_for_query(query):
-    setup_already = Integration.query.filter_by(user_id=current_user.get_id()).first()
-    host = setup_already.clickhouse_host
-    db = setup_already.clickhouse_db
+def made_url_for_query(query, integration):
+    host = integration.clickhouse_host
+    db = integration.clickhouse_db
     return 'https://{host}:8443/?database={db}&query={query}'.format(
         host=host,
         db=db,
@@ -42,8 +41,8 @@ def metrika(integration_id):
     if current_user != integration.user:
         abort(404)
     try:
-        url_for_columns = made_url_for_query('DESC visits_all')
-        url_for_visits_all_data = made_url_for_query('SELECT * FROM visits_all')
+        url_for_columns = made_url_for_query('DESC visits_all', integration)
+        url_for_visits_all_data = made_url_for_query('SELECT * FROM visits_all',integration)
         certificate_path = 'app/YandexInternalRootCA.crt'
         auth = {
         'X-ClickHouse-User': integration.clickhouse_login,

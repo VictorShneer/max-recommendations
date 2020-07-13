@@ -102,6 +102,7 @@ def edit_integration(integration_id):
         integration.clickhouse_host = form.clickhouse_host.data
         integration.clickhouse_db = form.clickhouse_db.data
         db.session.commit()
+        flash('Изменения сохранены')
     elif request.method == 'GET':
         form.integration_name.data = integration.integration_name
         form.api_key.data = integration.api_key
