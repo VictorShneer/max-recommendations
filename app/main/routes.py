@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from app.models import User
 import pandas as pd
 from app.main import bp
-from app.main.forms import EditIntegration
+from app.main.forms import EditIntegration, LinkGenerator
 from app.models import Integration, User
 from app import db
 
@@ -129,3 +129,13 @@ def setup():
         clickhouse_db = setup_already.clickhouse_db
         return render_template('yoursettings.html', api=api, domain=domain, metrika_key=metrika_key, metrika_counter_id=metrika_counter_id, clickhouse_login=clickhouse_login, clickhouse_password=clickhouse_password, clickhouse_host=clickhouse_host, clickhouse_db=clickhouse_db)
     return render_template('settings.html')
+
+@bp.route('/link_creation', methods=['GET','POST'])
+@login_required
+def link_creation():
+    form = LinkGenerator()
+    if form.validate_on_submit():
+        link = form.link.data + "?utm_campaign=&utm_content=&utm_medium=&utm_source={{CONTACT `subscriber_email`}}&utm_term="
+        flash('Ваша ссылка: {} '.format(link))
+        return render_template('link_creation.html', form=form)
+    return render_template('link_creation.html', form=form)

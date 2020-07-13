@@ -14,3 +14,7 @@ class EditIntegration(FlaskForm):
     clickhouse_host = StringField('Хост Базы Данных', validators=[DataRequired()])
     clickhouse_db = StringField('Имя Базы Данных', validators=[DataRequired()])
     submit = SubmitField("Отправить")
+
+class LinkGenerator(FlaskForm):
+    link = StringField("Введите ссылку", validators=[DataRequired()])
+    submit = SubmitField("Получить ссылку")
