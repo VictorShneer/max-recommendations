@@ -1,4 +1,13 @@
-2020-07-13 19:50:30,755 ERROR: Exception on /link_creation [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
+2020-07-13 21:22:20,013 ERROR: Exception on / [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1283, in _execute_context
+    self.dialect.do_execute(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 590, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: no such table: user
+
+The above exception was the direct cause of the following exception:
+
 Traceback (most recent call last):
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
     response = self.full_dispatch_request()
@@ -12,8 +21,68 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1936, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
-    return func(*args, **kwargs)
-  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 141, in link_creation
-    return render_template('profile.html', form=form, link=link)
-UnboundLocalError: local variable 'link' referenced before assignment
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 28, in index
+    return render_template('index.html')
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/templating.py", line 136, in render_template
+    ctx.app.update_template_context(context)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 838, in update_template_context
+    context.update(func())
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 379, in _user_context_processor
+    return dict(current_user=_get_user())
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 346, in _get_user
+    current_app.login_manager._load_user()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/login_manager.py", line 318, in _load_user
+    user = self._user_callback(user_id)
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/models.py", line 45, in load_user
+    return User.query.get(int(id))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 1021, in get
+    return self._get_impl(ident, loading.load_on_pk_identity)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 1138, in _get_impl
+    return db_load_fn(self, primary_key_identity)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/loading.py", line 287, in load_on_pk_identity
+    return q.one()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 3436, in one
+    ret = self.one_or_none()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 3405, in one_or_none
+    ret = list(self)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 3481, in __iter__
+    return self._execute_and_instances(context)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/query.py", line 3506, in _execute_and_instances
+    result = conn.execute(querycontext.statement, self._params)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1020, in execute
+    return meth(self, multiparams, params)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 298, in _execute_on_connection
+    return connection._execute_clauseelement(self, multiparams, params)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1133, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1323, in _execute_context
+    self._handle_dbapi_exception(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1517, in _handle_dbapi_exception
+    util.raise_(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 178, in raise_
+    raise exception
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1283, in _execute_context
+    self.dialect.do_execute(
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 590, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: user
+[SQL: SELECT user.id AS user_id, user.email AS user_email, user.password_hash AS user_password_hash, user.name AS user_name 
+FROM user 
+WHERE user.id = ?]
+[parameters: (4,)]
+(Background on this error at: http://sqlalche.me/e/e3q8)
+2020-07-13 21:23:02,958 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 21:23:02,959 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:23:02,959 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:23:10,019 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 21:23:10,019 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:23:10,019 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:23:20,895 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 21:23:20,895 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:23:20,895 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:26:42,382 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 21:26:42,383 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:26:42,383 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:26:47,833 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 21:26:47,834 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 21:26:47,834 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]

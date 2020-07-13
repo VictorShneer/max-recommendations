@@ -135,7 +135,7 @@ def setup():
 def link_creation():
     form = LinkGenerator()
     if form.validate_on_submit():
-        link = form.link.data + "?utm_campaign=&utm_content=&utm_medium=&utm_source={{CONTACT `subscriber_email`}}&utm_term="
+        link = form.link.data + "?utm_campaign=&utm_content=&utm_medium=&utm_source={{CONTACT 'subscriber_email'}}&utm_term="
         flash('Ваша ссылка: {} '.format(link))
         return render_template('link_creation.html', form=form)
     return render_template('link_creation.html', form=form)

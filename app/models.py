@@ -6,6 +6,7 @@ import jwt
 from time import time
 from hashlib import md5
 from flask import current_app
+from sqlalchemy import UniqueConstraint
 
 
 class User(UserMixin, db.Model):
@@ -45,6 +46,7 @@ def load_user(id):
 
 
 class Integration(UserMixin,db.Model):
+    __table_args__ = (db.UniqueConstraint('user_id', 'integration_name'),)
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     integration_name = db.Column(db.String(100)) # no unique=True, fix
@@ -57,7 +59,6 @@ class Integration(UserMixin,db.Model):
     clickhouse_host = db.Column(db.String(200))
     clickhouse_db = db.Column(db.String(200))
 
-    __table_args__ = (db.UniqueConstraint('user_id', 'integration_name'),)
 
     def delete_myself(self):
         db.session.delete(self)
