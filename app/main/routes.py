@@ -139,3 +139,8 @@ def link_creation():
         flash('Ваша ссылка: {} '.format(link))
         return render_template('link_creation.html', form=form)
     return render_template('link_creation.html', form=form)
+
+@bp.route('/back', methods=['GET'])
+@login_required
+def back():
+    return render_template('profile.html')
