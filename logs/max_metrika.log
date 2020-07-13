@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 2020-07-13 21:28:01,941 ERROR: Exception on /create_integration [POST] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
 Traceback (most recent call last):
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1283, in _execute_context
@@ -79,6 +80,8 @@ sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed
 2020-07-13 21:44:31,067 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
 2020-07-13 21:44:31,067 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
 =======
+=======
+>>>>>>> parent of 30c263b... tyed to fix UniqueConstraint
 2020-07-13 19:56:40,211 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
 2020-07-13 20:00:35,109 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
 2020-07-13 20:00:35,110 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
@@ -107,4 +110,7 @@ sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed
 2020-07-13 20:09:10,078 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
 2020-07-13 20:09:10,078 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
 2020-07-13 20:09:10,078 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+<<<<<<< HEAD
+>>>>>>> parent of 30c263b... tyed to fix UniqueConstraint
+=======
 >>>>>>> parent of 30c263b... tyed to fix UniqueConstraint
