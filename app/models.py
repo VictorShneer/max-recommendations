@@ -47,7 +47,7 @@ def load_user(id):
 class Integration(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    integration_name = db.Column(db.String(100)) # no unique=True, fix
+    integration_name = db.Column(db.String(100))
     api_key = db.Column(db.String(100))
     user_domain = db.Column(db.String(100))
     metrika_key = db.Column(db.String(100))
