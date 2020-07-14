@@ -67,5 +67,5 @@ def metrika(integration_id):
 
     front_end_df = max_df[['ClientID', 'Client identities', 'Total goals complited', 'Total visits', 'Visits with email','Goals complited via email', 'Conversion (TG/TV)', 'Email power proportion']]
     front_end_df= front_end_df.astype(str)
-    front_end_df.to_json(path_or_buf='~/Documents/metrika.json', default_handler=str, orient='table')
+    # front_end_df.to_json(path_or_buf='~/Documents/metrika.json', default_handler=str, orient='table')
     return render_template('metrika.html', table=front_end_df, titles=front_end_df.columns.values, graph_1=max_email_1graph, graph_1_no_email=max_no_email_1graph, conv_email_sum=conv_email_sum, conv_no_email_sum=conv_no_email_sum)
