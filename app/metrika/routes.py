@@ -30,22 +30,21 @@ def metrika(integration_id):
         'X-ClickHouse-User': integration.clickhouse_login,
         'X-ClickHouse-Key': integration.clickhouse_password
         }
+        # get column names 1
+        response_with_columns_names = request_clickhouse(url_for_columns, auth, certificate_path)
+        # get table data and prepare it
+        response_with_visits_all_data =request_clickhouse (url_for_visits_all_data, auth, certificate_path)
     except:
         flash('{} Ошибки в настройках итеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
-    # get column names 1
-    response_with_columns_names = request_clickhouse(url_for_columns, auth, certificate_path)
+    # prepare it column names
     file_from_string = StringIO(response_with_columns_names.text)
     columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, usecols=[0])
     list_of_column_names = columns_df[0].values
-
-    # get table data and prepare it
-    response_with_visits_all_data =request_clickhouse (url_for_visits_all_data, auth, certificate_path)
+    # finishing visits all table
     file_from_string = StringIO(response_with_visits_all_data.text)
     visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','Date','GoalsID', 'UTMSource','VisitID'])
-
-
     # building max data frame
     max_df = build_conversion_df(visits_all_data_df)
 
