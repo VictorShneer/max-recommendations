@@ -125,3 +125,8 @@ def link_creation():
         flash('Ваша ссылка: {} '.format(link))
         return render_template('link_creation.html', form=form)
     return render_template('link_creation.html', form=form)
+
+#for metrika examples
+@bp.route('/metrika-examples')
+def metexample():
+    return render_template('metrika_example.html')
