@@ -31,8 +31,8 @@ def metrika(integration_id):
         'X-ClickHouse-Key': integration.clickhouse_password
         }
     except:
-        flash('Ошибки в настройках!')
-        return render_template("error_settings.html")
+        flash('{} Ошибки в настройках итеграции!'.format(integration.integration_name))
+        return redirect(url_for('main.user_integrations'))
 
     # get column names 1
     response_with_columns_names = request_clickhouse(url_for_columns, auth, certificate_path)
@@ -43,8 +43,8 @@ def metrika(integration_id):
     # get table data and prepare it
     response_with_visits_all_data =request_clickhouse (url_for_visits_all_data, auth, certificate_path)
     file_from_string = StringIO(response_with_visits_all_data.text)
-    visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID'])
-    
+    visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','Date','GoalsID', 'UTMSource','VisitID'])
+
 
     # building max data frame
     max_df = build_conversion_df(visits_all_data_df)
@@ -62,5 +62,10 @@ def metrika(integration_id):
     print(conv_email_sum)
     print(conv_no_email_sum)
 
+
+
+
     front_end_df = max_df[['ClientID', 'Client identities', 'Total goals complited', 'Total visits', 'Visits with email','Goals complited via email', 'Conversion (TG/TV)', 'Email power proportion']]
+    front_end_df= front_end_df.astype(str)
+    front_end_df.to_json(path_or_buf='~/Documents/metrika.json', default_handler=str, orient='table')
     return render_template('metrika.html', table=front_end_df, titles=front_end_df.columns.values, graph_1=max_email_1graph, graph_1_no_email=max_no_email_1graph, conv_email_sum=conv_email_sum, conv_no_email_sum=conv_no_email_sum)

@@ -21,7 +21,6 @@ def leave_last_client_id(el):
 def make_utms_unique(el):
     aggregated = []
     for utm_groups in el.values:
-        print(utm_groups)
         aggregated.append(utm_groups)
     return ', '.join(set(aggregated))
 
@@ -88,8 +87,6 @@ def build_conversion_df(visits_all_data_df):
                                         'Visits with out email':'sum',\
                                         'Visits with email':'sum',\
                                         'Goals complited via email':'sum'})
-
-        # print(temp_df.to_string())
         temp_dfs.append(temp_df)
 
 
