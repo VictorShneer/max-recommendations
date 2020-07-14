@@ -109,13 +109,18 @@ def metrika(integration_id):
     max_df['Email power proportion'].replace(np.nan, 0, regex=True, inplace=True)
     max_df['Email power proportion'] =  max_df['Email power proportion'].astype(int)
 
-    max_for_3graph = [ [max_row['Visits with email'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ]
-
-    max_no_email_2graph = [ [max_row['NO-Email visits share'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['NO-Email visits share','Conversion (TG/TV)']].iterrows() ] # 2 график - без email
-    max_email_2graph = [ [max_row['Email visits share'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Email visits share','Conversion (TG/TV)']].iterrows() ] # 2 график - с email
-
     max_no_email_1graph = [ [max_row['Visits with out email'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Visits with out email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
     max_email_1graph = [ [max_row['Visits with email'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
 
+    conv_email_sum = 0
+    conv_no_email_sum = 0
+    for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows():
+        if max_row[0] == 0:
+            conv_no_email_sum = conv_no_email_sum + max_row[1]
+        else:
+            conv_email_sum = conv_email_sum + max_row[1]
+    print(conv_email_sum)
+    print(conv_no_email_sum)
+
     front_end_df = max_df[['ClientID', 'Client identities', 'Total goals complited', 'Total visits', 'Visits with email','Goals complited via email', 'Conversion (TG/TV)', 'Email power proportion']]
-    return render_template('metrika.html', table=front_end_df, titles=front_end_df.columns.values, graph_1=max_email_1graph, graph_1_no_email=max_no_email_1graph, graph_2=max_email_2graph, graph_2_no_email=max_no_email_2graph, graph_3=max_for_3graph)
+    return render_template('metrika.html', table=front_end_df, titles=front_end_df.columns.values, graph_1=max_email_1graph, graph_1_no_email=max_no_email_1graph, conv_email_sum=conv_email_sum, conv_no_email_sum=conv_no_email_sum)

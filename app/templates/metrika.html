@@ -24,11 +24,15 @@
 <!-- первый график - зависимость конверсии от общего количества визитов - с email и без email -->
 <div id="chart_div1" style="width: 1000px; height: 500px;"></div>
 <br>
-<!-- третий график - зависимость конверсии от количества визитов c email -->
+<!-- третий график - зависимость конверсии от количества визитов c email
 <div id="chart_div3" style="width: 1000px; height: 500px;"></div>
 <br>
-<!-- второй график - зависимость конверсии от количества визитов c email в utm/общее количество визитов -->
-<div id="chart_div2" style="width: 1000px; height: 500px;"></div>
+второй график - зависимость конверсии от количества визитов c email в utm/общее количество визитов
+<div id="chart_div2" style="width: 1000px; height: 500px;"></div>-->
+
+<!-- диаграмма -->
+<br>
+<div id="piechart_3d" style="width: 1000px; height: 500px;"></div>
 {% endblock %}
 
 {% block scripts %}
@@ -61,7 +65,7 @@
 
         chart.draw(data, options);
 
-        //второй график - зависимость конверсии от доли визитов с email в общем количестве визитов
+        /* второй график - зависимость конверсии от доли визитов с email в общем количестве визитов
         var data2 = google.visualization.arrayToDataTable([
           ['Count', ''],
           {% for line in graph_2 %}
@@ -81,7 +85,7 @@
 
         chart2.draw(data2, options2);
 
-        //третий график - зависимость конверсии от количества визитов с email
+        третий график - зависимость конверсии от количества визитов с email
 
         var data3 = google.visualization.arrayToDataTable([
           ['Count', ''],
@@ -100,7 +104,22 @@
 
         var chart3 = new google.visualization.ScatterChart(document.getElementById('chart_div3'));
 
-        chart3.draw(data3, options3);
+        chart3.draw(data3, options3); */
+
+        //диаграмма
+        var data_diag = google.visualization.arrayToDataTable([
+          ['Источник', 'Доля в конверсии'],
+          ['С email',     {{ conv_email_sum }}],
+          ['Без email',      {{ conv_no_email_sum }}]
+        ]);
+
+        var options_diag = {
+          title: 'Участие в конверсии источников с email и без email',
+          is3D: true,
+        };
+
+        var chart_diag = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+        chart_diag.draw(data_diag, options_diag);
 
       }
     </script>
