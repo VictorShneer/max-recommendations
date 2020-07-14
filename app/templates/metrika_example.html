@@ -147,6 +147,9 @@
 <br>
 <!-- второй график - зависимость конверсии от количества визитов c email в utm/общее количество визитов -->
 <div id="chart_div2" style="width: 1000px; height: 500px;"></div>
+<!-- диаграмма -->
+<br>
+<div id="piechart_3d" style="width: 1000px; height: 500px;"></div>
 {% endblock %}
 {% block scripts %}
 {{ super() }}
@@ -233,6 +236,21 @@
         var chart3 = new google.visualization.ScatterChart(document.getElementById('chart_div3'));
 
         chart3.draw(data3, options3);
+
+        //диаграмма
+        var data = google.visualization.arrayToDataTable([
+          ['Источник', 'Доля в конверсии'],
+          ['С email',     72],
+          ['Без email',      28]
+        ]);
+
+        var options = {
+          title: 'Участие в конверсии источников с email и без email',
+          is3D: true,
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+        chart.draw(data, options);
       }
 
     </script>
