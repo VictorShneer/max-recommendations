@@ -1,48 +1,6 @@
-<!-- templates/base.html -->
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>
-        Max Metrika
-</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-  <body>
-    
-  <nav class="navbar navbar-default">
-      <div class="container">
-      <ul class="nav navbar-nav navbar-left">
-        <li>
-          <a class="navbar-brand" href="/index">
-          <img src="https://ffb2efd5105ff0aedbc9-9cdacdeebf0faa19b665bf427f0c8092.ssl.cf1.rackcdn.com/img/getresponse.png" width="30" height="30" alt="Logo">
-          </a>
-        </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        
-        
-        <li>
-        <a href="/profile" class="navbar-item">
-            Профиль
-        </a>
-        </li>
-        
-        
-        
-        <li>
-        <a href="/logout" class="navbar-item">
-            Выйти
-        </a>
-        </li>
-        
-      </ul>
-    </div>
-</nav>
-        
-    
-            <div class="container">
+{% extends "base.html" %}
+
+{% block app_content %}
 <script type="text/javascript">
     var logs=[
       [1111111111, 'a@mail.ru', 9, 12, 12, 9],
@@ -275,7 +233,4 @@
       }
 
     </script>
-
-</div>
-  </body>
-</html>
+{% endblock %}
