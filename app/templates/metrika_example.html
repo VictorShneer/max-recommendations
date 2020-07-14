@@ -147,6 +147,9 @@
 <br>
 <!-- второй график - зависимость конверсии от количества визитов c email в utm/общее количество визитов -->
 <div id="chart_div2" style="width: 1000px; height: 500px;"></div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
 <script type="text/javascript">
   logs.forEach(function(log,i,logs) {
     var conv = log[2]*100/log[3];
