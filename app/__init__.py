@@ -45,7 +45,7 @@ def create_app(config_class=Config):
     app.register_blueprint(main_bp)
 
     from app.metrika import bp as metrika_bp
-    app.register_blueprint(metrika_bp, url_prefix='/profile')
+    app.register_blueprint(metrika_bp)
 
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
