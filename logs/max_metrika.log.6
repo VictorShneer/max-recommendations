@@ -1,29 +1,4 @@
-2020-07-13 19:44:36,665 ERROR: Exception on /link_creation [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
-Traceback (most recent call last):
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1952, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1821, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/_compat.py", line 39, in reraise
-    raise value
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1950, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1936, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
-    return func(*args, **kwargs)
-  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 136, in link_creation
-    form = LinkGenerator()
-NameError: name 'LinkGenerator' is not defined
-2020-07-13 19:45:29,086 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 19:45:29,087 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 19:45:29,087 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 19:48:47,207 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 19:48:47,208 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 19:48:47,208 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 19:48:48,255 ERROR: Exception on /link_creation [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
+2020-07-13 19:50:30,755 ERROR: Exception on /link_creation [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
 Traceback (most recent call last):
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
     response = self.full_dispatch_request()
@@ -40,9 +15,18 @@ Traceback (most recent call last):
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
     return func(*args, **kwargs)
   File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 141, in link_creation
-    return render_template('create_integration.html', form=form, link=link)
+    return render_template('profile.html', form=form, link=link)
 UnboundLocalError: local variable 'link' referenced before assignment
-2020-07-13 19:48:48,255 ERROR: Exception on /link_creation [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
+2020-07-13 19:51:16,096 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 19:51:16,097 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:51:16,097 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:51:27,358 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 19:51:27,358 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:51:27,358 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:52:13,718 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 19:52:13,718 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:52:13,718 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:52:23,535 ERROR: Exception on /link_creation [POST] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
 Traceback (most recent call last):
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
     response = self.full_dispatch_request()
@@ -58,10 +42,10 @@ Traceback (most recent call last):
     return self.view_functions[rule.endpoint](**req.view_args)
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
     return func(*args, **kwargs)
-  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 141, in link_creation
-    return render_template('create_integration.html', form=form, link=link)
-UnboundLocalError: local variable 'link' referenced before assignment
-2020-07-13 19:48:50,935 ERROR: Exception on /link_creation [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 140, in link_creation
+    return redirect(url_for('main.link_creation'), link=link)
+TypeError: redirect() got an unexpected keyword argument 'link'
+2020-07-13 19:52:23,535 ERROR: Exception on /link_creation [POST] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
 Traceback (most recent call last):
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
     response = self.full_dispatch_request()
@@ -77,10 +61,16 @@ Traceback (most recent call last):
     return self.view_functions[rule.endpoint](**req.view_args)
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
     return func(*args, **kwargs)
-  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 141, in link_creation
-    return render_template('create_integration.html', form=form, link=link)
-UnboundLocalError: local variable 'link' referenced before assignment
-2020-07-13 19:48:50,935 ERROR: Exception on /link_creation [GET] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 140, in link_creation
+    return redirect(url_for('main.link_creation'), link=link)
+TypeError: redirect() got an unexpected keyword argument 'link'
+2020-07-13 19:53:53,163 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 19:53:53,164 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:53:53,164 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:55:08,420 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 19:55:08,421 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:55:08,421 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+2020-07-13 19:55:14,694 ERROR: Exception on /link_creation [POST] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
 Traceback (most recent call last):
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
     response = self.full_dispatch_request()
@@ -96,9 +86,27 @@ Traceback (most recent call last):
     return self.view_functions[rule.endpoint](**req.view_args)
   File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
     return func(*args, **kwargs)
-  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 141, in link_creation
-    return render_template('create_integration.html', form=form, link=link)
-UnboundLocalError: local variable 'link' referenced before assignment
-2020-07-13 19:50:27,410 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 19:50:27,410 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 19:50:27,410 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 140, in link_creation
+    return redirect(url_for('main.link_creation'), link=link)
+TypeError: redirect() got an unexpected keyword argument 'link'
+2020-07-13 19:55:14,694 ERROR: Exception on /link_creation [POST] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
+    return func(*args, **kwargs)
+  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 140, in link_creation
+    return redirect(url_for('main.link_creation'), link=link)
+TypeError: redirect() got an unexpected keyword argument 'link'
+2020-07-13 19:56:40,211 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
+2020-07-13 19:56:40,211 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]

@@ -1,4 +1,4 @@
-
+import traceback
 from io import StringIO
 import ast
 import numpy as np
@@ -13,30 +13,49 @@ from app import db
 from app.metrika import bp
 from app.metrika.clickhouse import made_url_for_query,request_clickhouse
 from app.metrika.conversion_table_builder import build_conversion_df
+from app.metrika.secur import current_user_own_integration
 
 
-
-@bp.route('/metrika/<integration_id>', methods = ['POST','GET'])
+@bp.route('/metrika/<integration_id>/get_data')
 @login_required
-def metrika(integration_id):
+def metrika_get_data(integration_id):
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
-    if current_user != integration.user:
+    if not current_user_own_integration(integration, current_user):
         abort(404)
-    try:
-        url_for_columns = made_url_for_query('DESC visits_all', integration)
-        url_for_visits_all_data = made_url_for_query('SELECT * FROM visits_all',integration)
-        certificate_path = 'app/YandexInternalRootCA.crt'
-        auth = {
+
+
+    request_start_date = request.args.get('start_date')
+
+    url_for_columns = made_url_for_query('DESC visits_all', integration)
+    if request_start_date =='':
+        url_for_visits_all_data = made_url_for_query(\
+        "SELECT * FROM visits_all",\
+        integration\
+        )
+    else:
+        url_for_visits_all_data = made_url_for_query(\
+        "SELECT * FROM visits_all WHERE Date > toDate('{}')".format(request_start_date),\
+        integration\
+        )
+
+    certificate_path = 'app/YandexInternalRootCA.crt'
+    auth = {
         'X-ClickHouse-User': integration.clickhouse_login,
         'X-ClickHouse-Key': integration.clickhouse_password
-        }
+    }
+
+    try:
         # get column names 1
         response_with_columns_names = request_clickhouse(url_for_columns, auth, certificate_path)
         # get table data and prepare it
         response_with_visits_all_data =request_clickhouse (url_for_visits_all_data, auth, certificate_path)
+        if any([\
+                response_with_columns_names.status_code != 200,\
+                response_with_visits_all_data.status_code !=200\
+                ]):
+            flash('Некорректная в дата!')
     except:
-        flash('{} Ошибки в настройках итеграции!'.format(integration.integration_name))
-        return redirect(url_for('main.user_integrations'))
+        flash('{} Ошибки в запросе или в настройках итеграции!'.format(integration.integration_name))
 
     # prepare it column names
     file_from_string = StringIO(response_with_columns_names.text)
@@ -44,9 +63,12 @@ def metrika(integration_id):
     list_of_column_names = columns_df[0].values
     # finishing visits all table
     file_from_string = StringIO(response_with_visits_all_data.text)
-    visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','Date','GoalsID', 'UTMSource','VisitID'])
+    try:
+        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','Date','GoalsID', 'UTMSource','VisitID'])
+        max_df = build_conversion_df(visits_all_data_df)
+    except:
+        abort(404)
     # building max data frame
-    max_df = build_conversion_df(visits_all_data_df)
 
     max_no_email_1graph = [ [max_row['Visits with out email'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Visits with out email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
     max_email_1graph = [ [max_row['Visits with email'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
@@ -66,5 +88,47 @@ def metrika(integration_id):
 
     front_end_df = max_df[['ClientID', 'Client identities', 'Total goals complited', 'Total visits', 'Visits with email','Goals complited via email', 'Conversion (TG/TV)', 'Email power proportion']]
     front_end_df= front_end_df.astype(str)
-    # front_end_df.to_json(path_or_buf='~/Documents/metrika.json', default_handler=str, orient='table')
-    return render_template('metrika.html', table=front_end_df, titles=front_end_df.columns.values, graph_1=max_email_1graph, graph_1_no_email=max_no_email_1graph, conv_email_sum=conv_email_sum, conv_no_email_sum=conv_no_email_sum)
+    json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
+
+
+    return json_to_return
+
+@bp.route('/metrika/<integration_id>', methods = ['GET'])
+@login_required
+def metrika(integration_id):
+    integration = Integration.query.filter_by(id=integration_id).first_or_404()
+    if not current_user_own_integration(integration, current_user):
+        abort(404)
+
+    try:
+        certificate_path = 'app/YandexInternalRootCA.crt'
+        auth = {
+        'X-ClickHouse-User': integration.clickhouse_login,
+        'X-ClickHouse-Key': integration.clickhouse_password
+        }
+
+        query_data_length = made_url_for_query('SELECT count(Date) FROM visits_all',integration)
+        query_min_date = made_url_for_query('SELECT min(Date) FROM visits_all',integration)
+        query_max_date = made_url_for_query('SELECT max(Date) FROM visits_all',integration)
+        data_length_text =request_clickhouse(query_data_length, auth, certificate_path).text
+        min_date_text = request_clickhouse(query_min_date, auth, certificate_path).text
+        max_date_text = request_clickhouse(query_max_date, auth, certificate_path).text
+
+    except Exception as e:
+        traceback.print_exc()
+        flash('{} Ошибки в настройках итеграции!'.format(integration.integration_name))
+        return redirect(url_for('main.user_integrations'))
+
+    # file_from_string = StringIO(response_with_visits_all_data.text)
+    # visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n')
+    # min_date = visits_all_data_df.min().values[-1]
+    # max_date = visits_all_data_df.max().values[-1]
+    # data_length = visits_all_data_df.shape[0]
+
+    return render_template(\
+        'metrika.html',\
+        min_date=min_date_text,\
+        max_date=max_date_text,\
+        data_length = data_length_text,\
+        integration_name=integration.integration_name,\
+        integration_id=integration_id)

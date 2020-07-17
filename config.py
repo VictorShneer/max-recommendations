@@ -24,5 +24,3 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
     ADMINS = ['implixgr360@gmail.com']
-
-    COMPANIES_PER_PAGE = 30

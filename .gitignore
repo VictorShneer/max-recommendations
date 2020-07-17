@@ -1,3 +1,4 @@
-
 .DS_Store
-logs/max_metrika.log
+logs
+__pycache__
+venv

@@ -1,10 +1,7 @@
 <!-- templates/base.html -->
 {% extends 'bootstrap/base.html' %}
-{% block styles %}
-{{super()}}
-<link rel="stylesheet"
-      href="{{url_for('static', filename='metrik_table_styles.css')}}">
-{% endblock %}
+
+
 {% block title %}
         {% if title %}{{ title }} - Max Metrika{% else %}Max Metrika{% endif %}
 {% endblock %}
@@ -81,6 +78,8 @@
 <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_default_module.js"></script>
 <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_ui_module.js"></script>
 <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_corechart_module.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
 <script>
     function delete_integration(integration_id){
 
