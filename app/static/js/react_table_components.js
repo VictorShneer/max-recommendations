@@ -11,6 +11,7 @@ class VisitData extends React.Component{
 class VisitRow extends React.Component {
 
   render() {
+    const visits_data = [];
     const columnsOrder = [
     "ClientID",
     "Client identities",
@@ -20,7 +21,7 @@ class VisitRow extends React.Component {
     "Goals complited via email",
     "Conversion (TG/TV)",
     "Email power proportion"];
-    const visits_data = [];
+
     for(let columnName of columnsOrder) {
       visits_data.push(
         <VisitData visit_data={this.props.visit[columnName]} />
