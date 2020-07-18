@@ -9,11 +9,21 @@ class VisitData extends React.Component{
 }
 
 class VisitRow extends React.Component {
+
   render() {
+    const columnsOrder = [
+    "ClientID",
+    "Client identities",
+    "Total goals complited",
+    "Total visits",
+    "Visits with email",
+    "Goals complited via email",
+    "Conversion (TG/TV)",
+    "Email power proportion"];
     const visits_data = [];
-    for(var key in this.props.visit) {
+    for(let columnName of columnsOrder) {
       visits_data.push(
-        <VisitData visit_data={this.props.visit[key]} />
+        <VisitData visit_data={this.props.visit[columnName]} />
       );
     }
     return (
@@ -32,8 +42,8 @@ class HeaderVisitsTable extends React.Component{
   }
 }
 
-class VisitsTable extends React.Component {
 
+class VisitsTable extends React.Component {
   render() {
     const rows = [];
     const headerNames = [];

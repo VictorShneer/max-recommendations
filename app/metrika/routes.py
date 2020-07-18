@@ -63,7 +63,7 @@ def metrika_get_data(integration_id):
     # finishing visits all table
     file_from_string = StringIO(response_with_visits_all_data.text)
     try:
-        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','Date','GoalsID', 'UTMSource','VisitID'])
+        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID'])
         max_df = build_conversion_df(visits_all_data_df)
     except:
         abort(404)
@@ -72,17 +72,8 @@ def metrika_get_data(integration_id):
     max_no_email_1graph = [ [int(max_row['Visits with out email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Visits with out email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
     max_email_1graph = [ [int(max_row['Visits with email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
 
-    conv_email_sum = 0
-    conv_no_email_sum = 0
-    for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows():
-        if max_row[0] == 0:
-            conv_no_email_sum = conv_no_email_sum + max_row[1]
-        else:
-            conv_email_sum = conv_email_sum + max_row[1]
-    print(conv_email_sum)
-    print(conv_no_email_sum)
-
-
+    conv_email_sum = max_df[max_df['Visits with email'] != 0]['Conversion (TG/TV)'].sum()
+    conv_no_email_sum = max_df[max_df['Visits with email'] == 0]['Conversion (TG/TV)'].sum()
 
 
     front_end_df = max_df[['ClientID', 'Client identities', 'Total goals complited', 'Total visits', 'Visits with email','Goals complited via email', 'Conversion (TG/TV)', 'Email power proportion']]
@@ -123,11 +114,6 @@ def metrika(integration_id):
         flash('{} Ошибки в настройках итеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
-    # file_from_string = StringIO(response_with_visits_all_data.text)
-    # visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n')
-    # min_date = visits_all_data_df.min().values[-1]
-    # max_date = visits_all_data_df.max().values[-1]
-    # data_length = visits_all_data_df.shape[0]
 
     return render_template(\
         'metrika.html',\

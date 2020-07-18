@@ -19,7 +19,6 @@ function drawChart(graph_1_no_email,graph_1,conv_no_email_sum, conv_email_sum) {
     );
   });
   arrayToLoad = arrayToLoad.concat(emailDots,noEmailDots);
-  console.log(arrayToLoad);
   var data = google.visualization.arrayToDataTable(
       arrayToLoad
   );

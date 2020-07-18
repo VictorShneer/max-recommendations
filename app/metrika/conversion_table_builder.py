@@ -71,7 +71,6 @@ def build_conversion_df(visits_all_data_df):
     max_df = pd.concat(temp_dfs)
     max_df.reset_index(inplace=True, drop=True)
 
-
     # handle utm intersections
     temp_dfs = []
     list_of_utm_sets_raw = merge([ [idx] + utm.split(', ') for idx,utm in max_df['Client identities'].iteritems()])
@@ -93,6 +92,7 @@ def build_conversion_df(visits_all_data_df):
     #contatenating intersections UTMs into single DataFrame
     max_df = pd.concat(temp_dfs)
     max_df.reset_index(inplace=True, drop=True)
+
     #calculating metrics
     max_df['Conversion (TG/TV)'] = devide_columns_handler(max_df,'Total goals complited','Total visits')
     max_df['Email visits share'] = devide_columns_handler(max_df,'Visits with email','Total visits')
