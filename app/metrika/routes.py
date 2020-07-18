@@ -15,7 +15,6 @@ from app.metrika.clickhouse import made_url_for_query,request_clickhouse
 from app.metrika.conversion_table_builder import build_conversion_df
 from app.metrika.secur import current_user_own_integration
 
-
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
 def metrika_get_data(integration_id):
@@ -70,8 +69,8 @@ def metrika_get_data(integration_id):
         abort(404)
     # building max data frame
 
-    max_no_email_1graph = [ [max_row['Visits with out email'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Visits with out email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
-    max_email_1graph = [ [max_row['Visits with email'],max_row['Conversion (TG/TV)']] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
+    max_no_email_1graph = [ [int(max_row['Visits with out email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Visits with out email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
+    max_email_1graph = [ [int(max_row['Visits with email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
 
     conv_email_sum = 0
     conv_no_email_sum = 0
@@ -90,6 +89,11 @@ def metrika_get_data(integration_id):
     front_end_df= front_end_df.astype(str)
     json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
 
+    json_to_return =json.loads(json_to_return)
+    json_to_return['conv_email_sum'] = str(conv_email_sum)
+    json_to_return['conv_no_email_sum'] = str(conv_no_email_sum)
+    json_to_return['max_no_email_1graph'] = json.dumps(max_no_email_1graph)
+    json_to_return['max_email_1graph'] = json.dumps(max_email_1graph)
 
     return json_to_return
 

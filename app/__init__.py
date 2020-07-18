@@ -15,7 +15,6 @@ from flask_migrate import Migrate
 
 
 
-
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -35,7 +34,6 @@ def create_app(config_class=Config):
     migrate.init_app(app,db)
     bootstrap.init_app(app)
     login.init_app(app)
-
     # blueprint for auth routes in our app
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)

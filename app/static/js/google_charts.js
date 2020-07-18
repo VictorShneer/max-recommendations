@@ -1,17 +1,28 @@
 google.charts.load('current', {'packages':['corechart']});
 google.charts.setOnLoadCallback(drawChart);
 
-function drawChart() {
+function drawChart(graph_1_no_email,graph_1,conv_no_email_sum, conv_email_sum) {
   //первый график  - зависимость конверсии от общего количества визитов (с email, без email)
-  var data = google.visualization.arrayToDataTable([
-    ['Count', 'Без email', 'с email'],
-    {% for line in graph_1 %}
-      [{{line[0]}}, null, {{line[1]}}],
-    {% endfor %}
-    {% for line in graph_1_no_email %}
-      [{{line[0]}}, {{line[1]}}, null],
-    {% endfor %}
-  ]);
+  const emailDots = [];
+  const noEmailDots = [];
+  const graph_1_no_email_array = eval(graph_1_no_email);
+  const graph_1_array = eval(graph_1);
+  let arrayToLoad = [['Count', 'Без email', 'с email']];
+  graph_1_array.forEach((pairOfDots) => {
+    noEmailDots.push(
+      [parseFloat(pairOfDots[0]), parseFloat(pairOfDots[1]), null]
+    );
+  });
+  graph_1_no_email_array.forEach((pairOfDots) => {
+    emailDots.push(
+      [parseFloat(pairOfDots[0]), null, parseFloat(pairOfDots[1])]
+    );
+  });
+  arrayToLoad = arrayToLoad.concat(emailDots,noEmailDots);
+  console.log(arrayToLoad);
+  var data = google.visualization.arrayToDataTable(
+      arrayToLoad
+  );
 
   var options = {
     title: 'Зависимость конверсии от общего количества визитов (с) - с email, без email',
@@ -64,13 +75,13 @@ var options3 = {
 
   var chart3 = new google.visualization.ScatterChart(document.getElementById('chart_div3'));
 
-  chart3.draw(data3, options3); */
+  // chart3.draw(data3, options3); */
 
   //диаграмма
   var data_diag = google.visualization.arrayToDataTable([
     ['Источник', 'Доля в конверсии'],
-    ['С email',     {{ conv_email_sum }}],
-    ['Без email',      {{ conv_no_email_sum }}]
+    ['С email',     parseInt(conv_email_sum)],
+    ['Без email',      parseInt(conv_no_email_sum)]
   ]);
 
   var options_diag = {

@@ -78,21 +78,17 @@ class SearchBar extends React.Component {
   render() {
 
     return (
-      <div class="container">
-        <div class="form-group row">
+        <div className="container form-group row">
           <form onSubmit={() => {
             this.props.onSubmit(this.state.value);
             event.preventDefault();
           }}>
-            <div class="col-xs-2">
-              <label for="example-date-input" class="col-2 col-form-label">
-                Выберите дату:
-              </label>
-              <input id="example-date-input" type="date" className="form-control" value={this.state.value} onChange={this.handleChange} />
-            </div>
+                <label for="example-date-input" class="col-2 col-form-label">
+                  Выберите дату:
+                </label>
+                  <input type="date" className="form-control" value={this.state.value} onChange={this.handleChange} id="datepicker"/>
             <input type="submit" value="Загрузить данные" className="btn btn-primary"/>
           </form>
-        </div>
       </div>
     );
   }
@@ -126,14 +122,24 @@ class FilterableVisitsTable extends React.Component {
             throw new Error('Нет данных за указанный период');
           }
         })
-        .then(data => this.setState({visits: data, isLoading: false }))
+        .then(data => {
+          this.setState({visits: data, isLoading: false });
+          drawChart(
+            data.max_no_email_1graph,
+            data.max_email_1graph,
+            data.conv_no_email_sum,
+            data.conv_email_sum
+          );
+        })
         .catch(error => this.setState({ error, isLoading: false }));
+
   }
 
   render() {
     const { visits, isLoading, error } = this.state;
 
     if (error) {
+      console.log(error.message)
       alert('За указанный период нет данных');
     }
 
