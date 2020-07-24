@@ -49,7 +49,7 @@ class VisitsTable extends React.Component {
     const rows = [];
     const headerNames = [];
     if(this.props.visits){
-      this.props.visits.data.forEach((visit) => {
+      this.props.visits.data.slice(0, 20).forEach((visit) => {
         rows.push(
           <VisitRow visit={visit} />
         );
@@ -63,7 +63,7 @@ class VisitsTable extends React.Component {
     }
 
     return (
-      <table className="table table-striped table-dark table-bordered table-striped">
+      <table className="table table-bordered table-striped mb-0">
         <thead className="thead-dark">
           <tr>
             {headerNames}
@@ -143,7 +143,6 @@ class FilterableVisitsTable extends React.Component {
           );
         })
         .catch(error => this.setState({ error, isLoading: false }));
-
   }
 
   render() {

@@ -1,116 +1,119 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-2020-07-13 21:28:01,941 ERROR: Exception on /create_integration [POST] [in /Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py:1891]
+2020-07-20 19:13:10,474 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:62]
+2020-07-20 19:13:10,488 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
+2020-07-20 19:13:10,488 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
+2020-07-20 19:14:30,894 ERROR: Exception on / [GET] [in /Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py:1892]
 Traceback (most recent call last):
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1283, in _execute_context
-    self.dialect.do_execute(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 590, in do_execute
-    cursor.execute(statement, parameters)
-sqlite3.IntegrityError: UNIQUE constraint failed: integration.user_id, integration.integration_name
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 2447, in wsgi_app
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 2447, in wsgi_app
     response = self.full_dispatch_request()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1952, in full_dispatch_request
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1952, in full_dispatch_request
     rv = self.handle_user_exception(e)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1821, in handle_user_exception
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1821, in handle_user_exception
     reraise(exc_type, exc_value, tb)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/_compat.py", line 39, in reraise
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/_compat.py", line 39, in reraise
     raise value
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1950, in full_dispatch_request
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1950, in full_dispatch_request
     rv = self.dispatch_request()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask/app.py", line 1936, in dispatch_request
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1936, in dispatch_request
     return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/flask_login/utils.py", line 272, in decorated_view
-    return func(*args, **kwargs)
-  File "/Users/gyakovlev/Desktop/max-recommendations/app/main/routes.py", line 76, in create_integration
-    db.session.commit()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/scoping.py", line 163, in do
-    return getattr(self.registry(), name)(*args, **kwargs)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 1042, in commit
-    self.transaction.commit()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 504, in commit
-    self._prepare_impl()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 483, in _prepare_impl
-    self.session.flush()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 2523, in flush
-    self._flush(objects)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 2664, in _flush
-    transaction.rollback(_capture_exception=True)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/util/langhelpers.py", line 68, in __exit__
-    compat.raise_(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 178, in raise_
-    raise exception
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/session.py", line 2624, in _flush
-    flush_context.execute()
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/unitofwork.py", line 422, in execute
-    rec.execute(self)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/unitofwork.py", line 586, in execute
-    persistence.save_obj(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/persistence.py", line 239, in save_obj
-    _emit_insert_statements(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/orm/persistence.py", line 1135, in _emit_insert_statements
-    result = cached_connections[connection].execute(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1020, in execute
-    return meth(self, multiparams, params)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/sql/elements.py", line 298, in _execute_on_connection
-    return connection._execute_clauseelement(self, multiparams, params)
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1133, in _execute_clauseelement
-    ret = self._execute_context(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1323, in _execute_context
-    self._handle_dbapi_exception(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1517, in _handle_dbapi_exception
-    util.raise_(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/util/compat.py", line 178, in raise_
-    raise exception
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/base.py", line 1283, in _execute_context
-    self.dialect.do_execute(
-  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/site-packages/sqlalchemy/engine/default.py", line 590, in do_execute
-    cursor.execute(statement, parameters)
-sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) UNIQUE constraint failed: integration.user_id, integration.integration_name
-[SQL: INSERT INTO integration (user_id, integration_name, api_key, user_domain, metrika_key, metrika_counter_id, clickhouse_login, clickhouse_password, clickhouse_host, clickhouse_db) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)]
-[parameters: (1, 'test', '', '', '', 23456, '12345', '2345', '2345', '345')]
-(Background on this error at: http://sqlalche.me/e/gkpj)
-2020-07-13 21:44:03,984 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 21:44:03,985 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 21:44:03,985 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 21:44:31,064 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 21:44:31,067 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 21:44:31,067 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-=======
-=======
->>>>>>> parent of 30c263b... tyed to fix UniqueConstraint
-2020-07-13 19:56:40,211 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:00:35,109 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 20:00:35,110 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:00:35,110 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:01:24,820 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 20:01:24,821 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:01:24,821 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:01:57,143 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 20:01:57,144 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:01:57,144 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:02:06,768 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 20:02:06,768 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:02:06,768 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:04:05,917 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 20:04:05,918 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:04:05,918 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:05:01,910 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 20:05:01,910 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:05:01,910 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:06:50,687 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 20:06:50,688 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:06:50,688 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:08:30,033 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 20:08:30,034 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:08:30,034 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:09:10,078 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:64]
-2020-07-13 20:09:10,078 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-2020-07-13 20:09:10,078 INFO: Max metrika startup [in /Users/gyakovlev/Desktop/max-recommendations/app/__init__.py:82]
-<<<<<<< HEAD
->>>>>>> parent of 30c263b... tyed to fix UniqueConstraint
-=======
->>>>>>> parent of 30c263b... tyed to fix UniqueConstraint
+  File "/Users/vzakharenko/Documents/max-recommendations/app/main/routes.py", line 28, in index
+    return render_template('index.html')
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/templating.py", line 140, in render_template
+    ctx.app,
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/templating.py", line 120, in _render
+    rv = template.render(context)
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 1090, in render
+    self.environment.handle_exception()
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/index.html", line 3, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/base.html", line 94, in template
+    {% block scripts %}
+jinja2.exceptions.TemplateAssertionError: block 'scripts' defined twice
+2020-07-20 19:14:30,894 ERROR: Exception on / [GET] [in /Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py:1892]
+Traceback (most recent call last):
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/_compat.py", line 39, in reraise
+    raise value
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/Users/vzakharenko/Documents/max-recommendations/app/main/routes.py", line 28, in index
+    return render_template('index.html')
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/templating.py", line 140, in render_template
+    ctx.app,
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/templating.py", line 120, in _render
+    rv = template.render(context)
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 1090, in render
+    self.environment.handle_exception()
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/index.html", line 3, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/base.html", line 94, in template
+    {% block scripts %}
+jinja2.exceptions.TemplateAssertionError: block 'scripts' defined twice
+2020-07-20 19:14:31,294 ERROR: Exception on /apple-touch-icon-precomposed.png [GET] [in /Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py:1892]
+Traceback (most recent call last):
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1926, in dispatch_request
+    self.raise_routing_exception(req)
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1908, in raise_routing_exception
+    raise request.routing_exception
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/ctx.py", line 350, in match_request
+    result = self.url_adapter.match(return_rule=True)
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/werkzeug/routing.py", line 1945, in match
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1816, in handle_user_exception
+    return self.handle_http_exception(e)
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1744, in handle_http_exception
+    return handler(e)
+  File "/Users/vzakharenko/Documents/max-recommendations/app/errors/handlers.py", line 8, in not_found_error
+    return render_template('errors/404.html'), 404
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/templating.py", line 140, in render_template
+    ctx.app,
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/templating.py", line 120, in _render
+    rv = template.render(context)
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 1090, in render
+    self.environment.handle_exception()
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/errors/404.html", line 1, in top-level template code
+    {% extends "base.html" %}
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 832, in handle_exception
+    reraise(*rewrite_traceback_stack(source=source))
+  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/_compat.py", line 28, in reraise
+    raise value.with_traceback(tb)
+  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/base.html", line 94, in template
+    {% block scripts %}
+jinja2.exceptions.TemplateAssertionError: block 'scripts' defined twice

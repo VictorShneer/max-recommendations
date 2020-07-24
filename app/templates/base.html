@@ -1,29 +1,13 @@
 <!-- templates/base.html -->
 {% extends 'bootstrap/base.html' %}
 
-{% block style %}
-{{ super() }}
-<link rel="stylesheet" href='https:/code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'>
-
-{% endblock %}
 
 {% block head %}
 {{ super() }}
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/loader.js"></script>
 <link id="load-css-0" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/core/tooltip.css">
 <link id="load-css-1" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/util/util.css">
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_format_module.js"></script>
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_default_module.js"></script>
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_ui_module.js"></script>
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_corechart_module.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
-
-
-
 {% endblock %}
+
 {% block title %}
         {% if title %}{{ title }} - Max Metrika{% else %}Max Metrika{% endif %}
 {% endblock %}
@@ -93,6 +77,15 @@
 {% block scripts %}
 {{ super() }}
 
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/loader.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_format_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_default_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_ui_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_corechart_module.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
 <script>
     function delete_integration(integration_id){
 

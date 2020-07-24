@@ -20,6 +20,7 @@ from app.metrika.secur import current_user_own_integration
 def metrika_get_data(integration_id):
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):
+        print('Permission abort')
         abort(404)
 
 
@@ -66,6 +67,7 @@ def metrika_get_data(integration_id):
         visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID'])
         max_df = build_conversion_df(visits_all_data_df)
     except:
+        print('Table building abort')
         abort(404)
     # building max data frame
 

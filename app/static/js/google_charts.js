@@ -8,6 +8,7 @@ function drawChart(graph_1_no_email,graph_1,conv_no_email_sum, conv_email_sum) {
   const graph_1_no_email_array = eval(graph_1_no_email);
   const graph_1_array = eval(graph_1);
   let arrayToLoad = [['Count', 'Без email', 'с email']];
+
   graph_1_array.forEach((pairOfDots) => {
     noEmailDots.push(
       [parseFloat(pairOfDots[0]), parseFloat(pairOfDots[1]), null]
@@ -19,10 +20,10 @@ function drawChart(graph_1_no_email,graph_1,conv_no_email_sum, conv_email_sum) {
     );
   });
   arrayToLoad = arrayToLoad.concat(emailDots,noEmailDots);
+
   var data = google.visualization.arrayToDataTable(
       arrayToLoad
   );
-
   var options = {
     title: 'Зависимость конверсии от общего количества визитов (с) - с email, без email',
     hAxis: {title: 'Общее количество визитов', minValue: 0, maxValue: 10},
