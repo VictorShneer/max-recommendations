@@ -41,8 +41,10 @@ def register():
         name = form.email.data
         user = User(email=email,name=name)
         user.set_password(form.password.data)
+        user.active = True
         db.session.add(user)
         db.session.commit()
+        # user_datastore.create_user(email=email, name=name, password=form.password.data)
         flash('Congratulations!')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', title='Register', form=form)

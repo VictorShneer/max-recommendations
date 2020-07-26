@@ -11,18 +11,17 @@ from flask_bootstrap import Bootstrap
 from config import Config
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
+from flask_admin import Admin
+from app.admin_security import MyModefView, MyAdminIndexView
 
 
-
-
-# init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
 bootstrap = Bootstrap()
 login = LoginManager()
 migrate = Migrate()
 login.login_view = 'auth.login'
 login.login_message = "Please login to view that page."
-
+admin=Admin()
 
 def create_app(config_class=Config):
 
@@ -34,6 +33,19 @@ def create_app(config_class=Config):
     migrate.init_app(app,db)
     bootstrap.init_app(app)
     login.init_app(app)
+
+
+    #ADMIN PANEL
+    from app.models import User, Integration, Role
+
+    admin.init_app(app,index_view = MyAdminIndexView())
+
+
+    admin.add_view(MyModefView(User, db.session))
+    admin.add_view(MyModefView(Integration, db.session))
+    admin.add_view(MyModefView(Role, db.session))
+
+
     # blueprint for auth routes in our app
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
