@@ -1,5 +1,3 @@
-google.charts.load('current', {'packages':['corechart']});
-google.charts.setOnLoadCallback(drawChart);
 
 function drawChart(graph_1_no_email,graph_1,conv_no_email_sum, conv_email_sum) {
   //первый график  - зависимость конверсии от общего количества визитов (с email, без email)

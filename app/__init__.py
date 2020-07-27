@@ -37,10 +37,7 @@ def create_app(config_class=Config):
 
     #ADMIN PANEL
     from app.models import User, Integration, Role
-
     admin.init_app(app,index_view = MyAdminIndexView())
-
-
     admin.add_view(MyModefView(User, db.session))
     admin.add_view(MyModefView(Integration, db.session))
     admin.add_view(MyModefView(Role, db.session))
@@ -50,7 +47,7 @@ def create_app(config_class=Config):
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
 
-    # blueprint for non-auth parts of app
+    # blueprint
     from app.main import bp as main_bp
     app.register_blueprint(main_bp)
 
@@ -59,6 +56,10 @@ def create_app(config_class=Config):
 
     from app.errors import bp as errors_bp
     app.register_blueprint(errors_bp)
+
+    # blueprint for newsletters routes in our app
+    from app.newsletters import bp as newsletters_bp
+    app.register_blueprint(newsletters_bp)
 
     if not app.debug and not app.testing:
         if not os.path.exists('logs'):

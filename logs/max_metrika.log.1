@@ -1,95 +1,83 @@
-2020-07-20 19:15:52,757 ERROR: Exception on / [GET] [in /Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py:1892]
-Traceback (most recent call last):
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 2447, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1952, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1821, in handle_user_exception
-    reraise(exc_type, exc_value, tb)
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/_compat.py", line 39, in reraise
-    raise value
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1950, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/app.py", line 1936, in dispatch_request
-    return self.view_functions[rule.endpoint](**req.view_args)
-  File "/Users/vzakharenko/Documents/max-recommendations/app/main/routes.py", line 28, in index
-    return render_template('index.html')
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/templating.py", line 140, in render_template
-    ctx.app,
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask/templating.py", line 120, in _render
-    rv = template.render(context)
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 1090, in render
-    self.environment.handle_exception()
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/environment.py", line 832, in handle_exception
-    reraise(*rewrite_traceback_stack(source=source))
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/jinja2/_compat.py", line 28, in reraise
-    raise value.with_traceback(tb)
-  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/index.html", line 3, in top-level template code
-    {% extends "base.html" %}
-  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/base.html", line 2, in top-level template code
-    {% extends 'bootstrap/base.html' %}
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 1, in top-level template code
-    {% block doc -%}
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 4, in block "doc"
-    {%- block html %}
-  File "/Users/vzakharenko/Documents/max-recommendations/venv/lib/python3.7/site-packages/flask_bootstrap/templates/bootstrap/base.html", line 6, in block "html"
-    {%- block head %}
-  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/base.html", line 7, in block "head"
-  File "/Users/vzakharenko/Documents/max-recommendations/app/templates/base.html", line 8, in block "style"
-    {{ super() }}
-jinja2.exceptions.UndefinedError: there is no parent block called 'style'.
-2020-07-20 19:16:17,866 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:62]
-2020-07-20 19:16:17,867 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-20 19:16:17,867 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-22 16:16:19,708 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:62]
-2020-07-22 16:16:19,709 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-22 16:16:19,709 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-22 16:52:57,250 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:62]
-2020-07-22 16:52:57,251 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-22 16:52:57,251 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 16:48:54,939 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:62]
-2020-07-24 16:48:54,942 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 16:48:54,942 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 16:53:16,205 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:62]
-2020-07-24 16:53:16,205 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 16:53:16,205 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 16:53:27,135 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 16:53:27,714 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:08:02,822 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:08:32,123 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:08:43,435 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:08:59,135 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:09:21,627 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:09:29,361 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:10:28,625 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:10:39,467 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:11:37,243 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:11:45,546 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:12:35,269 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:12:51,968 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:14:59,534 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:15:07,873 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:16:13,485 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:16:43,382 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:17:13,600 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:17:36,557 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:18:16,892 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:18:49,753 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:19:20,620 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:19:47,604 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:20:08,082 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:20:30,432 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:20:39,796 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:21:10,612 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:22:45,300 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:30:25,122 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:30:25,843 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:30:29,767 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:31:32,832 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:31:42,488 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:32:10,540 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:32:43,698 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:33:11,697 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:33:24,016 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:33:41,053 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
-2020-07-24 17:52:23,535 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
+2020-07-24 17:52:27,926 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
+2020-07-24 18:05:00,860 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
+2020-07-24 18:10:00,087 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
+2020-07-24 18:10:28,036 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
+2020-07-24 18:10:43,339 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
+2020-07-24 18:11:08,072 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:80]
+2020-07-24 23:59:30,634 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:82]
+2020-07-24 23:59:30,641 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:82]
+2020-07-25 00:01:08,523 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:81]
+2020-07-25 00:01:20,492 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:81]
+2020-07-26 15:29:15,804 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:81]
+2020-07-26 15:40:13,515 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:88]
+2020-07-26 15:43:11,738 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:97]
+2020-07-26 15:43:57,528 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:94]
+2020-07-26 15:44:35,242 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:87]
+2020-07-26 15:45:11,692 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:84]
+2020-07-26 15:54:39,167 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:84]
+2020-07-26 16:20:13,839 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 16:20:13,839 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 16:42:48,624 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 16:44:28,385 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 16:45:17,489 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 16:45:24,935 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 16:45:43,405 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 16:45:43,838 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 19:40:44,444 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 19:51:30,050 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 19:51:42,398 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 19:51:56,694 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 19:51:57,324 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:90]
+2020-07-26 19:54:07,352 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:91]
+2020-07-26 20:39:31,390 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 20:40:45,686 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:94]
+2020-07-26 20:43:50,692 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:94]
+2020-07-26 20:46:35,231 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:94]
+2020-07-26 20:56:54,649 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:96]
+2020-07-26 20:59:07,300 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:96]
+2020-07-26 20:59:07,618 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:96]
+2020-07-26 21:00:16,657 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:96]
+2020-07-26 21:01:36,679 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:96]
+2020-07-26 21:02:28,098 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:96]
+2020-07-26 21:02:29,749 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:95]
+2020-07-26 21:02:36,578 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:95]
+2020-07-26 21:03:17,028 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:95]
+2020-07-26 21:03:24,754 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:95]
+2020-07-26 21:03:25,443 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:95]
+2020-07-26 21:03:45,604 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:95]
+2020-07-26 21:03:57,815 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:95]
+2020-07-26 21:11:39,694 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:100]
+2020-07-26 21:11:52,598 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:100]
+2020-07-26 21:15:01,203 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:99]
+2020-07-26 21:15:54,283 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:99]
+2020-07-26 21:16:00,239 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:99]
+2020-07-26 21:16:34,266 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:99]
+2020-07-26 21:21:41,483 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:99]
+2020-07-26 21:22:07,721 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:99]
+2020-07-26 21:26:24,864 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:99]
+2020-07-26 21:38:41,839 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:98]
+2020-07-26 21:40:02,134 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:98]
+2020-07-26 21:41:01,909 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:97]
+2020-07-26 21:41:14,014 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:97]
+2020-07-26 21:42:24,997 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:96]
+2020-07-26 21:46:16,269 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 21:52:29,734 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 21:53:34,728 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 21:53:50,148 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 21:54:06,099 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 21:54:31,952 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 21:55:40,207 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 22:11:16,953 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 22:11:17,170 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 22:15:36,829 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 22:16:03,947 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 23:28:52,116 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-26 23:28:52,314 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:92]
+2020-07-27 00:15:35,089 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:93]
+2020-07-27 00:15:35,544 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:93]
+2020-07-27 00:16:41,592 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:93]
+2020-07-27 00:16:42,199 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:93]
+2020-07-27 00:17:06,996 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:93]
+2020-07-27 00:17:22,381 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:93]
+2020-07-27 00:18:49,123 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:93]
+2020-07-27 00:19:01,890 INFO: Max metrika startup [in /Users/vzakharenko/Documents/max-recommendations/app/__init__.py:93]
