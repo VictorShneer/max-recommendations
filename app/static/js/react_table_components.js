@@ -94,10 +94,12 @@ class SearchBar extends React.Component {
             this.props.onSubmit(this.state.value);
             event.preventDefault();
           }}>
-                <label for="example-date-input" class="col-2 col-form-label">
-                  Выберите дату:
-                </label>
-                  <input type="date" className="form-control" value={this.state.value} onChange={this.handleChange} id="datepicker"/>
+                <div className='form-search-date'>
+                  <label for="example-date-input" className="col-2 col-form-label">
+                    Выберите дату:
+                  </label>
+                  <input type="date" className="form-control col-2" value={this.state.value} onChange={this.handleChange} id="datepicker"/>
+                </div>
             <input type="submit" value="Загрузить данные" className="btn btn-primary"/>
           </form>
       </div>

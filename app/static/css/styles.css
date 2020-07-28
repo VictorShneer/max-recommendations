@@ -1,0 +1,36 @@
+.container .integration_info {
+  font-size: 18px;
+}
+
+.form-search-date {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.form-search-date label{
+  display: block;
+  max-width: 150px;
+  float: left;
+  line-height: 34px;
+  margin-right: 10px;
+}
+
+.form-search-date input[type=date] {
+  width: auto !important;
+}
+
+#mount-visits_table input[type=submit] {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  background-color: #00baff;
+  border-radius: 100px;
+  border: 1px solid #00baff;
+  box-sizing: border-box;
+  padding: 10px 20px;
+  letter-spacing: .04em;
+  transition: all .1s ease-in-out;
+  line-height: 1;
+  margin: 20px auto;
+  display: block;
+}
