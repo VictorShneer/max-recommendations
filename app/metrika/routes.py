@@ -73,6 +73,10 @@ def metrika_get_data(integration_id):
 
     max_no_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Visits with email'] != 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
     max_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Visits with email'] == 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
+    if (len(max_no_email_1graph) == 0):
+        max_no_email_1graph = [[0,0]]
+    if (len(max_email_1graph) == 0):
+        max_email_1graph = [[0,0]]
 
     #max_no_email_1graph = max_df[max_df['Visits with email'] != 0][['Visits with email','Conversion (TG/TV)']]
     print(max_no_email_1graph)
