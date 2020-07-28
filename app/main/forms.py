@@ -5,8 +5,8 @@ from app.models import User, Integration
 
 class EditIntegration(FlaskForm):
     integration_name = StringField("Название интеграции", validators=[DataRequired()])
-    api_key = StringField('API ключ GetReponse')
-    user_domain = StringField('Домен GetReponse')
+    api_key = StringField('API ключ GetResponse')
+    user_domain = StringField('Домен GetResponse')
     metrika_key = StringField('Ключ Яндекс Метрики')
     metrika_counter_id = IntegerField('ID счетчика Яндекс Метрики')
     clickhouse_login = StringField('Логин Базы Данных', validators=[DataRequired()])
