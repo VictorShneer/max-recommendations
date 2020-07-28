@@ -123,11 +123,13 @@ def metrika(integration_id):
         flash('{} Ошибки в настройках итеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
-
-    return render_template(\
-        'metrika.html',\
-        min_date=min_date_text,\
-        max_date=max_date_text,\
-        data_length = data_length_text,\
-        integration_name=integration.integration_name,\
-        integration_id=integration_id)
+    if (current_user.email == 'sales@getresponse.com'):
+        return render_template('metrika_example.html')
+    else:
+        return render_template(\
+            'metrika.html',\
+            min_date=min_date_text,\
+            max_date=max_date_text,\
+            data_length = data_length_text,\
+            integration_name=integration.integration_name,\
+            integration_id=integration_id)

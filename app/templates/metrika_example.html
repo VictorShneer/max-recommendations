@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+<div>
+  <p id='atb' hidden>5</p>
+  <p><b>Интеграция Test</b></p>
+  <p>Доступны данные с <b>2020-06-25</b> по <b>2020-07-15</b></p>
+  <p>Всего уникальных визитов доступно: <b>100</b></p>
+</div>
+<div id='mount-button_run_table'></div>
+<div id="mount-visits_table"></div>
+
 <script type="text/javascript">
     var logs=[
       [1111111111, 'a@mail.ru', 9, 12, 12, 9],
@@ -146,6 +155,7 @@
 <div id="piechart_3d" style="width: 1000px; height: 500px;"></div>
 {% endblock %}
 {% block scripts %}
+<script type="text/jsx" src='{{url_for("static",filename="js/react_table_components.js")}}'></script>
 {{ super() }}
 <script type="text/javascript">
   logs.forEach(function(log,i,logs) {
