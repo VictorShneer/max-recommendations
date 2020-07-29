@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+<div class="integration_info text-center">
+  <p id='atb' hidden>5</p>
+  <p><b>Интеграция Test</b></p>
+  <p>Доступны данные с <b>2020-06-25</b> по <b>2020-07-15</b></p>
+  <p>Всего уникальных визитов доступно: <b>100</b></p>
+</div>
+<div id='mount-button_run_table'></div>
+<div id="mount-visits_table"></div>
+
 <script type="text/javascript">
     var logs=[
       [1111111111, 'a@mail.ru', 9, 12, 12, 9],
@@ -120,7 +129,6 @@
         <table border="1" class="dataframe data table table-striped table-dark table-bordere">
 <thead class="thead-dark">
   <tr style="text-align: right;">
-    <th></th>
     <th>ClientID</th>
     <th>Client identities</th>
     <th>Total goals complited</th>
@@ -142,16 +150,12 @@
 <!-- первый график - зависимость конверсии от общего количества визитов - с email и без email -->
 <div id="chart_div1" style="width: 1000px; height: 500px;"></div>
 <br>
-<!-- третий график - зависимость конверсии от количества визитов c email -->
-<div id="chart_div3" style="width: 1000px; height: 500px;"></div>
-<br>
-<!-- второй график - зависимость конверсии от количества визитов c email в utm/общее количество визитов -->
-<div id="chart_div2" style="width: 1000px; height: 500px;"></div>
 <!-- диаграмма -->
 <br>
 <div id="piechart_3d" style="width: 1000px; height: 500px;"></div>
 {% endblock %}
 {% block scripts %}
+<script type="text/jsx" src='{{url_for("static",filename="js/react_table_components.js")}}'></script>
 {{ super() }}
 <script type="text/javascript">
   logs.forEach(function(log,i,logs) {
@@ -159,18 +163,22 @@
     var power = log[5]*100/log[2];
     let tableLog = document.getElementById('addLog');
       let trLog = document.createElement('tr');
-    if (log[1] == "no-email") {
-      trLog.insertAdjacentHTML('afterbegin','<td>'+i+'</td><td>'+log[0]+'</td><td>'+log[1]+'</td><td>'+log[2]+'</td><td>'+log[3]+'</td><td>'+log[4]+'</td><td>'+log[5]+'</td><td>'+conv+'</td><td>0</td>');
-    } else {
-      trLog.insertAdjacentHTML('afterbegin','<td>'+i+'</td><td>'+log[0]+'</td><td>'+log[1]+'</td><td>'+log[2]+'</td><td>'+log[3]+'</td><td>'+log[4]+'</td><td>'+log[5]+'</td><td>'+conv+'</td><td>'+power+'</td>');
+    if (i < 11){
+      if (log[1] == "no-email") {
+        trLog.insertAdjacentHTML('afterbegin','<td>'+log[0]+'</td><td>'+log[1]+'</td><td>'+log[2]+'</td><td>'+log[3]+'</td><td>'+log[4]+'</td><td>'+log[5]+'</td><td>'+conv+'</td><td>0</td>');
+      } else {
+        trLog.insertAdjacentHTML('afterbegin','<td>'+log[0]+'</td><td>'+log[1]+'</td><td>'+log[2]+'</td><td>'+log[3]+'</td><td>'+log[4]+'</td><td>'+log[5]+'</td><td>'+conv+'</td><td>'+power+'</td>');
+      }
+      tableLog.append(trLog);
     }
-    tableLog.append(trLog);
+
   })
 </script>
 <script type="text/javascript">
-      google.charts.load('current', {'packages':['corechart']});
-      google.charts.setOnLoadCallback(drawChart);
+      //google.charts.load('current', {'packages':['corechart']});
+      //google.charts.setOnLoadCallback(drawChart);
 
+      drawChart();
       function drawChart() {
         //первый график  - зависимость конверсии от общего количества визитов (с email, без email)
         var dataLogs = [['Count', 'Без email', 'с email']];
@@ -197,45 +205,6 @@
         var chart = new google.visualization.ScatterChart(document.getElementById('chart_div1'));
 
         chart.draw(data, options);
-
-        //второй график - зависимость конверсии от доли визитов с email в общем количестве визитов
-        var data2Logs = [['Count', '']];
-        logs.forEach(function(log,i,logs) {
-          data2Logs.push([log[4]*100/log[3], log[2]*100/log[3]]);
-        });
-        var data2 = google.visualization.arrayToDataTable(data2Logs);
-      var options2 = {
-          title: 'Зависимость конверсии от доли визитов с email (d/c)',
-          hAxis: {title: '% количество визитов с email / общее количество визитов', minValue: 0, maxValue: 100},
-          vAxis: {title: 'Конверсия', minValue: 0, maxValue: 1000},
-          legend: 'none',
-          colors: ['#3caa3c']
-        };
-
-        var chart2 = new google.visualization.ScatterChart(document.getElementById('chart_div2'));
-
-        chart2.draw(data2, options2);
-
-
-      //третий график - зависимость конверсии от количества визитов с email
-
-      var data3Logs = [['Count', '']];
-      logs.forEach(function(log,i,logs) {
-        data3Logs.push([log[4], log[2]*100/log[3]]);
-      });
-      var data3 = google.visualization.arrayToDataTable(data3Logs);
-
-      var options3 = {
-          title: 'Зависимость конверсии от количества визитов с email (d)',
-          hAxis: {title: 'Количество визитов с email', minValue: 0, maxValue: 10},
-          vAxis: {title: 'Конверсия', minValue: 0, maxValue: 1000},
-          legend: 'none',
-          colors: ['#3caa3c']
-        };
-
-        var chart3 = new google.visualization.ScatterChart(document.getElementById('chart_div3'));
-
-        chart3.draw(data3, options3);
 
         //диаграмма
         var data = google.visualization.arrayToDataTable([
