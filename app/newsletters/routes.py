@@ -3,7 +3,8 @@ from flask_login import login_required, current_user
 from app.newsletters import bp
 from app.newsletters.forms import Available_newsletters, Available_links, \
     Api_key, Converted_links
-from app.newsletters.gr_requests import get_newsletters_names
+from app.newsletters.gr_requests import get_newsletters_names,\
+    get_newsletters_links_for_newsletterId
 
 
 @bp.route('/newsletters')
@@ -24,4 +25,14 @@ def newsletters():
 def get_newsletters():
     key = request.json
     response = get_newsletters_names(key)
+    return response
+
+
+
+@bp.route('/get_newsletter_links', methods=['POST'])
+@login_required
+def get_newsletters_links():
+    key = request.json['key']
+    newsletterId = request.json['newsletterId']
+    response = get_newsletters_links_for_newsletterId(key,newsletterId)
     return response

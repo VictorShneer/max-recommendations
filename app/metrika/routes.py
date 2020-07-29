@@ -71,12 +71,12 @@ def metrika_get_data(integration_id):
         abort(404)
     # building max data frame
 
-<<<<<<< HEAD
+
     max_no_email_1graph = [ [int(max_row['Visits with out email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Visits with out email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
     max_email_1graph = [ [int(max_row['Visits with email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
 
 
-=======
+
     max_no_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Visits with email'] != 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
     max_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Visits with email'] == 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
     if (len(max_no_email_1graph) == 0):
@@ -85,9 +85,9 @@ def metrika_get_data(integration_id):
         max_email_1graph = [[0,0]]
 
     #max_no_email_1graph = max_df[max_df['Visits with email'] != 0][['Visits with email','Conversion (TG/TV)']]
-    print(max_no_email_1graph)
-    print(max_email_1graph)
->>>>>>> ce18c3546f9d82507f3d5a5f03b592f4d21c8b95
+    # print(max_no_email_1graph)
+    # print(max_email_1graph)
+
     conv_email_sum = max_df[max_df['Visits with email'] != 0]['Conversion (TG/TV)'].sum()
     conv_no_email_sum = max_df[max_df['Visits with email'] == 0]['Conversion (TG/TV)'].sum()
 
