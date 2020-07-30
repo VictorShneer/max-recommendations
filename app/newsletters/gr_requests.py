@@ -1,7 +1,7 @@
 import requests
 import datetime
 from bs4 import BeautifulSoup
-
+import re
 
 def get_newsletters_names(key):
     newsletters_types = ['draft','automation','broadcast','splittest']
@@ -40,7 +40,9 @@ def parse_links_from_content(content):
         if href == "" or href is None:
         # href empty tag
             continue
-        urls.add(href)
+        url = re.search(r'`(.*?)`', href)
+        if url:
+            urls.add(url.group(1))
 
     return '\n'.join(urls)
 
