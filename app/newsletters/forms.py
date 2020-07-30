@@ -16,4 +16,4 @@ class Api_key(FlaskForm):
     submit = SubmitField('Получить список доступных писем и черновиков')
 
 class Converted_links(FlaskForm):
-    available_links = TextAreaField('Обернутые ссылки. Можно редактировать')
+    converted_links = TextAreaField('Обернутые ссылки. Можно редактировать')

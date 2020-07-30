@@ -2,7 +2,20 @@ const apiKeyForm = document.getElementById('apikeyform').getElementsByClassName(
 apiKeyForm.addEventListener('submit', handleApiKeyForm);
 const availableNewslettersForm = document.getElementById('availablenewslettersform').getElementsByClassName('form')[0];
 availableNewslettersForm.addEventListener('submit', handleAvailableNewslettersForm);
+const availableLinksForm = document.getElementById('availablelinksform').getElementsByClassName('form')[0];
+availableLinksForm.addEventListener('submit', handleAvailableLinksForm);
+//"?utm_campaign=&utm_content=&utm_medium=&utm_source={{CONTACT `subscriber_email`}}&utm_term="
 
+function handleAvailableLinksForm(event){
+  event.preventDefault();
+  const availableLinks = document.getElementById("available_links").value;
+  console.log(availableLinks.split('\n'))
+  availableLinks.split('\n').forEach((url) => {
+    trimed_url = url.trim();
+    $("#converted_links").append(trimed_url +
+        "?utm_campaign=&utm_content=&utm_medium=&utm_source={{CONTACT `subscriber_email`}}&utm_term=\n");
+  });
+}
 function handleAvailableNewslettersForm(event){
   event.preventDefault();
   const e = document.getElementById("available_newsletters");
