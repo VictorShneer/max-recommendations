@@ -11,6 +11,7 @@ function handleAvailableLinksForm(event){
   event.preventDefault();
   const availableLinks = document.getElementById("available_links").value;
   console.log(availableLinks.split('\n'))
+  $("#converted_links").empty();
   availableLinks.split('\n').forEach((url) => {
     trimed_url = url.trim();
     $("#converted_links").append(trimed_url +
