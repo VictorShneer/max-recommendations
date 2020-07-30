@@ -126,6 +126,7 @@ class FilterableVisitsTable extends React.Component {
   }
 
   fetch_metrika_view(date){
+    this.setState({ isLoading: true });
     const url = this.state.url+date
     fetch(url)
         .then(response => {

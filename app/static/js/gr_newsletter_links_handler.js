@@ -4,9 +4,10 @@ const availableNewslettersForm = document.getElementById('availablenewslettersfo
 availableNewslettersForm.addEventListener('submit', handleAvailableNewslettersForm);
 const availableLinksForm = document.getElementById('availablelinksform').getElementsByClassName('form')[0];
 availableLinksForm.addEventListener('submit', handleAvailableLinksForm);
-//"?utm_campaign=&utm_content=&utm_medium=&utm_source={{CONTACT `subscriber_email`}}&utm_term="
+
 
 function handleAvailableLinksForm(event){
+  //
   event.preventDefault();
   const availableLinks = document.getElementById("available_links").value;
   console.log(availableLinks.split('\n'))
@@ -18,6 +19,7 @@ function handleAvailableLinksForm(event){
 }
 function handleAvailableNewslettersForm(event){
   event.preventDefault();
+  event.submitter.disabled = true;
   const e = document.getElementById("available_newsletters");
   const id = e.options[e.selectedIndex].id;
   const key = document.getElementById("key").value;
@@ -28,6 +30,7 @@ function handleAvailableNewslettersForm(event){
     method : 'POST',
     body: JSON.stringify({key:key,newsletterId:id})
   }).then((response) => {
+    event.submitter.disabled = false;
     if (response.ok) {
       return response.json();
     } else {
@@ -43,6 +46,7 @@ function handleAvailableNewslettersForm(event){
 
 function handleApiKeyForm(event){
   event.preventDefault();
+  event.submitter.disabled = true;
   const key = document.getElementById("key").value;
   let response = fetch('/get_newsletters', {
     headers: {
@@ -51,6 +55,7 @@ function handleApiKeyForm(event){
     method : 'POST',
     body: JSON.stringify(key)
   }).then((response) => {
+    event.submitter.disabled = false;
     if (response.ok) {
       return response.json();
     } else {
@@ -69,4 +74,5 @@ function handleApiKeyForm(event){
     });
 
   }).catch((error) => console.log(error));
+
 }
