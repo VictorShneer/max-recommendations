@@ -40,9 +40,10 @@ def parse_links_from_content(content):
         if href == "" or href is None:
         # href empty tag
             continue
-        url = re.search(r'`(.*?)`', href)
+        url = re.search(r'http[\w:/.\[\]=?&]*', href)
+        print(href)
         if url:
-            urls.add(url.group(1))
+            urls.add(url.group(0))
 
     return '\n'.join(urls)
 
