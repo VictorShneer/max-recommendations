@@ -7,18 +7,19 @@
 <link id="load-css-0" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/core/tooltip.css">
 <link id="load-css-1" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/util/util.css">
 <link id="load-css-1" rel="stylesheet" type="text/css" href='{{url_for("static",filename="css/styles.css")}}'>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700%7CRoboto:400,500,700&amp;subset=latin,latin" media="all">
 {% endblock %}
 {% block title %}
         {% if title %}{{ title }} - Max Metrika{% else %}Max Metrika{% endif %}
 {% endblock %}
 
 {% block navbar %}
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-default grmax-navbar">
       <div class="container center">
       <ul class="nav navbar-nav navbar-left">
         <li>
           <a class="navbar-brand" href="{{ url_for('main.index') }}">
-          <img src="https://ffb2efd5105ff0aedbc9-9cdacdeebf0faa19b665bf427f0c8092.ssl.cf1.rackcdn.com/img/getresponse.png" width="30" height="30" alt="Logo">
+          <img src="{{ url_for('static', filename='img/logo.svg') }}" height="19px" alt="Logo">
           </a>
         </li>
       </ul>
@@ -61,7 +62,7 @@
 </nav>
         {% endblock %}
         {% block content %}
-            <div class="container">
+            <div class="container grmax-container">
                 {% with messages = get_flashed_messages() %}
                 {% if messages %}
                     {% for message in messages %}
@@ -74,6 +75,7 @@
                 {% block app_content %}{% endblock %}
             </div>
         {% endblock %}
+
 {% block scripts %}
 {{ super() }}
 
@@ -99,4 +101,13 @@
         });
     }
 </script>
+<footer class="grmax-footer">
+  <div class="shadow"></div>
+  <div class="mfooter-info">
+    <p class="mfooter-copyright">
+      <a class="mfooter-logo" href="/" title="Инструменты для маркетинга от GetResponse"><img src="https://us-as.gr-cdn.com/images/secure-getresponse/global/footer/mini-logo.svg" alt="Инструменты для маркетинга от GetResponse"></a>
+      <span class="mfooter-text"> Copyright ©  2020 GetResponse. Email Marketing. Solved<sup>®</sup>. </span>
+    </p>
+  </div>
+</footer>
 {% endblock %}
