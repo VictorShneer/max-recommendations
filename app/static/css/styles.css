@@ -22,7 +22,7 @@ body {
   margin-top: 7px;
 }
 
-.grmax-navbar ul.navbar-right li a {
+.grmax-navbar ul.navbar-right > li > a {
   font-family: roboto-basic,Roboto,Helvetica,sans-serif;
   font-weight: 500;
   line-height: 1;
@@ -35,10 +35,112 @@ body {
   font-size: 14px;
 }
 
-.grmax-navbar ul.navbar-right li a:hover {
+.grmax-navbar ul.navbar-right > li > a.navbar-link-active {
+  color: #00baff;
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu a {
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: rgb(36, 40, 44);
+}
+
+.grmax-navbar ul.navbar-right > li {
+  display: block;
+}
+
+.grmax-navbar ul.navbar-right > li > a:hover, .grmax-navbar ul.navbar-right li div.navbar-submenu a:hover {
   color: #00baff;
   text-decoration: none;
 }
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu a:active {
+  text-decoration: none;
+}
+
+.grmax-navbar li#navbar-profile {
+  position: relative;
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu {
+  position: absolute;
+  top: 60px;
+  left: -49px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 4px 8px 0px;
+  z-index: 999999;
+  color: rgb(87, 106, 123);
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(204, 204, 204);
+  background: rgb(255, 255, 255);
+  font-family: roboto-basic,Roboto,Helvetica,sans-serif;
+  color: #11161d;
+  letter-spacing: .02em;
+  font-size: 14px;
+  width: 250px;
+  display: none;
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu:before {
+  position: absolute;
+  content: "";
+  transform: translate(0px, -100%);
+  left: 84px;
+  top: 0px;
+  width: 0px;
+  height: 0px;
+  border-right: 10px solid transparent;
+  border-left: 10px solid transparent;
+  border-bottom: 9px solid rgb(204, 204, 204);
+  box-sizing: border-box;
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu:after {
+  position: absolute;
+  content: "";
+  transform: translate(0px, -85%);
+  left: 84px;
+  top: 0px;
+  width: 0px;
+  height: 0px;
+  border-right: 10px solid transparent;
+  border-left: 10px solid transparent;
+  border-bottom: 9px solid rgb(255, 255, 255);
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu ul {
+  list-style: none;
+  padding: 10px 40px;
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu ul li {
+  padding: 10px 0;
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu ul li a:before {
+  font-family: FontAwesome;
+	position: relative;
+  left: 0px;
+  top: 0px;
+  padding-right: 10px;
+  color: #00baff;
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu-profile ul li a.show-integration:before {
+  content: "\f0ad";
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu-profile ul li a.create-link:before {
+  content: "\f0c1";
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu-profile ul li a.create-letter:before {
+  content: "\f003";
+}
+
 .grmax-container h1 {
   font-family: Assistant,sans-serif;
   font-size: 45px;

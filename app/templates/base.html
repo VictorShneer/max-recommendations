@@ -7,7 +7,8 @@
 <link id="load-css-0" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/core/tooltip.css">
 <link id="load-css-1" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/util/util.css">
 <link id="load-css-1" rel="stylesheet" type="text/css" href='{{url_for("static",filename="css/styles.css")}}'>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700%7CRoboto:400,500,700&amp;subset=latin,latin" media="all">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto:300,400,500,700&amp;subset=latin,latin" media="all">
+<script src="https://use.fontawesome.com/79cfbb194f.js"></script>
 {% endblock %}
 {% block title %}
         {% if title %}{{ title }} - Max Metrika{% else %}Max Metrika{% endif %}
@@ -37,10 +38,17 @@
         </li>
         {% endif %}
         {% if current_user.is_authenticated %}
-        <li>
-        <a href="{{ url_for('main.profile') }}" class="navbar-item">
+        <li id="navbar-profile">
+        <a href="" class="navbar-item" id='navbar-profile-link'>
             Профиль
         </a>
+        <div class="navbar-submenu navbar-submenu-profile">
+          <ul>
+            <li><a href="{{url_for('main.user_integrations')}}" class="show-integration">Показать интеграции</a></li>
+            <li><a href="{{url_for('main.link_creation')}}" class="create-link">Создать ссылку</a></li>
+            <li><a href="{{url_for('newsletters.newsletters')}}" class="create-letter">Создать письмо</a></li>
+          </ul>
+        </div>
         </li>
         {% endif %}
         {% if current_user.email == 'george@mail.ru' %}
@@ -88,6 +96,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
+<script type="text/javascript" src="{{url_for("static",filename="js/common.js")}}"></script>
 <script>
     function delete_integration(integration_id){
 
