@@ -100,7 +100,7 @@ class SearchBar extends React.Component {
                   </label>
                   <input type="date" className="form-control col-2" value={this.state.value} onChange={this.handleChange} id="datepicker"/>
                 </div>
-            <input type="submit" value="Загрузить данные" className="btn btn-primary"/>
+            <input type="submit" value="Загрузить данные" className="btn grmax-btn"/>
           </form>
       </div>
     );

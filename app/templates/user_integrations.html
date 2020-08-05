@@ -1,17 +1,18 @@
 {% extends "base.html" %}
 {% block app_content %}
-<table class="profile table table-hover">
+<div class="user-integrations">
+  <div class="button-add">
+    <a class="btn grmax-btn floatright" href="{{url_for('main.create_integration')}}" role="button">Добавить новую интеграцию</a>
+    <div class="clr"></div>
+  </div>
+
+<table class="profile table table-hover grmax-table">
     <thead>
         <tr>
             <td>
                 Название
             </td>
             <td>
-              <a class="btn btn-primary"
-              href="{{url_for('main.create_integration')}}"
-              role="button">
-              Добавить новую интеграцию
-            </a>
             </td>
             <td>
             </td>
@@ -23,4 +24,5 @@
     {% endfor %}
     </tbody>
 </table>
+</div>
 {% endblock %}

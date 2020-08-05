@@ -1,23 +1,23 @@
 <tr id='{{integration.id}}'>
-    <td>
-       <h3>{{integration.integration_name}}</h3>
+    <td class="td-integration-name">
+       {{integration.integration_name}}
     </td>
 
-    <td>
-      <a class="btn btn-link"
+    <td class="integration-justlink">
+      <a class="btn grmax-justlink"
       href="{{url_for('main.edit_integration', integration_id = integration.id) }}"
       role="button">
         Настроить интеграцию
       </a>
     </td>
-    <td>
-      <a class="btn btn-link"
+    <td class="integration-justlink">
+      <a class="btn grmax-justlink"
       href="{{url_for('metrika.metrika', integration_id = integration.id) }}"
       role="button">
         Посмотреть конверсию
       </a>
     </td>
-    <td>
-      <a href="javascript:delete_integration('{{ integration.id }}')">{{ ('Удалить интеграцию') }}</a>
+    <td class="integration-justlink">
+      <a class="btn grmax-justlink" href="javascript:delete_integration('{{ integration.id }}')">{{ ('Удалить интеграцию') }}</a>
     </td>
 </tr>
