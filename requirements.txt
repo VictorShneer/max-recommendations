@@ -36,8 +36,6 @@ idna==2.10
 itsdangerous==1.1.0
 jdcal==1.4.1
 Jinja2==2.11.2
-Kivy==1.11.1
-Kivy-Garden==0.1.4
 kiwisolver==1.2.0
 libmagic==1.0
 lxml==4.5.2
@@ -49,6 +47,8 @@ openpyxl==3.0.3
 pandas==1.0.5
 paramiko==2.7.1
 passlib==1.7.2
+Kivy==1.11.1
+Kivy-Garden==0.1.4
 Pillow==6.1.0
 psycopg2-binary==2.8.5
 pycparser==2.19

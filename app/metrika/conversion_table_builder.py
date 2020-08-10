@@ -38,7 +38,7 @@ def build_conversion_df(visits_all_data_df):
     unique_client_ids = max_df['ClientID'].unique()
     # after this loop we got ClientID column with distinct values
     temp_dfs = []
-
+    # print(visits_all_data_df.head().to_string())
     for client_id in unique_client_ids:
 
         # for every unique ClientID we group rows that belong to it
@@ -83,7 +83,7 @@ def build_conversion_df(visits_all_data_df):
         'Goals complited via email':'sum'
         })
     max_df.reset_index(inplace=True, drop=False)
-    print(max_df.to_string())
+    # print(max_df.to_string())
 
     # # handle utm intersections
     # temp_dfs = []
@@ -106,7 +106,6 @@ def build_conversion_df(visits_all_data_df):
     # #contatenating intersections UTMs into single DataFrame
     # max_df = pd.concat(temp_dfs)
     # max_df.reset_index(inplace=True, drop=True)
-
     #calculating metrics
     max_df['Conversion (TG/TV)'] = devide_columns_handler(max_df,'Total goals complited','Total visits')
     max_df['Email visits share'] = devide_columns_handler(max_df,'Visits with email','Total visits')

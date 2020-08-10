@@ -5,13 +5,13 @@ import numpy as np
 import requests
 import json
 from datetime import datetime, timedelta
-from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 import pandas as pd
 from app.models import User, Integration
 from app import db
 from app.metrika import bp
-from app.metrika.clickhouse import made_url_for_query,request_clickhouse
+from app.metrika.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from app.metrika.conversion_table_builder import build_conversion_df
 from app.metrika.secur import current_user_own_integration
 
@@ -38,17 +38,11 @@ def metrika_get_data(integration_id):
         integration\
         )
 
-    certificate_path = 'app/YandexInternalRootCA.crt'
-    auth = {
-        'X-ClickHouse-User': integration.clickhouse_login,
-        'X-ClickHouse-Key': integration.clickhouse_password
-    }
-
     try:
         # get column names 1
-        response_with_columns_names = request_clickhouse(url_for_columns, auth, certificate_path)
+        response_with_columns_names = request_clickhouse(url_for_columns, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
         # get table data and prepare it
-        response_with_visits_all_data =request_clickhouse (url_for_visits_all_data, auth, certificate_path)
+        response_with_visits_all_data =request_clickhouse (url_for_visits_all_data, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
         if any([\
                 response_with_columns_names.status_code != 200,\
                 response_with_visits_all_data.status_code !=200\
@@ -114,13 +108,15 @@ def metrika(integration_id):
     try:
         certificate_path = 'app/YandexInternalRootCA.crt'
         auth = {
-        'X-ClickHouse-User': integration.clickhouse_login,
-        'X-ClickHouse-Key': integration.clickhouse_password
+        'X-ClickHouse-User': current_app.config['CLICKHOUSE_LOGIN'],
+        'X-ClickHouse-Key': current_app.config['CLICKHOUSE_PASSWORD']
         }
-
-        query_data_length = made_url_for_query('SELECT count(Date) FROM visits_all',integration)
-        query_min_date = made_url_for_query('SELECT min(Date) FROM visits_all',integration)
-        query_max_date = made_url_for_query('SELECT max(Date) FROM visits_all',integration)
+        # visits_table = ''.join([current_user.crypto, '_visits_all'])
+        # print(visits_table)
+        visits_table = 'visits_all'
+        query_data_length = made_url_for_query('SELECT count(Date) FROM {}'.format(visits_table),integration)
+        query_min_date = made_url_for_query('SELECT min(Date) FROM {}'.format(visits_table),integration)
+        query_max_date = made_url_for_query('SELECT max(Date) FROM {}'.format(visits_table),integration)
         data_length_text =request_clickhouse(query_data_length, auth, certificate_path).text
         min_date_text = request_clickhouse(query_min_date, auth, certificate_path).text
         max_date_text = request_clickhouse(query_max_date, auth, certificate_path).text

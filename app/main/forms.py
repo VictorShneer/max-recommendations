@@ -9,10 +9,10 @@ class EditIntegration(FlaskForm):
     user_domain = StringField('Домен GetResponse')
     metrika_key = StringField('Ключ Яндекс Метрики')
     metrika_counter_id = IntegerField('ID счетчика Яндекс Метрики')
-    clickhouse_login = StringField('Логин Базы Данных', validators=[DataRequired()])
-    clickhouse_password = StringField('Пароль Базы Данных', validators=[DataRequired()])
-    clickhouse_host = StringField('Хост Базы Данных', validators=[DataRequired()])
-    clickhouse_db = StringField('Имя Базы Данных', validators=[DataRequired()])
+    # clickhouse_login = StringField('Логин Базы Данных', validators=[DataRequired()])
+    # clickhouse_password = StringField('Пароль Базы Данных', validators=[DataRequired()])
+    # clickhouse_host = StringField('Хост Базы Данных', validators=[DataRequired()])
+    # clickhouse_db = StringField('Имя Базы Данных', validators=[DataRequired()])
     submit = SubmitField("Отправить")
 
     # def validate_integration_name(self, integration_name):

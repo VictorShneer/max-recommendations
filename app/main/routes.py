@@ -8,7 +8,8 @@ from app.main import bp
 from app.main.forms import EditIntegration, LinkGenerator
 from app.models import Integration, User
 from app import db
-
+from app.metrika.secur import current_user_own_integration
+from app.main.intergration_initializer import create_integration_tables
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
@@ -58,6 +59,9 @@ def user_integrations():
 @bp.route('/create_integration', methods=['GET','POST'])
 @login_required
 def create_integration():
+    if current_user.crypto is None:
+        flash('Настройка вашего аккаунта еще не закончена')
+        return redirect(url_for('main.user_integrations'))
     form = EditIntegration()
     if form.validate_on_submit():
         integration = Integration(
@@ -65,13 +69,21 @@ def create_integration():
         api_key = form.api_key.data,
         user_domain = form.user_domain.data,
         metrika_key = form.metrika_key.data,
-        metrika_counter_id = form.metrika_counter_id.data,
-        clickhouse_login = form.clickhouse_login.data,
-        clickhouse_password = form.clickhouse_password.data,
-        clickhouse_host = form.clickhouse_host.data,
-        clickhouse_db = form.clickhouse_db.data,
-        user=current_user
+        metrika_counter_id = form.metrika_counter_id.data
+        # clickhouse_login = form.clickhouse_login.data,
+        # clickhouse_password = form.clickhouse_password.data,
+        # clickhouse_host = form.clickhouse_host.data,
+        # clickhouse_db = form.clickhouse_db.data,
         )
+        create_integration_tables(current_user.crypto)
+        try:
+            # create_integration_tables(current_user.crypto)
+            pass
+        except:
+            flash("Проблемки..")
+            abort(404)
+        user=current_user
+
         db.session.add(integration)
         db.session.commit()
         flash('You just have add new {} integration '.format(integration.integration_name))
@@ -85,10 +97,12 @@ def create_integration():
 @bp.route('/edit_integration/<integration_id>', methods = ['GET','POST'])
 @login_required
 def edit_integration(integration_id):
+
     form = EditIntegration()
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
-    if integration.user!=current_user:
-        abort(404)
+    if not current_user_own_integration(integration, current_user):
+        flash('Настройка вашего аккаунта еще не закончена')
+        return redirect(url_for('main.user_integrations'))
 
     title = integration.integration_name
     if form.validate_on_submit():
@@ -97,10 +111,10 @@ def edit_integration(integration_id):
         integration.user_domain = form.user_domain.data
         integration.metrika_key = form.metrika_key.data
         integration.metrika_counter_id = form.metrika_counter_id.data
-        integration.clickhouse_login = form.clickhouse_login.data
-        integration.clickhouse_password = form.clickhouse_password.data
-        integration.clickhouse_host = form.clickhouse_host.data
-        integration.clickhouse_db = form.clickhouse_db.data
+        # integration.clickhouse_login = form.clickhouse_login.data
+        # integration.clickhouse_password = form.clickhouse_password.data
+        # integration.clickhouse_host = form.clickhouse_host.data
+        # integration.clickhouse_db = form.clickhouse_db.data
         db.session.commit()
         flash('Изменения сохранены')
     elif request.method == 'GET':
@@ -109,10 +123,10 @@ def edit_integration(integration_id):
         form.user_domain.data = integration.user_domain
         form.metrika_key.data = integration.metrika_key
         form.metrika_counter_id.data = integration.metrika_counter_id
-        form.clickhouse_login.data = integration.clickhouse_login
-        form.clickhouse_password.data = integration.clickhouse_password
-        form.clickhouse_host.data = integration.clickhouse_host
-        form.clickhouse_db.data = integration.clickhouse_db
+        # form.clickhouse_login.data = integration.clickhouse_login
+        # form.clickhouse_password.data = integration.clickhouse_password
+        # form.clickhouse_host.data = integration.clickhouse_host
+        # form.clickhouse_db.data = integration.clickhouse_db
     return render_template("create_integration.html", form=form, title=title)
 
 

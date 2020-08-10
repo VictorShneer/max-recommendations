@@ -23,4 +23,15 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
+    # CLICKHOUSE
+    CLICKHOUSE_LOGIN = 'user1'
+    CLICKHOUSE_PASSWORD = 'password'
+    CLICKHOUSE_HOST = 'rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net'
+    CLICKHOUSE_DB = 'db1'
+    CERTIFICATE_PATH = 'app/YandexInternalRootCA.crt'
+    AUTH = {
+        'X-ClickHouse-User': 'user1',
+        'X-ClickHouse-Key': 'password'
+    }
+
     ADMINS = ['implixgr360@gmail.com']

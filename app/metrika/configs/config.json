@@ -1,0 +1,42 @@
+{
+	"token" : "AgAAAAAOfQzUAAZsVJowlKqpKEEOvNCfAFr78lg",
+	"counter_id": "65168419",
+	"disable_ssl_verification_for_clickhouse": 1,
+	"visits_fields": [
+			"ym:s:visitID",
+			"ym:s:counterID",
+			"ym:s:watchIDs",
+			"ym:s:dateTime",
+			"ym:s:clientID",
+	    "ym:s:UTMSource",
+			"ym:s:startURL",
+	    "ym:s:pageViews",
+	    "ym:s:goalsID",
+			"ym:s:goalsDateTime",
+			"ym:s:date"
+	],
+	"hits_fields": [
+	    "ym:pv:counterID",
+	    "ym:pv:dateTime",
+	    "ym:pv:date",
+	    "ym:pv:clientID",
+			"ym:pv:URL",
+			"ym:pv:UTMSource",
+			"ym:pv:lastTrafficSource",
+			"ym:pv:link",
+			"ym:pv:httpError",
+			"ym:pv:goalsID"
+
+	],
+	"log_level": "INFO",
+	"retries": 1,
+	"retries_delay": 60,
+	"clickhouse": {
+		"host": "https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443",
+		"user": "user1",
+		"password": "password",
+		"visits_table": "",
+		"hits_table": "",
+		"database": "db1"
+	}
+}
