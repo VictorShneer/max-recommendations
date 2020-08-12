@@ -62,6 +62,10 @@ def create_app(config_class=Config):
     from app.newsletters import bp as newsletters_bp
     app.register_blueprint(newsletters_bp)
 
+    #bp for analytics
+    from app.analytics import bp as analytics_bp
+    app.register_blueprint(analytics_bp)
+
     if not app.debug and not app.testing:
         if not os.path.exists('logs'):
             os.mkdir('logs')
