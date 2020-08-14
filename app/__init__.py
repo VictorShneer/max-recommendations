@@ -13,7 +13,8 @@ from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_admin import Admin
 from app.admin_security import MyModefView, MyAdminIndexView
-
+from redis import Redis
+import rq
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -42,6 +43,8 @@ def create_app(config_class=Config):
     admin.add_view(MyModefView(Integration, db.session))
     admin.add_view(MyModefView(Role, db.session))
 
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
+    app.task_queue = rq.Queue('max-tasks', connection=app.redis)
 
     # blueprint for auth routes in our app
     from app.auth import bp as auth_bp

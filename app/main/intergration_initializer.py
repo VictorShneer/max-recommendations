@@ -1,6 +1,6 @@
 from flask import app
 from app.metrika.metrica_logs_api import handle_integration_tables
-def create_integration_tables(crypto):
+def create_integration_tables(crypto, id):
     params = ['-source=hits', '-mode=history']
     handle_integration_tables(crypto, params)
     params = ['-source=visits', '-mode=history']

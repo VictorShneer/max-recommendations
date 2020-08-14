@@ -34,4 +34,8 @@ class Config(object):
         'X-ClickHouse-Key': 'password'
     }
 
+    #REDIS
+    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
+
+
     ADMINS = ['implixgr360@gmail.com']

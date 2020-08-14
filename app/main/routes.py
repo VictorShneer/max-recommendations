@@ -69,25 +69,23 @@ def create_integration():
         api_key = form.api_key.data,
         user_domain = form.user_domain.data,
         metrika_key = form.metrika_key.data,
-        metrika_counter_id = form.metrika_counter_id.data
-        # clickhouse_login = form.clickhouse_login.data,
-        # clickhouse_password = form.clickhouse_password.data,
-        # clickhouse_host = form.clickhouse_host.data,
-        # clickhouse_db = form.clickhouse_db.data,
+        metrika_counter_id = form.metrika_counter_id.data,
+        user_id = current_user.id
         )
-        create_integration_tables(current_user.crypto)
+
+        db.session.add(integration)
+        db.session.flush()
+
         try:
-            # create_integration_tables(current_user.crypto)
-            pass
+            ### TODO  
+            # UUID CUSTOM UNIQUE ID FOR ClickHousE integration
+            create_integration_tables(current_user.crypto, integration.id)
         except:
             flash("Проблемки..")
             abort(404)
-        user=current_user
 
-        db.session.add(integration)
         db.session.commit()
         flash('You just have add new {} integration '.format(integration.integration_name))
-
         return redirect(url_for('main.user_integrations'))
 
     return render_template('create_integration.html', form=form)
