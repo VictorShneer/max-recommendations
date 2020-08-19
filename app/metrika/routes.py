@@ -14,6 +14,7 @@ from app.metrika import bp
 from app.metrika.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from app.metrika.conversion_table_builder import build_conversion_df
 from app.metrika.secur import current_user_own_integration
+from app.metrika.send_hash_to_gr import add_custom_field
 
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
@@ -121,7 +122,7 @@ def metrika(integration_id):
 
     except Exception as e:
         traceback.print_exc()
-        flash('{} Ошибки в настройках итеграции!'.format(integration.integration_name))
+        flash('{} Ошибки в настройках интеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
     if (current_user.email == 'sales@getresponse.com'):
@@ -134,3 +135,13 @@ def metrika(integration_id):
             data_length = data_length_text,\
             integration_name=integration.integration_name,\
             integration_id=integration_id)
+
+@bp.route('/metrika/callback_add_custom_field', methods = ['GET'])
+def callback_add_custom_field():
+    action = request.args.get('action')
+    contact_email = request.args.get('contact_email')
+    contact_id = request.args.get('CONTACT_ID')
+    custom_field_id= 'nZT'  #TODO id кастомного поля, для каждого клиента должен быть свой (в ссылке прописать), пока зашит с моего акка
+    if (action == 'subscribe'): #проверяем, что коллбек именно на подписку
+        add_custom_field(contact_email, contact_id, custom_field_id)
+    return redirect(url_for('main.index'))
