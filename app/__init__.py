@@ -38,11 +38,12 @@ def create_app(adminFlag=True,config_class=Config):
 
     #ADMIN PANEL
     if (adminFlag):
-        from app.models import User, Integration, Role
+        from app.models import User, Integration, Role, Task
         admin.init_app(app,index_view = MyAdminIndexView())
         admin.add_view(MyModefView(User, db.session))
         admin.add_view(MyModefView(Integration, db.session))
         admin.add_view(MyModefView(Role, db.session))
+        admin.add_view(MyModefView(Task, db.session))
 
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('max-tasks', connection=app.redis)
