@@ -1,12 +1,11 @@
 from collections import namedtuple
-import app.metrika.logs_api as logs_api
 import time
-import app.metrika.utils as utils
 import sys
 import datetime
 import logging
-from app.metrika.clickhouse import setup_cofig
-import app.metrika.clickhouse as clickhouse
+import app.clickhousehub.logs_api as logs_api
+import app.clickhousehub.utils as utils
+import app.clickhousehub.clickhouse as clickhouse
 
 def setup_logging(config):
     global logger
@@ -111,8 +110,6 @@ def integrate_with_logs_api(config, user_request):
 def handle_integration_tables(crypto, params):
     print('##### python', utils.get_python_version())
     start_time = time.time()
-
-    setup_cofig(crypto)
     config = utils.get_config()
     config['clickhouse']['visits_table'] = crypto + "_visits_table"
     config['clickhouse']['hits_table'] = crypto + "_hits_table"

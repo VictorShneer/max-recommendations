@@ -2,12 +2,11 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 
 import requests
-
 import json
-import app.metrika.utils as utils
 import datetime
 import logging
-import app.metrika.clickhouse as clickhouse
+import app.clickhousehub.utils as utils
+import app.clickhousehub.clickhouse as clickhouse
 
 if utils.get_python_version().startswith('2'):
     from urllib import urlencode

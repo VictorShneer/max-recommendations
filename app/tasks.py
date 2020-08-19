@@ -3,7 +3,8 @@ from rq import get_current_job
 from app import db
 from app.models import Task
 from app import create_app
-app = create_app()
+import sys
+app = create_app(adminFlag=False)
 app.app_context().push()
 
 
@@ -30,3 +31,12 @@ def _set_task_progress(progress):
         if progress >= 100:
             task.complete = True
         db.session.commit()
+
+def init_clickhouse_tables(crypto, id):
+    try:
+        # читать сообщения пользователей из базы данных
+        # отправить письмо с данными пользователю
+    except:
+    # обработки непредвиденных ошибок
+        _set_task_progress(100)
+        app.logger.error('Unhandled exception', exc_info=sys.exc_info())

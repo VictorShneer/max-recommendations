@@ -26,16 +26,14 @@ def metrika_get_data(integration_id):
 
     request_start_date = request.args.get('start_date')
 
-    url_for_columns = made_url_for_query('DESC visits_all', integration)
+    url_for_columns = made_url_for_query('DESC visits_all')
     if request_start_date =='':
         url_for_visits_all_data = made_url_for_query(\
-        "SELECT * FROM visits_all",\
-        integration\
+        "SELECT * FROM visits_all"\
         )
     else:
         url_for_visits_all_data = made_url_for_query(\
-        "SELECT * FROM visits_all WHERE Date > toDate('{}')".format(request_start_date),\
-        integration\
+        "SELECT * FROM visits_all WHERE Date > toDate('{}')".format(request_start_date)\
         )
 
     try:
@@ -114,9 +112,9 @@ def metrika(integration_id):
         # visits_table = ''.join([current_user.crypto, '_visits_all'])
         # print(visits_table)
         visits_table = 'visits_all'
-        query_data_length = made_url_for_query('SELECT count(Date) FROM {}'.format(visits_table),integration)
-        query_min_date = made_url_for_query('SELECT min(Date) FROM {}'.format(visits_table),integration)
-        query_max_date = made_url_for_query('SELECT max(Date) FROM {}'.format(visits_table),integration)
+        query_data_length = made_url_for_query('SELECT count(Date) FROM {}'.format(visits_table))
+        query_min_date = made_url_for_query('SELECT min(Date) FROM {}'.format(visits_table))
+        query_max_date = made_url_for_query('SELECT max(Date) FROM {}'.format(visits_table))
         data_length_text =request_clickhouse(query_data_length, auth, certificate_path).text
         min_date_text = request_clickhouse(query_min_date, auth, certificate_path).text
         max_date_text = request_clickhouse(query_max_date, auth, certificate_path).text

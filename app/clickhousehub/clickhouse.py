@@ -3,44 +3,23 @@ from __future__ import (absolute_import, division,
 import requests
 import urllib
 import urllib3
-import app.metrika.utils as utils
+import app.clickhousehub.utils as utils
 import sys
 import logging
 from flask import current_app
-
-
-config = None
-CH_HOST = None
-CH_USER = None
-CH_PASSWORD = None
-CH_VISITS_TABLE = None
-CH_HITS_TABLE = None
-CH_DATABASE = None
-SSL_VERIFY = None
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logger = logging.getLogger('logs_api')
 
 
-def setup_cofig(crypto):
-    global config
-    global CH_HOST
-    global CH_USER
-    global CH_PASSWORD
-    global CH_VISITS_TABLE
-    global CH_HITS_TABLE
-    global CH_DATABASE
-    global SSL_VERIFY
-    config = utils.get_config()
-    config['clickhouse']['visits_table'] = crypto + "_visits_table"
-    config['clickhouse']['hits_table'] = crypto + "_hits_table"
-    CH_HOST = config['clickhouse']['host']
-    CH_USER = config['clickhouse']['user']
-    CH_PASSWORD = config['clickhouse']['password']
-    CH_VISITS_TABLE = config['clickhouse']['visits_table']
-    CH_HITS_TABLE = config['clickhouse']['hits_table']
-    CH_DATABASE = config['clickhouse']['database']
-    SSL_VERIFY = (config['disable_ssl_verification_for_clickhouse'] == 0)
+config = utils.get_config()
+CH_HOST = config['clickhouse']['host']
+CH_USER = config['clickhouse']['user']
+CH_PASSWORD = config['clickhouse']['password']
+CH_VISITS_TABLE = config['clickhouse']['visits_table']
+CH_HITS_TABLE = config['clickhouse']['hits_table']
+CH_DATABASE = config['clickhouse']['database']
+SSL_VERIFY = (config['disable_ssl_verification_for_clickhouse'] == 0)
 
 
 def get_clickhouse_data(query,host="https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443"):

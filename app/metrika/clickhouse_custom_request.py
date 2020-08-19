@@ -1,7 +1,7 @@
 import requests
 from flask import current_app
 
-def made_url_for_query(query, integration):
+def made_url_for_query(query):
     host = current_app.config['CLICKHOUSE_HOST']
     db = current_app.config['CLICKHOUSE_DB']
 

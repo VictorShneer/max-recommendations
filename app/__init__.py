@@ -24,7 +24,7 @@ login.login_view = 'auth.login'
 login.login_message = "Please login to view that page."
 admin=Admin()
 
-def create_app(config_class=Config):
+def create_app(adminFlag=True,config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -37,11 +37,12 @@ def create_app(config_class=Config):
 
 
     #ADMIN PANEL
-    from app.models import User, Integration, Role
-    admin.init_app(app,index_view = MyAdminIndexView())
-    admin.add_view(MyModefView(User, db.session))
-    admin.add_view(MyModefView(Integration, db.session))
-    admin.add_view(MyModefView(Role, db.session))
+    if (adminFlag):
+        from app.models import User, Integration, Role
+        admin.init_app(app,index_view = MyAdminIndexView())
+        admin.add_view(MyModefView(User, db.session))
+        admin.add_view(MyModefView(Integration, db.session))
+        admin.add_view(MyModefView(Role, db.session))
 
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('max-tasks', connection=app.redis)
