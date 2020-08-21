@@ -35,7 +35,7 @@ class Config(object):
     }
 
     #REDIS
-    REDIS_URL = os.getenv('REDISTOGO_URL', 'redis://localhost:6379')
+    REDIS_URL = os.getenv('REDISTOGO_URL')
 
 
     ADMINS = ['implixgr360@gmail.com']
