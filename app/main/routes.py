@@ -57,17 +57,6 @@ def user_integrations():
 
     return render_template('user_integrations.html', integrations=integrations)
 
-@bp.route('/notifications')
-@login_required
-def notifications():
-    since = request.args.get('since', 0.0, type=float)
-    notifications = current_user.notifications.filter(
-        Notification.timestamp > since).order_by(Notification.timestamp.asc())
-    return jsonify([{
-        'name': n.name,
-        'data': n.get_data(),
-        'timestamp': n.timestamp
-    } for n in notifications])
 
 @bp.route('/create_integration', methods=['GET','POST'])
 @login_required
