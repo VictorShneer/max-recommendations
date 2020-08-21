@@ -16,6 +16,8 @@ from app.admin_security import MyModefView, MyAdminIndexView
 from redis import Redis
 import rq
 
+from rq import Connection, Worker
+
 db = SQLAlchemy()
 bootstrap = Bootstrap()
 login = LoginManager()
