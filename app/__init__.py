@@ -14,6 +14,7 @@ from flask_migrate import Migrate
 from flask_admin import Admin
 from app.admin_security import MyModefView, MyAdminIndexView
 from redis import Redis
+import redis
 import rq
 from rq import Queue, Connection
 from rq.worker import HerokuWorker as Worker
@@ -51,7 +52,8 @@ def create_app(adminFlag=True,config_class=Config):
 
 
     listen = ['high', 'default', 'low']
-    app.redis = Redis.from_url(app.config['REDIS_URL'])
+    REDIS_DEFAULT_CONNECTION_POOL = redis.ConnectionPool.from_url(app.config['REDIS_URL'])
+    app.redis = Redis(connection_pool=REDIS_DEFAULT_CONNECTION_POOL)
     app.task_queue = rq.Queue('max-tasks', connection=app.redis)
     # url = urlparse(app.config['REDIS_URL'])
     # conn = Redis(host=url.hostname, port=url.port, db=0, password=url.password)
