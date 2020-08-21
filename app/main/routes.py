@@ -9,7 +9,8 @@ from app.main.forms import EditIntegration, LinkGenerator
 from app.models import Integration, User
 from app import db
 from app.metrika.secur import current_user_own_integration
-from app.main.intergration_initializer import create_integration_tables
+from app.models import Notification
+from flask import jsonify
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
@@ -56,6 +57,18 @@ def user_integrations():
 
     return render_template('user_integrations.html', integrations=integrations)
 
+@bp.route('/notifications')
+@login_required
+def notifications():
+    since = request.args.get('since', 0.0, type=float)
+    notifications = current_user.notifications.filter(
+        Notification.timestamp > since).order_by(Notification.timestamp.asc())
+    return jsonify([{
+        'name': n.name,
+        'data': n.get_data(),
+        'timestamp': n.timestamp
+    } for n in notifications])
+
 @bp.route('/create_integration', methods=['GET','POST'])
 @login_required
 def create_integration():
@@ -76,12 +89,25 @@ def create_integration():
         db.session.add(integration)
         db.session.flush()
 
+
+
         try:
-            ### TODO  
+            ### TODO
             # UUID CUSTOM UNIQUE ID FOR ClickHousE integration
-            create_integration_tables(current_user.crypto, integration.id)
+            params = ['-source=hits', '-mode=history']
+            params_2 = ['-source=visits', '-mode=history']
+            if current_user.get_task_in_progress('init_integration'):
+                flash('Нельзя запускать создание больше одной интеграции одновременно!')
+                db.session.rollback()
+            else:
+                # print('launch', current_user.crypto,  integration.id, params)
+                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params)
+                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params_2)
+                # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), )
+                db.session.commit()
         except:
             flash("Проблемки..")
+            db.session.rollback()
             abort(404)
 
         db.session.commit()

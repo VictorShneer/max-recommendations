@@ -6,11 +6,24 @@ import jwt
 from time import time
 from hashlib import md5
 from flask import current_app
+import json
+import redis
+import rq
 
 roles_users = db.Table('roles_users', \
     db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),\
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    timestamp = db.Column(db.Float, index=True, default=time)
+    payload_json = db.Column(db.Text)
+
+    def get_data(self):
+        return json.loads(str(self.payload_json))
 
 class Task(db.Model):
     # look primary key is STRING not Integer            WTF!? :D
@@ -43,10 +56,17 @@ class User(UserMixin, db.Model):
     integrations = db.relationship('Integration', backref='user', lazy='dynamic')
     roles = db.relationship('Role', secondary = roles_users, backref=db.backref('users', lazy='dynamic'))
     tasks = db.relationship('Task', backref='user', lazy='dynamic')
-
+    notifications = db.relationship('Notification', backref='user',
+                                    lazy='dynamic')
 
     def __repr__(self):
         return '<User {}>'.format(self.name)
+
+    def add_notification(self, name, data):
+        self.notifications.filter_by(name=name).delete()
+        n = Notification(name=name, payload_json=json.dumps(data), user=self)
+        db.session.add(n)
+        return n
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -69,8 +89,8 @@ class User(UserMixin, db.Model):
         return User.query.get(id)
 
     def launch_task(self, name, description, *args, **kwargs):
-        rq_job = current_app.task_queue.enqueue('app.tasks.' + name, self.id,
-                                                *args, **kwargs)
+        rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0], args[1], args[2])
+
         task = Task(id=rq_job.get_id(), name=name, description=description,
                     user=self)
         db.session.add(task)

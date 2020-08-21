@@ -75,6 +75,9 @@ def build_user_request(config,params):
 
 
 def integrate_with_logs_api(config, user_request):
+    print("====integrate_with_logs_api=====")
+    print(config)
+    print()
     for i in range(config['retries']):
         time.sleep(i * config['retries_delay'])
         try:
@@ -107,16 +110,19 @@ def integrate_with_logs_api(config, user_request):
             if i == config['retries'] - 1:
                 raise e
 
-def handle_integration_tables(crypto, params):
+def handle_integration(crypto,id, params):
+    print(crypto,type(crypto))
+    print(id,type(id))
     print('##### python', utils.get_python_version())
     start_time = time.time()
-    config = utils.get_config()
-    config['clickhouse']['visits_table'] = crypto + "_visits_table"
-    config['clickhouse']['hits_table'] = crypto + "_hits_table"
+    # config = utils.get_config()
+    clickhouse.CH_VISITS_TABLE = clickhouse.config['clickhouse']['visits_table'] = crypto + "_visits_"+str(id)
+    clickhouse.CH_HITS_TABLE = clickhouse.config['clickhouse']['hits_table'] = crypto + "_hits_"+str(id)
+    print(clickhouse.config)
     # nessessary to config
-    setup_logging(config)
+    setup_logging(clickhouse.config)
 
-    user_request = build_user_request(config, params)
+    user_request = build_user_request(clickhouse.config, params)
 
 
     # If data for specified period is already in database, script is skipped
@@ -127,7 +133,7 @@ def handle_integration_tables(crypto, params):
         exit(0)
 
 
-    integrate_with_logs_api(config, user_request)
+    integrate_with_logs_api(clickhouse.config, user_request)
 
     end_time = time.time()
     logger.info('### TOTAL TIME: %d minutes %d seconds' % (

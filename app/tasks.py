@@ -4,8 +4,12 @@ from app import db
 from app.models import Task
 from app import create_app
 import sys
+from app.clickhousehub.metrica_logs_api import handle_integration
+
+
 app = create_app(adminFlag=False)
 app.app_context().push()
+
 
 
 def example(seconds):
@@ -32,10 +36,17 @@ def _set_task_progress(progress):
             task.complete = True
         db.session.commit()
 
-def init_clickhouse_tables(crypto, id):
+def init_clickhouse_tables(crypto, id, params):
     try:
-        # читать сообщения пользователей из базы данных
-        # отправить письмо с данными пользователю
+        # В ИДЕАЛЕ узнать за какой период есть данные
+        # В ИДЕАЛЕ создать таблицы и выгрузить в них данные за указ. пер.
+
+        # сейчас - создать таблицы
+        # и выгрузить в них все доступные данные
+        _set_task_progress(0)
+        print('task', crypto, id, params)
+        handle_integration(crypto,id,params)
+        _set_task_progress(100)
     except:
     # обработки непредвиденных ошибок
         _set_task_progress(100)
