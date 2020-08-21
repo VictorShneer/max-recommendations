@@ -57,6 +57,17 @@ def user_integrations():
 
     return render_template('user_integrations.html', integrations=integrations)
 
+@bp.route('/notifications')
+@login_required
+def notifications():
+    since = request.args.get('since', 0.0, type=float)
+    notifications = current_user.notifications.filter(
+        Notification.timestamp > since).order_by(Notification.timestamp.asc())
+    return jsonify([{
+        'name': n.name,
+        'data': n.get_data(),
+        'timestamp': n.timestamp
+    } for n in notifications])
 
 @bp.route('/create_integration', methods=['GET','POST'])
 @login_required
@@ -79,7 +90,6 @@ def create_integration():
         db.session.flush()
 
 
-
         try:
             ### TODO
             # UUID CUSTOM UNIQUE ID FOR ClickHousE integration
@@ -90,8 +100,9 @@ def create_integration():
                 db.session.rollback()
             else:
                 # print('launch', current_user.crypto,  integration.id, params)
-                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params)
-                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params_2)
+                current_user.launch_task('example','test',50)
+                # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params)
+                # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params_2)
                 # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), )
                 db.session.commit()
         except:

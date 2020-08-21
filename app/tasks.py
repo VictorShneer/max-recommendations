@@ -15,9 +15,11 @@ app.app_context().push()
 def example(seconds):
     job = get_current_job()
     print('Starting task')
+    _set_task_progress(0)
     for i in range(seconds):
         job.meta['progress'] = 100.0 * i / seconds
         job.save_meta()
+        _set_task_progress(100 * i // seconds)
         print(i)
         time.sleep(1)
     job.meta['progress'] = 100
