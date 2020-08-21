@@ -1,5 +1,5 @@
 # init.py
-
+from urllib.parse import urlparse
 from logging.handlers import RotatingFileHandler
 import os
 import logging
@@ -15,6 +15,8 @@ from flask_admin import Admin
 from app.admin_security import MyModefView, MyAdminIndexView
 from redis import Redis
 import rq
+from rq import Queue, Connection
+from rq.worker import HerokuWorker as Worker
 
 from rq import Connection, Worker
 
@@ -47,8 +49,19 @@ def create_app(adminFlag=True,config_class=Config):
         admin.add_view(MyModefView(Role, db.session))
         admin.add_view(MyModefView(Task, db.session))
 
+
+    listen = ['high', 'default', 'low']
     app.redis = Redis.from_url(app.config['REDIS_URL'])
+
     app.task_queue = rq.Queue('max-tasks', connection=app.redis)
+    url = urlparse(app.config['REDIS_URL'])
+    conn = Redis(host=url.hostname, port=url.port, db=0, password=url.password)
+
+
+    with Connection(conn):
+        worker = Worker(map(Queue, listen))
+        worker.work()
+
 
     # blueprint for auth routes in our app
     from app.auth import bp as auth_bp
