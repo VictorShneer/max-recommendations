@@ -52,15 +52,14 @@ def create_app(adminFlag=True,config_class=Config):
 
     listen = ['high', 'default', 'low']
     app.redis = Redis.from_url(app.config['REDIS_URL'])
-
     app.task_queue = rq.Queue('max-tasks', connection=app.redis)
-    url = urlparse(app.config['REDIS_URL'])
-    conn = Redis(host=url.hostname, port=url.port, db=0, password=url.password)
-
-
-    with Connection(conn):
-        worker = Worker(map(Queue, listen))
-        worker.work()
+    # url = urlparse(app.config['REDIS_URL'])
+    # conn = Redis(host=url.hostname, port=url.port, db=0, password=url.password)
+    #
+    #
+    # with Connection(conn):
+    #     worker = Worker(map(Queue, listen))
+    #     worker.work()
 
 
     # blueprint for auth routes in our app
