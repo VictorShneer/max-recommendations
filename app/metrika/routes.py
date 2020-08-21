@@ -141,7 +141,7 @@ def callback_add_custom_field():
     action = request.args.get('action')
     contact_email = request.args.get('contact_email')
     contact_id = request.args.get('CONTACT_ID')
-    custom_field_id= 'nZT'  #TODO id кастомного поля, для каждого клиента должен быть свой (в ссылке прописать), пока зашит с моего акка
+    custom_field_id= 'Vu40V0'  #TODO id кастомного поля hash_metrika Макса
     if (action == 'subscribe'): #проверяем, что коллбек именно на подписку
         add_custom_field(contact_email, contact_id, custom_field_id)
     return redirect(url_for('main.index'))

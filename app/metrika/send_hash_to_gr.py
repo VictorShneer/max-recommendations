@@ -3,9 +3,9 @@ import requests
 import base64
 
 def add_custom_field(contact_email,contact_id, custom_field_id):
-    domain = "https://api3.getresponse360.com/v3"
+    domain = "https://api.getresponse.com/v3" #SMBшный домен сейчас, т.к. здесь все под аккаунт Макса
     headers = {
-      'X-Auth-Token': 'api-key walmu0bwal02klnvetji4x7vlix15y74', #TODO здесь должен вставляться api-ключ в gr клиента
+      'X-Auth-Token': 'api-key dfouywk89fmfxflsbzxdex4swyhuzijn', #TODO сейчас здесь API ключ Макса
       'Content-Type': 'application/json'
     }
     url = domain+'/contacts/'+contact_id+'/custom-fields'
