@@ -100,7 +100,7 @@ def create_integration():
                 db.session.rollback()
             else:
                 # print('launch', current_user.crypto,  integration.id, params)
-                current_user.launch_task('example','test',50)
+                current_user.launch_task('example','test',15)
                 # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params)
                 # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params_2)
                 # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), )

@@ -23,6 +23,7 @@ def example(seconds):
         print(i)
         time.sleep(1)
     job.meta['progress'] = 100
+    _set_task_progress(100)
     job.save_meta()
     print('Task completed')
 
