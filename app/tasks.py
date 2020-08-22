@@ -13,6 +13,7 @@ app.app_context().push()
 
 
 def example(seconds):
+
     job = get_current_job()
     print('Starting task')
     _set_task_progress(0)

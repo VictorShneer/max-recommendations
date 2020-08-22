@@ -13,13 +13,9 @@ from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_admin import Admin
 from app.admin_security import MyModefView, MyAdminIndexView
-from redis import Redis
-import redis
-import rq
-from rq import Queue, Connection
-from rq.worker import HerokuWorker as Worker
+from rq import Queue
+from app.worker import conn
 
-from rq import Connection, Worker
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -30,7 +26,7 @@ login.login_message = "Please login to view that page."
 admin=Admin()
 
 def create_app(adminFlag=True,config_class=Config):
-
+    print('Hey yo!')
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -50,19 +46,10 @@ def create_app(adminFlag=True,config_class=Config):
         admin.add_view(MyModefView(Role, db.session))
         admin.add_view(MyModefView(Task, db.session))
 
+    app.redis = conn
+    app.task_queue = Queue(connection=app.redis)
 
-    app.redis = Redis.from_url(app.config['REDIS_URL'])
-    app.task_queue = rq.Queue('max-tasks', connection=app.redis)
-    # print(app.task_queue)
-    # url = urlparse(app.config['REDIS_URL'])
-    # conn = Redis(host=url.hostname, port=url.port, db=0, password=url.password)
-    #
-    #
-    # with Connection(conn):
-    #     worker = Worker(map(Queue, listen))
-    #     worker.work()
-
-
+    # app.task_queue = rq.Queue('max-tasks', connection=app.redis)
     # blueprint for auth routes in our app
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)

@@ -92,6 +92,9 @@ class User(UserMixin, db.Model):
 
         # rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0], args[1], args[2])
         rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0])
+        # rq_job = current_app.task_queue.enqueue_call(
+        # func='app.tasks.' + name, args=(args[0],), result_ttl=5000
+        # )
         print('---job_id')
         print(rq_job.get_id())
         print('----')
