@@ -14,7 +14,8 @@ from flask_migrate import Migrate
 from flask_admin import Admin
 from app.admin_security import MyModefView, MyAdminIndexView
 from rq import Queue
-from app.worker import conn
+import rq
+from redis import Redis
 
 
 db = SQLAlchemy()
@@ -46,8 +47,8 @@ def create_app(adminFlag=True,config_class=Config):
         admin.add_view(MyModefView(Role, db.session))
         admin.add_view(MyModefView(Task, db.session))
 
-    app.redis = conn
-    app.task_queue = Queue(connection=app.redis)
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
+    app.task_queue = rq.Queue('max-tasks', connection=app.redis)
 
     # app.task_queue = rq.Queue('max-tasks', connection=app.redis)
     # blueprint for auth routes in our app

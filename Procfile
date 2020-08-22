@@ -1,2 +1,2 @@
 web: flask db upgrade; gunicorn run:app
-worker: python app/worker.py
+worker: rq worker max-tasks
