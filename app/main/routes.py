@@ -75,6 +75,8 @@ def create_integration():
     if current_user.crypto is None:
         flash('Настройка вашего аккаунта еще не закончена')
         return redirect(url_for('main.user_integrations'))
+    current_user.launch_task('example','test',15)
+    db.session.commit()
     form = EditIntegration()
     if form.validate_on_submit():
         integration = Integration(
@@ -88,7 +90,6 @@ def create_integration():
 
         db.session.add(integration)
         db.session.flush()
-
 
         try:
             ### TODO

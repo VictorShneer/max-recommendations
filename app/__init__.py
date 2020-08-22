@@ -51,10 +51,9 @@ def create_app(adminFlag=True,config_class=Config):
         admin.add_view(MyModefView(Task, db.session))
 
 
-    listen = ['high', 'default', 'low']
-    REDIS_DEFAULT_CONNECTION_POOL = redis.ConnectionPool.from_url(app.config['REDIS_URL'])
-    app.redis = Redis(connection_pool=REDIS_DEFAULT_CONNECTION_POOL)
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('max-tasks', connection=app.redis)
+    # print(app.task_queue)
     # url = urlparse(app.config['REDIS_URL'])
     # conn = Redis(host=url.hostname, port=url.port, db=0, password=url.password)
     #

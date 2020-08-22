@@ -92,11 +92,12 @@ class User(UserMixin, db.Model):
 
         # rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0], args[1], args[2])
         rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0])
-        print('---')
+        print('---job_id')
         print(rq_job.get_id())
-        print('0000')
+        print('----')
         task = Task(id=rq_job.get_id(), name=name, description=description,
                     user=self)
+        print(task)
         db.session.add(task)
         return task
 
