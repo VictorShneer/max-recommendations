@@ -40,7 +40,7 @@ def _set_task_progress(progress):
             task.complete = True
         db.session.commit()
 
-def init_clickhouse_tables(crypto, id, params):
+def init_clickhouse_tables(crypto, id, paramss):
     try:
         # В ИДЕАЛЕ узнать за какой период есть данные
         # В ИДЕАЛЕ создать таблицы и выгрузить в них данные за указ. пер.
@@ -48,8 +48,10 @@ def init_clickhouse_tables(crypto, id, params):
         # сейчас - создать таблицы
         # и выгрузить в них все доступные данные
         _set_task_progress(0)
-        print('task', crypto, id, params)
-        handle_integration(crypto,id,params)
+        print('task', crypto, id, paramss)
+        for count,params in enumerate(paramss):
+            _set_task_progress(100 * count // len(paramss))
+            handle_integration(crypto,id,params)
         _set_task_progress(100)
     except:
     # обработки непредвиденных ошибок
