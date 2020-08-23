@@ -10,7 +10,6 @@ from app import db
 from app.metrika.secur import current_user_own_integration
 from app.models import Notification
 from flask import jsonify
-from app.clickhousehub.clickhouse import get_clickhouse_data
 
 
 @bp.route('/delete_integration', methods=['GET','POST'])
@@ -19,18 +18,16 @@ def delete_integration():
     # heroku db delete
     integration_id = request.form['integration_id']
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
-    # if User.query.filter_by(id = integration.user_id).first() != current_user:
-    #     flash("Ошибка")
-    #     abort(403)
-    # integration.delete_myself()
+    if User.query.filter_by(id = integration.user_id).first() != current_user:
+        flash("Ошибка")
+        abort(403)
+    integration.delete_myself()
 
     # clickhouse db delete
-    # drop TABLE db1.sweet_hits_2;
-    clickhouse_visits_table = '{}_{}_{}'.format(current_user.crypto,'visits',integration_id)
-    clickhouse_hits_table = '{}_{}_{}'.format(current_user.crypto,'hits',integration_id)
-    url_for_visits_delete = get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_table))
-    url_for_hits_delete = get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_hits_table))
 
+    print('hey!')
+    current_user.launch_task('drop_integration_task',('Удаление интеграции'), current_user.crypto, integration_id)
+    db.session.commit()
 
     return '<200>'
 

@@ -5,13 +5,23 @@ from app.models import Task
 from app import create_app
 import sys
 from app.clickhousehub.metrica_logs_api import handle_integration
+from app.clickhousehub.metrica_logs_api import drop_integration
+
 
 
 app = create_app(adminFlag=False)
 app.app_context().push()
 
 
-
+def drop_integration_task(crypto, integration_id):
+    _set_task_progress(0)
+    try:
+        drop_integration(crypto, integration_id)
+        _set_task_progress(100)
+    except:
+    # обработки непредвиденных ошибок
+        _set_task_progress(100)
+        app.logger.error('Unhandled exception', exc_info=sys.exc_info())
 def example(seconds):
 
     job = get_current_job()

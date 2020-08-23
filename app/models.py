@@ -90,7 +90,7 @@ class User(UserMixin, db.Model):
 
     def launch_task(self, name, description, *args, **kwargs):
 
-        rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0], args[1], args[2])
+        rq_job = current_app.task_queue.enqueue('app.tasks.' + name, *args)
         # rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0])
         # rq_job = current_app.task_queue.enqueue_call(
         # func='app.tasks.' + name, args=(args[0],), result_ttl=5000

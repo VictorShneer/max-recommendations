@@ -110,9 +110,16 @@ def integrate_with_logs_api(config, user_request):
             if i == config['retries'] - 1:
                 raise e
 
+def drop_integration(crypto, integration_id):
+    # drop TABLE db1.sweet_hits_2;
+    clickhouse_visits_table = '{}_{}_{}'.format(crypto,'visits',integration_id)
+    clickhouse_hits_table = '{}_{}_{}'.format(crypto,'hits',integration_id)
+    url_for_visits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_table))
+    url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_hits_table))
+
 def handle_integration(crypto,id, params):
-    print(crypto,type(crypto))
-    print(id,type(id))
+    # print(crypto,type(crypto))
+    # print(id,type(id))
     print('##### python', utils.get_python_version())
     start_time = time.time()
     # config = utils.get_config()
