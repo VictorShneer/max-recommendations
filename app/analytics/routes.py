@@ -23,8 +23,12 @@ def generate_values(integration_id):
             list_of_answers.append(get_data)
             i += 1
         # Generating readable data for the drop down menu
+        # print(list_of_answers)
         df = pd.DataFrame(list_of_answers, columns=['Values'])
+        # print(df.Values.str.split("\n"))
         a = df.Values.str.split("\n")
+        for idx,val in a.items():
+            a[idx] = [v for v in val if v != '']
 
     except Exception as e:
         traceback.print_exc()
