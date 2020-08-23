@@ -1,28 +1,16 @@
 {% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
 Свойства:
 
-<select name= colours method="GET" action="/">
-    {% for answer in list[0] %}
-    <option value= "{{answer}}">{{answer}}</option>"
-    {% endfor %}
-</select>
-<select name= colours method="GET" action="/">
-    {% for answer in list[1] %}
-    <option value= "{{answer}}">{{answer}}</option>"
-    {% endfor %}
-</select>
-<select name= colours method="GET" action="/">
-    {% for answer in list[2] %}
-    <option value= "{{answer}}">{{answer}}</option>"
-    {% endfor %}
-</select>
-<select name= colours method="GET" action="/">
-    {% for answer in list[3] %}
-    <option value= "{{answer}}">{{answer}}</option>"
-    {% endfor %}
-</select>
+<div class="row">
+  {% if title %} <h2>{{title}}</h2> {% endif %}
+    <div class="col-md-4">
+        {{ wtf.quick_form(form) }}
+        <a class="btn btn-info" href="{{url_for('main.user_integrations')}}">Назад</a>
+    </div>
+</div>
 
 Действия:
 
