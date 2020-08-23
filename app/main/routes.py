@@ -1,6 +1,5 @@
 # main.py
-
-from flask import Blueprint, render_template, redirect, url_for, flash,request, abort
+from flask import Blueprint, render_template, redirect, url_for, flash,request, abort, current_app
 from flask_login import login_required, current_user
 from app.models import User
 import pandas as pd
@@ -11,16 +10,27 @@ from app import db
 from app.metrika.secur import current_user_own_integration
 from app.models import Notification
 from flask import jsonify
+from app.clickhousehub.clickhouse import get_clickhouse_data
+
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
 def delete_integration():
+    # heroku db delete
     integration_id = request.form['integration_id']
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
-    if User.query.filter_by(id = integration.user_id).first() != current_user:
-        flash("Ошибка")
-        abort(403)
-    integration.delete_myself()
+    # if User.query.filter_by(id = integration.user_id).first() != current_user:
+    #     flash("Ошибка")
+    #     abort(403)
+    # integration.delete_myself()
+
+    # clickhouse db delete
+    # drop TABLE db1.sweet_hits_2;
+    clickhouse_visits_table = '{}_{}_{}'.format(current_user.crypto,'visits',integration_id)
+    clickhouse_hits_table = '{}_{}_{}'.format(current_user.crypto,'hits',integration_id)
+    url_for_visits_delete = get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_table))
+    url_for_hits_delete = get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_hits_table))
+
 
     return '<200>'
 
@@ -57,6 +67,17 @@ def user_integrations():
 
     return render_template('user_integrations.html', integrations=integrations)
 
+@bp.route('/notifications')
+@login_required
+def notifications():
+    since = request.args.get('since', 0.0, type=float)
+    notifications = current_user.notifications.filter(
+        Notification.timestamp > since).order_by(Notification.timestamp.asc())
+    return jsonify([{
+        'name': n.name,
+        'data': n.get_data(),
+        'timestamp': n.timestamp
+    } for n in notifications])
 
 @bp.route('/create_integration', methods=['GET','POST'])
 @login_required
@@ -78,8 +99,6 @@ def create_integration():
         db.session.add(integration)
         db.session.flush()
 
-
-
         try:
             ### TODO
             # UUID CUSTOM UNIQUE ID FOR ClickHousE integration
@@ -90,8 +109,9 @@ def create_integration():
                 db.session.rollback()
             else:
                 # print('launch', current_user.crypto,  integration.id, params)
-                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params)
-                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params_2)
+                # current_user.launch_task('example','test',15)
+                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, [params,params_2])
+                # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params_2)
                 # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), )
                 db.session.commit()
         except:

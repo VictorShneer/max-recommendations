@@ -1,5 +1,5 @@
 # init.py
-
+from urllib.parse import urlparse
 from logging.handlers import RotatingFileHandler
 import os
 import logging
@@ -13,8 +13,10 @@ from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_admin import Admin
 from app.admin_security import MyModefView, MyAdminIndexView
-from redis import Redis
+from rq import Queue
 import rq
+from redis import Redis
+
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
@@ -25,7 +27,7 @@ login.login_message = "Please login to view that page."
 admin=Admin()
 
 def create_app(adminFlag=True,config_class=Config):
-
+    print('Hey yo!')
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -48,6 +50,7 @@ def create_app(adminFlag=True,config_class=Config):
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('max-tasks', connection=app.redis)
 
+    # app.task_queue = rq.Queue('max-tasks', connection=app.redis)
     # blueprint for auth routes in our app
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)

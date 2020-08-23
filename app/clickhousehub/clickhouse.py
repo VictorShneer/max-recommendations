@@ -6,7 +6,7 @@ import urllib3
 import app.clickhousehub.utils as utils
 import sys
 import logging
-from flask import current_app
+
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logger = logging.getLogger('logs_api')
@@ -23,9 +23,9 @@ SSL_VERIFY = (config['disable_ssl_verification_for_clickhouse'] == 0)
 
 def get_clickhouse_data(query,host="https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443"):
     '''Returns ClickHouse response'''
-    print('--get_clickhouse_data--'*5)
-    print(query)
-    print()
+    # print('--get_clickhouse_data--'*5)
+    # print(query)
+    # print()
     logger.debug(query)
     if (CH_USER == '') and (CH_PASSWORD == ''):
         r = requests.post(host, data=query, verify=SSL_VERIFY)
@@ -57,9 +57,9 @@ def upload(table, content,host="https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.ne
 
 def get_source_table_name(source, with_db=True):
     '''Returns table name in database'''
-    print('+++++get_source_table_name')
-    print(config)
-    print()
+    # print('+++++get_source_table_name')
+    # print(config)
+    # print()
     if source == 'hits':
         if with_db:
             return '{db}.{table}'.format(db=CH_DATABASE, table=CH_HITS_TABLE)
@@ -120,12 +120,12 @@ def create_table(source, fields):
     '''
     field_tmpl = '{name} {type}'
     field_statements = []
-    print('_________SD_DSD__create_table')
-    print(config)
-    print()
+    # print('_________SD_DSD__create_table')
+    # print(config)
+    # print()
     table_name = get_source_table_name(source)
-    print(table_name)
-    print()
+    # print(table_name)
+    # print()
     if source == 'hits':
         if ('ym:pv:date' in fields) and ('ym:pv:clientID' in fields):
             engine = 'MergeTree(Date, intHash32(ClientID), (Date, intHash32(ClientID)), 8192)'

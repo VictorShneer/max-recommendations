@@ -11,7 +11,7 @@ import pandas as pd
 from app.models import User, Integration
 from app import db
 from app.metrika import bp
-from app.metrika.clickhouse_custom_request import made_url_for_query,request_clickhouse
+from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from app.metrika.conversion_table_builder import build_conversion_df
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
@@ -26,15 +26,16 @@ def metrika_get_data(integration_id):
 
 
     request_start_date = request.args.get('start_date')
-
-    url_for_columns = made_url_for_query('DESC visits_all')
+    clickhouse_table = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
+    # print(clickhouse_table)
+    url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table))
     if request_start_date =='':
         url_for_visits_all_data = made_url_for_query(\
-        "SELECT * FROM visits_all"\
+        "SELECT * FROM {}".format(clickhouse_table)\
         )
     else:
         url_for_visits_all_data = made_url_for_query(\
-        "SELECT * FROM visits_all WHERE Date > toDate('{}')".format(request_start_date)\
+        "SELECT * FROM {} WHERE Date > toDate('{}')".format(clickhouse_table,request_start_date)\
         )
 
     try:
@@ -110,12 +111,10 @@ def metrika(integration_id):
         'X-ClickHouse-User': current_app.config['CLICKHOUSE_LOGIN'],
         'X-ClickHouse-Key': current_app.config['CLICKHOUSE_PASSWORD']
         }
-        # visits_table = ''.join([current_user.crypto, '_visits_all'])
-        # print(visits_table)
-        visits_table = 'visits_all'
-        query_data_length = made_url_for_query('SELECT count(Date) FROM {}'.format(visits_table))
-        query_min_date = made_url_for_query('SELECT min(Date) FROM {}'.format(visits_table))
-        query_max_date = made_url_for_query('SELECT max(Date) FROM {}'.format(visits_table))
+        clickhouse_table = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
+        query_data_length = made_url_for_query('SELECT count(Date) FROM {}'.format(clickhouse_table))
+        query_min_date = made_url_for_query('SELECT min(Date) FROM {}'.format(clickhouse_table))
+        query_max_date = made_url_for_query('SELECT max(Date) FROM {}'.format(clickhouse_table))
         data_length_text =request_clickhouse(query_data_length, auth, certificate_path).text
         min_date_text = request_clickhouse(query_min_date, auth, certificate_path).text
         max_date_text = request_clickhouse(query_max_date, auth, certificate_path).text
@@ -141,7 +140,7 @@ def callback_add_custom_field():
     action = request.args.get('action')
     contact_email = request.args.get('contact_email')
     contact_id = request.args.get('CONTACT_ID')
-    custom_field_id= 'nZT'  #TODO id кастомного поля, для каждого клиента должен быть свой (в ссылке прописать), пока зашит с моего акка
+    custom_field_id= 'Vu40V0'  #TODO id кастомного поля hash_metrika Макса
     if (action == 'subscribe'): #проверяем, что коллбек именно на подписку
         add_custom_field(contact_email, contact_id, custom_field_id)
     return redirect(url_for('main.index'))

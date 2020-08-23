@@ -89,10 +89,18 @@ class User(UserMixin, db.Model):
         return User.query.get(id)
 
     def launch_task(self, name, description, *args, **kwargs):
-        rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0], args[1], args[2])
 
+        rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0], args[1], args[2])
+        # rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0])
+        # rq_job = current_app.task_queue.enqueue_call(
+        # func='app.tasks.' + name, args=(args[0],), result_ttl=5000
+        # )
+        print('---job_id')
+        print(rq_job.get_id())
+        print('----')
         task = Task(id=rq_job.get_id(), name=name, description=description,
                     user=self)
+        print(task)
         db.session.add(task)
         return task
 
