@@ -11,7 +11,7 @@ import pandas as pd
 from app.models import User, Integration
 from app import db
 from app.metrika import bp
-from app.metrika.clickhouse_custom_request import made_url_for_query,request_clickhouse
+from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from app.metrika.conversion_table_builder import build_conversion_df
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
@@ -27,7 +27,7 @@ def metrika_get_data(integration_id):
 
     request_start_date = request.args.get('start_date')
     clickhouse_table = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
-    print(clickhouse_table)
+    # print(clickhouse_table)
     url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table))
     if request_start_date =='':
         url_for_visits_all_data = made_url_for_query(\
