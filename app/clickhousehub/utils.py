@@ -42,6 +42,7 @@ def validate_cli_options(options):
             'Wrong mode in CLI options'
 def get_api_options(params):
     '''Returns function call options'''
+    print(params)
     parser = argparse.ArgumentParser()
     parser.add_argument('-start_date', help = 'Start of period')
     parser.add_argument('-end_date', help = 'End of period')

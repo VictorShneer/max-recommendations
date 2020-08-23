@@ -99,17 +99,17 @@ def create_integration():
         try:
             ### TODO
             # UUID CUSTOM UNIQUE ID FOR ClickHousE integration
-            params = ['-source=hits', '-mode=history']
-            params_2 = ['-source=visits', '-mode=history']
-            if current_user.get_task_in_progress('init_integration'):
+            # -start_date 2016-10-10 -end_date 2016-10-18
+            timing = ['-start_date={}'.format(form.start_date.data)]
+            if form.end_date.data:
+                timing.append('-end_date={}'.format(form.end_date.data))
+            params = ['-source=hits', *timing]
+            params_2 = ['-source=visits', *timing]
+            if current_user.get_task_in_progress('init_clickhouse_tables'):
                 flash('Нельзя запускать создание больше одной интеграции одновременно!')
                 db.session.rollback()
             else:
-                # print('launch', current_user.crypto,  integration.id, params)
-                # current_user.launch_task('example','test',15)
                 current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, [params,params_2])
-                # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, params_2)
-                # current_user.launch_task('init_clickhouse_tables', ('Init integration...'), )
                 db.session.commit()
         except:
             flash("Проблемки..")

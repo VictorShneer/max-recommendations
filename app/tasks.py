@@ -13,6 +13,11 @@ app = create_app(adminFlag=False)
 app.app_context().push()
 
 
+def if_init_correct(crypto, integration_id):
+    pass
+def if_init_correct(crypto, integration_id):
+    pass
+
 def drop_integration_task(crypto, integration_id):
     _set_task_progress(0)
     try:
@@ -22,6 +27,7 @@ def drop_integration_task(crypto, integration_id):
     # обработки непредвиденных ошибок
         _set_task_progress(100)
         app.logger.error('Unhandled exception', exc_info=sys.exc_info())
+
 def example(seconds):
 
     job = get_current_job()
@@ -54,7 +60,8 @@ def init_clickhouse_tables(crypto, id, paramss):
     try:
         # В ИДЕАЛЕ узнать за какой период есть данные
         # В ИДЕАЛЕ создать таблицы и выгрузить в них данные за указ. пер.
-
+        # В ИДЕАЛЕ проверить все ли ок
+        
         # сейчас - создать таблицы
         # и выгрузить в них все доступные данные
         _set_task_progress(0)

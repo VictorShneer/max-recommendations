@@ -125,10 +125,7 @@ class Integration(UserMixin,db.Model):
     user_domain = db.Column(db.String(100))
     metrika_key = db.Column(db.String(100))
     metrika_counter_id = db.Column(db.Integer)
-    clickhouse_login = db.Column(db.String(20))
-    clickhouse_password = db.Column(db.String(20))
-    clickhouse_host = db.Column(db.String(200))
-    clickhouse_db = db.Column(db.String(200))
+
 
     def delete_myself(self):
         db.session.delete(self)
