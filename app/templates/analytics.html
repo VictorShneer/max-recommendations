@@ -1,11 +1,31 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+Свойства:
 
-HUI
+<select name= colours method="GET" action="/">
+    {% for answer in list[0] %}
+    <option value= "{{answer}}">{{answer}}</option>"
+    {% endfor %}
+</select>
+<select name= colours method="GET" action="/">
+    {% for answer in list[1] %}
+    <option value= "{{answer}}">{{answer}}</option>"
+    {% endfor %}
+</select>
+<select name= colours method="GET" action="/">
+    {% for answer in list[2] %}
+    <option value= "{{answer}}">{{answer}}</option>"
+    {% endfor %}
+</select>
+<select name= colours method="GET" action="/">
+    {% for answer in list[3] %}
+    <option value= "{{answer}}">{{answer}}</option>"
+    {% endfor %}
+</select>
 
-{% endblock %}
+Действия:
 
-{% block scripts %}
-{{ super() }}
+
+
 {% endblock %}

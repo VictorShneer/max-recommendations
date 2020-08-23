@@ -14,7 +14,14 @@
       <a class="btn grmax-justlink"
       href="{{url_for('metrika.metrika', integration_id = integration.id) }}"
       role="button">
-        Посмотреть конверсию
+        Конверсия
+      </a>
+    </td>
+    <td class="integration-justlink">
+      <a class="btn grmax-justlink"
+      href="{{url_for('analytics.wrapper', integration_id = integration.id) }}"
+      role="button">
+        Аналитика
       </a>
     </td>
     <td class="integration-justlink">
