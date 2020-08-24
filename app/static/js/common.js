@@ -10,5 +10,5 @@ $(document).ready(function(){
       $('.navbar-submenu-profile').hide();
     }
   })
-
+ 
 })

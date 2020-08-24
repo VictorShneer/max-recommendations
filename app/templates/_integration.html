@@ -3,13 +3,13 @@
        {{integration.integration_name}}
     </td>
 
-    <td class="integration-justlink">
+  <!--  <td class="integration-justlink">
       <a class="btn grmax-justlink"
       href="{{url_for('main.edit_integration', integration_id = integration.id) }}"
       role="button">
         Настроить интеграцию
       </a>
-    </td>
+    </td> -->
     <td class="integration-justlink">
       <a class="btn grmax-justlink"
       href="{{url_for('metrika.metrika', integration_id = integration.id) }}"
@@ -24,7 +24,24 @@
         Аналитика
       </a>
     </td>
-    <td class="integration-justlink">
+    <!-- <td class="integration-justlink">
       <a class="btn grmax-justlink" href="javascript:delete_integration('{{ integration.id }}')">{{ ('Удалить интеграцию') }}</a>
+    </td>-->
+    <td class="integration-dotes">
+      <div id="show_settings">
+        <i class="fa fa-ellipsis-v fa-lg"  aria-hidden="true"></i>
+        <div class="integration-settings">
+          <ul>
+            <li>
+              <a class="btn grmax-justlink"
+            href="{{url_for('main.edit_integration', integration_id = integration.id) }}"
+            role="button">Настроить</a>
+            </li>
+            <li>
+              <a class="btn grmax-justlink" href="javascript:delete_integration('{{ integration.id }}')">{{ ('Удалить') }}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </td>
 </tr>
