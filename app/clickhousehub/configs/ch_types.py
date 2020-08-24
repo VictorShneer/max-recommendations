@@ -1,4 +1,4 @@
-{
+CH_TYPES = {
 	"ym:s:counterID": "UInt32",
 	"ym:s:watchIDs": "Array(UInt64)",
 	"ym:s:dateTime": "DateTime",
@@ -134,7 +134,6 @@
 	"ym:s:offlineCallTag": "Array(String)",
 	"ym:s:offlineCallFirstTimeCaller": "Array(UInt32)",
 	"ym:s:offlineCallURL": "Array(String)",
-
 	"ym:pv:watchID": "UInt64",
 	"ym:pv:counterID": "UInt32",
 	"ym:pv:dateTime": "DateTime",

@@ -5,11 +5,13 @@ import json
 import argparse
 import requests
 import platform
-from flask import current_app
-from app import create_app
-
-app = create_app(adminFlag=False)
-app.app_context().push()
+from app.clickhousehub.configs.config import CONFIG
+from app.clickhousehub.configs.ch_types import CH_TYPES
+# from flask import current_app
+# from app import create_app
+#
+# app = create_app(adminFlag=False)
+# app.app_context().push()
 
 DATE_FORMAT = '%Y-%m-%d'
 
@@ -82,9 +84,9 @@ def get_counter_creation_date(counter_id, token):
 def get_config():
 
     '''Returns user config'''
-    with current_app.open_resource('clickhousehub/configs/config.json') as input_file:
-        config = json.loads(input_file.read())
-
+    # with current_app.open_resource('clickhousehub/configs/config.json') as input_file:
+    #     config = json.loads(input_file.read())
+    config = CONFIG
     assert 'counter_id' in config, 'CounterID must be specified in config'
     assert 'token' in config, 'Token must be specified in config'
     assert 'retries' in config, 'Number of retries should be specified in config'
@@ -94,8 +96,9 @@ def get_config():
 
 def get_ch_fields_config():
     '''Returns config for ClickHouse columns\'s datatypes'''
-    with current_app.open_resource('clickhousehub/configs/ch_types.json') as input_file:
-        ch_field_types = json.loads(input_file.read())
+    # with current_app.open_resource('clickhousehub/configs/ch_types.json') as input_file:
+    #     ch_field_types = json.loads(input_file.read())
+    ch_field_types = CH_TYPES
     return ch_field_types
 
 def get_python_version():

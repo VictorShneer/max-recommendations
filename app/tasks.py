@@ -7,14 +7,14 @@ import sys
 from app.clickhousehub.metrica_logs_api import handle_integration
 from app.clickhousehub.metrica_logs_api import drop_integration
 
-
+from app.clickhousehub.clickhouse import get_clickhouse_data
 
 app = create_app(adminFlag=False)
 app.app_context().push()
 
 
 def if_init_correct(crypto, integration_id):
-    pass
+    get_clickhouse_data
 def if_init_correct(crypto, integration_id):
     pass
 
@@ -61,7 +61,7 @@ def init_clickhouse_tables(crypto, id, paramss):
         # В ИДЕАЛЕ узнать за какой период есть данные
         # В ИДЕАЛЕ создать таблицы и выгрузить в них данные за указ. пер.
         # В ИДЕАЛЕ проверить все ли ок
-        
+
         # сейчас - создать таблицы
         # и выгрузить в них все доступные данные
         _set_task_progress(0)

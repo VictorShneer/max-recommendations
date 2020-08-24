@@ -1,4 +1,4 @@
-{
+CONFIG = {
 	"token" : "AgAAAAAOfQzUAAZsVJowlKqpKEEOvNCfAFr78lg",
 	"counter_id": "65168419",
 	"disable_ssl_verification_for_clickhouse": 1,

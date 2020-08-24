@@ -75,9 +75,9 @@ def build_user_request(config,params):
 
 
 def integrate_with_logs_api(config, user_request):
-    print("====integrate_with_logs_api=====")
-    print(config)
-    print()
+    # print("====integrate_with_logs_api=====")
+    # print(config)
+    # print()
     for i in range(config['retries']):
         time.sleep(i * config['retries_delay'])
         try:
@@ -110,6 +110,12 @@ def integrate_with_logs_api(config, user_request):
             if i == config['retries'] - 1:
                 raise e
 
+
+def if_init_correct(crypto, integration_id):
+    pass
+
+def if_delete_correct(crypto, integration_id):
+    pass
 def drop_integration(crypto, integration_id):
     # drop TABLE db1.sweet_hits_2;
     clickhouse_visits_table = '{}_{}_{}'.format(crypto,'visits',integration_id)
@@ -125,7 +131,7 @@ def handle_integration(crypto,id, params):
     # config = utils.get_config()
     clickhouse.CH_VISITS_TABLE = clickhouse.config['clickhouse']['visits_table'] = crypto + "_visits_"+str(id)
     clickhouse.CH_HITS_TABLE = clickhouse.config['clickhouse']['hits_table'] = crypto + "_hits_"+str(id)
-    print(clickhouse.config)
+    # print(clickhouse.config)
     # nessessary to config
     setup_logging(clickhouse.config)
 

@@ -10,7 +10,7 @@ from app import db
 from app.metrika.secur import current_user_own_integration
 from app.models import Notification
 from flask import jsonify
-
+from app.clickhousehub.metrica_logs_api import drop_integration
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
@@ -26,8 +26,9 @@ def delete_integration():
     # clickhouse db delete
 
     print('hey!')
-    current_user.launch_task('drop_integration_task',('Удаление интеграции'), current_user.crypto, integration_id)
-    db.session.commit()
+    # current_user.launch_task('drop_integration_task',('Удаление интеграции'), current_user.crypto, integration_id)
+    # db.session.commit()
+    drop_integration(current_user.crypto, integration_id)
 
     return '<200>'
 
