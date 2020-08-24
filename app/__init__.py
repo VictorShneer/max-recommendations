@@ -16,6 +16,7 @@ from app.admin_security import MyModefView, MyAdminIndexView
 from rq import Queue
 import rq
 from redis import Redis
+from flask_wtf.csrf import CSRFProtect
 
 
 db = SQLAlchemy()
@@ -25,6 +26,7 @@ migrate = Migrate()
 login.login_view = 'auth.login'
 login.login_message = "Please login to view that page."
 admin=Admin()
+csrf = CSRFProtect()
 
 def create_app(adminFlag=True,config_class=Config):
     print('Hey yo!')
@@ -36,7 +38,7 @@ def create_app(adminFlag=True,config_class=Config):
     migrate.init_app(app,db)
     bootstrap.init_app(app)
     login.init_app(app)
-
+    csrf.init_app(app)
 
     #ADMIN PANEL
     if (adminFlag):

@@ -4,16 +4,26 @@
 {% block app_content %}
 Свойства:
 
-<div class="row">
-  {% if title %} <h2>{{title}}</h2> {% endif %}
-    <div class="col-md-4">
-        {{ wtf.quick_form(form) }}
-        <a class="btn btn-info" href="{{url_for('main.user_integrations')}}">Назад</a>
+<form action="/analytics/getdata" id="contact-form" method="POST" enctype="text/plain">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <div class="row">
+      {% if title %} <h2>{{title}}</h2> {% endif %}
+          <div class="col-md-4 analyticsform">
+            {{ wtf.quick_form(form) }}
+            <a class="btn btn-info" href="{{url_for('main.user_integrations')}}">Назад</a>
+        </div>
     </div>
-</div>
-
+</form>
 Действия:
 
 
+{% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<<script type="text/javascript">
+  var csrf_token = "{{ csrf_token() }}";
+  console.log(csrf_token);
+</script>
+<script type="text/jsx" src='{{url_for("static",filename="js/analytics.js")}}'></script>
 {% endblock %}

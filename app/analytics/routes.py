@@ -3,13 +3,14 @@ from flask_login import login_required, current_user
 from app.models import User, Integration
 from app import db
 from app.analytics import bp
+import requests
 from app.analytics.utils import current_user_own_integration, create_url_for_query, send_request_to_clickhouse
 import traceback
 from pprint import pprint
 import pandas as pd
 from app.analytics.forms import AnalyticsBar
 
-@bp.route('/analytics/<integration_id>', methods = ['GET'])
+@bp.route('/analytics/<integration_id>', methods = ['GET', 'POST'])
 @login_required
 @current_user_own_integration
 def generate_values(integration_id):
@@ -31,13 +32,32 @@ def generate_values(integration_id):
             a[idx].append('Не выбрано')
 
         # Adding choices to the forms
-        form.device_category.choices = [(g) for g in a[0]]
-        form.operating_system.choices = [(g) for g in a[1]]
-        form.region_city.choices = [(g) for g in a[2]]
-        form.url.choices = [(g) for g in a[3]]
-        form.goals_id.choices = [(g) for g in a[4]]
+        form.device_category.choices = [(g,g) for g in a[0]]
+        form.operating_system.choices = [(g,g) for g in a[1]]
+        form.region_city.choices = [(g,g) for g in a[2]]
+        form.url.choices = [(g,g) for g in a[3]]
+        form.goals_id.choices = [(g,g) for g in a[4]]
+        #
+        # if form.validate_on_submit():
+        #     return redirect(url_for('analytics.after_analytics'))
     except Exception as e:
         traceback.print_exc()
         flash('{} Ошибки в настройках интеграции!'.format(Integration.integration_name))
         return render_template('analytics.html')
-    return render_template('analytics.html', list = a, form=form)
+    return render_template('analytics.html', list= a, form=form)
+
+
+
+@bp.route('/analytics/getdata', methods = ['GET','POST'])
+@login_required
+# @current_user_own_integration
+def process_values():
+    if request.method == 'POST':
+        try:
+            print(request.form['operating_system'])
+        except Exception as err:
+            pass
+        return render_template('index.html')
+    elif request.method == 'GET':
+        print("last hui")
+    return render_template('after_analytics.html')
