@@ -27,7 +27,7 @@ def metrika_get_data(integration_id):
 
     request_start_date = request.args.get('start_date')
     clickhouse_table = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
-    # print(clickhouse_table)
+
     url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table))
     if request_start_date =='':
         url_for_visits_all_data = made_url_for_query(\
@@ -55,15 +55,17 @@ def metrika_get_data(integration_id):
     file_from_string = StringIO(response_with_columns_names.text)
     columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, usecols=[0])
     list_of_column_names = columns_df[0].values
+    print(list_of_column_names)
     # finishing visits all table
     file_from_string = StringIO(response_with_visits_all_data.text)
     try:
-        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID'])
+        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID','StartURL'])
         max_df = build_conversion_df(visits_all_data_df)
     except:
         print('Table building abort')
         abort(404)
     # building max data frame
+
 
 
     max_no_email_1graph = [ [int(max_row['Visits with out email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Visits with out email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
@@ -78,9 +80,6 @@ def metrika_get_data(integration_id):
     if (len(max_email_1graph) == 0):
         max_email_1graph = [[0,0]]
 
-    #max_no_email_1graph = max_df[max_df['Visits with email'] != 0][['Visits with email','Conversion (TG/TV)']]
-    # print(max_no_email_1graph)
-    # print(max_email_1graph)
 
     conv_email_sum = max_df[max_df['Visits with email'] != 0]['Conversion (TG/TV)'].sum()
     conv_no_email_sum = max_df[max_df['Visits with email'] == 0]['Conversion (TG/TV)'].sum()
