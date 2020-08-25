@@ -55,7 +55,6 @@ def metrika_get_data(integration_id):
     file_from_string = StringIO(response_with_columns_names.text)
     columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, usecols=[0])
     list_of_column_names = columns_df[0].values
-    print(list_of_column_names)
     # finishing visits all table
     file_from_string = StringIO(response_with_visits_all_data.text)
     try:

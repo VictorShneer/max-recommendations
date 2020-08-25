@@ -51,7 +51,6 @@ def build_conversion_df(visits_all_data_df):
     #     .replace(np.nan, 'no-email', regex=True, inplace=True)
 
     # First raw grouping. Result: not distinct ClientID column values
-    print(visits_all_data_df[['hash','StartURL']])
     max_df = visits_all_data_df.groupby(['ClientID','hash'])\
         .agg({'GoalsID': goalId_count, 'VisitID':'count'})
     max_df.reset_index(inplace=True)
@@ -59,9 +58,7 @@ def build_conversion_df(visits_all_data_df):
     unique_client_ids = max_df['ClientID'].unique()
     # after this loop we got ClientID column with distinct values
     temp_dfs = []
-    # print(visits_all_data_df.head().to_string())
     for client_id in unique_client_ids:
-
         # for every unique ClientID we group rows that belong to it
         temp_df = max_df[max_df['ClientID'] == client_id]
         #calculation metrics for result row
@@ -96,7 +93,6 @@ def build_conversion_df(visits_all_data_df):
     #contatenating unique ClientID row into DataFrame
     max_df = pd.concat(temp_dfs)
     max_df.reset_index(inplace=True, drop=True)
-
     max_df = max_df.groupby(['Client identities'])\
         .agg({'ClientID':leave_last_client_id,\
         'Total goals complited':'sum',
@@ -106,7 +102,6 @@ def build_conversion_df(visits_all_data_df):
         'Goals complited via email':'sum'
         })
     max_df.reset_index(inplace=True, drop=False)
-    # print(max_df.to_string())
 
     # LEGACY
     # # handle utm intersections
@@ -134,7 +129,6 @@ def build_conversion_df(visits_all_data_df):
     max_df['Email visits share'] = devide_columns_handler(max_df,'Visits with email','Total visits')
     max_df['NO-Email visits share'] = devide_columns_handler(max_df,'Visits with out email','Total visits')
     max_df['Email power proportion'] = devide_columns_handler(max_df,'Goals complited via email','Total goals complited')
-
 
     return max_df
 
