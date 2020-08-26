@@ -11,6 +11,7 @@ from app.metrika.secur import current_user_own_integration
 from app.models import Notification
 from flask import jsonify
 from app.clickhousehub.metrica_logs_api import drop_integration
+from wtforms.fields.html5 import DateField
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
@@ -114,7 +115,7 @@ def create_integration():
             abort(404)
 
         db.session.commit()
-        flash('You just have add new {} integration '.format(integration.integration_name))
+        flash('You just have added new {} integration '.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
     return render_template('create_integration.html', form=form)
