@@ -164,7 +164,15 @@ def edit_integration(integration_id):
 def link_creation():
     form = LinkGenerator()
     if form.validate_on_submit():
-        link = form.link.data + "?utm_campaign=&utm_content=&utm_medium=&utm_source={{CONTACT `subscriber_email`}}&utm_term="
+        input_link = form.link.data.strip()
+        last_sym = input_link[-1:]
+        if (input_link.find('?') == -1):
+            link = input_link + "?mxm={CUSTOM 'hash_metrika'}"
+        else:
+            if (last_sym == "?" or last_sym == "&"):
+                link = input_link + "mxm={CUSTOM 'hash_metrika'}"
+            else:
+                link = input_link + "&mxm={CUSTOM 'hash_metrika'}"
         flash('Ваша ссылка: {} '.format(link))
         return render_template('link_creation.html', form=form)
     return render_template('link_creation.html', form=form)
