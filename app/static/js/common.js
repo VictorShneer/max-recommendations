@@ -1,7 +1,7 @@
 $(document).ready(function(){
   $('#navbar-profile-link').click(function(e){
     e.preventDefault();
-    console.log('yep!');
+    // console.log('yep!');
     if (!$(this).hasClass('navbar-link-active')){
       $(this).addClass('navbar-link-active');
       $('.navbar-submenu-profile').show();
@@ -11,10 +11,10 @@ $(document).ready(function(){
     }
   })
   $('.show_settings').mouseenter(function(){
-    console.log('enter');
+    // console.log('enter');
     $(this).children('.integration-settings').show();
   }).mouseleave(function(){
-    console.log('leave');
+    // console.log('leave');
     $(this).children('.integration-settings').hide();
   })
 })

@@ -16,6 +16,7 @@ from wtforms.fields.html5 import DateField
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
 def delete_integration():
+
     # heroku db delete
     integration_id = request.form['integration_id']
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
