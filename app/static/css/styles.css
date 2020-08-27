@@ -345,3 +345,11 @@ body {
   text-decoration: underline;
   color: rgb(0, 186, 255);
 }
+
+.link_creation {
+  padding-top: 40px;
+}
+
+.link_creation .grmax-btn {
+  margin-top: 50px;
+}
