@@ -15,6 +15,8 @@ from app.analytics.forms import AnalyticsBar
 @current_user_own_integration
 def generate_values(integration_id):
     form = AnalyticsBar()
+    integration = Integration.query.filter_by(id=integration_id).first_or_404()
+    # print(form)
     try:
         # Getting the data needed for the drop down menu
         list_of_column_names = ['DeviceCategory','OperatingSystem','RegionCity','URL','GoalsID']
@@ -42,9 +44,10 @@ def generate_values(integration_id):
         #     return redirect(url_for('analytics.after_analytics'))
     except Exception as e:
         traceback.print_exc()
-        flash('{} Ошибки в настройках интеграции!'.format(Integration.integration_name))
-        return render_template('analytics.html')
-    return render_template('analytics.html', list= a, form=form)
+        flash('{} Ошибки в настройках интеграции!'.format(integration.integration_name))
+        return redirect(url_for('main.user_integrations'))
+        # return render_template('analytics.html')
+    return render_template('analytics.html', list=a, form=form)
 
 
 
