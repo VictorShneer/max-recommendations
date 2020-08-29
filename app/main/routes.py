@@ -151,7 +151,7 @@ def edit_integration(integration_id):
 
         integration.start_date = form_to_data_load.start_date.data
         integration.end_date = form_to_data_load.end_date.data
-        current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, [params,params_2])
+        current_user.launch_task('init_clickhouse_tables', ('Инициализация интеграции...'), current_user.crypto,  integration.id, [params,params_2])
         # todo only if success - change integration db records
         db.session.commit()
     elif form.validate_on_submit():
