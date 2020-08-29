@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, IntegerField, DateField
+from wtforms import StringField, SubmitField, TextAreaField, IntegerField, DateField,BooleanField
 from wtforms.validators import DataRequired, ValidationError
 from app.models import User, Integration
 from datetime import date
@@ -11,13 +11,15 @@ class EditIntegration(FlaskForm):
     user_domain = StringField('Домен GetResponse')
     metrika_key = StringField('Ключ Яндекс Метрики')
     metrika_counter_id = IntegerField('ID счетчика Яндекс Метрики')
-
     start_date = DateField('От', validators=[DataRequired()])
     end_date = DateField('До')
-
+    auto_load = BooleanField('Автозагрузка')
     submit = SubmitField("Отправить")
 
-
+class LoadDataMetrikaToClickhouse(FlaskForm):
+    start_date = DateField('От', validators=[DataRequired()])
+    end_date = DateField('До')
+    submit = SubmitField("Отправить")
 
 class LinkGenerator(FlaskForm):
     link = StringField("Введите ссылку", validators=[DataRequired()])

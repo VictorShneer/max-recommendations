@@ -125,6 +125,9 @@ class Integration(UserMixin,db.Model):
     user_domain = db.Column(db.String(100))
     metrika_key = db.Column(db.String(100))
     metrika_counter_id = db.Column(db.Integer)
+    auto_load = db.Column(db.Boolean)
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
 
 
     def delete_myself(self):
