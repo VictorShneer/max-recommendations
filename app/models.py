@@ -128,7 +128,6 @@ class Integration(UserMixin,db.Model):
     auto_load = db.Column(db.Boolean)
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
-    just_for_test = db.Column(db.Integer)
 
     def delete_myself(self):
         db.session.delete(self)

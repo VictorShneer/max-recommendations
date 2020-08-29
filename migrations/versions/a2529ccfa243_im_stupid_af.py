@@ -1,8 +1,8 @@
-"""machome start
+"""im stupid af
 
-Revision ID: 36e362d2a9e4
+Revision ID: a2529ccfa243
 Revises: 
-Create Date: 2020-08-25 01:34:32.981472
+Create Date: 2020-08-30 01:34:50.644211
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '36e362d2a9e4'
+revision = 'a2529ccfa243'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -45,6 +45,9 @@ def upgrade():
     sa.Column('user_domain', sa.String(length=100), nullable=True),
     sa.Column('metrika_key', sa.String(length=100), nullable=True),
     sa.Column('metrika_counter_id', sa.Integer(), nullable=True),
+    sa.Column('auto_load', sa.Boolean(), nullable=True),
+    sa.Column('start_date', sa.Date(), nullable=True),
+    sa.Column('end_date', sa.Date(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
