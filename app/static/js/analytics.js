@@ -1,7 +1,7 @@
 $(document).ready(function(){
 
 
-$('#submit').click(function(event){
+$('.analyticsform #submit').click(function(event){
     console.log('hui');
     // Prevent redirection with AJAX for contact form
     var form = $('#contact-form');
