@@ -4,17 +4,19 @@ from flask_login import login_required, current_user
 from app.models import User
 import pandas as pd
 from app.main import bp
-from app.main.forms import EditIntegration, LinkGenerator
+from app.main.forms import EditIntegration, LinkGenerator, LoadDataMetrikaToClickhouse
 from app.models import Integration, User
 from app import db
 from app.metrika.secur import current_user_own_integration
 from app.models import Notification
 from flask import jsonify
 from app.clickhousehub.metrica_logs_api import drop_integration
+from wtforms.fields.html5 import DateField
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
 def delete_integration():
+
     # heroku db delete
     integration_id = request.form['integration_id']
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
@@ -24,10 +26,6 @@ def delete_integration():
     integration.delete_myself()
 
     # clickhouse db delete
-
-    print('hey!')
-    # current_user.launch_task('drop_integration_task',('Удаление интеграции'), current_user.crypto, integration_id)
-    # db.session.commit()
     drop_integration(current_user.crypto, integration_id)
 
     return '<200>'
@@ -91,6 +89,9 @@ def create_integration():
         user_domain = form.user_domain.data,
         metrika_key = form.metrika_key.data,
         metrika_counter_id = form.metrika_counter_id.data,
+        auto_load = form.auto_load.data,
+        start_date = form.start_date.data,
+        end_date = form.end_date.data,
         user_id = current_user.id
         )
 
@@ -118,7 +119,7 @@ def create_integration():
             abort(404)
 
         db.session.commit()
-        flash('You just have add new {} integration '.format(integration.integration_name))
+        flash('You just have added new {} integration '.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
     return render_template('create_integration.html', form=form)
@@ -130,22 +131,33 @@ def create_integration():
 def edit_integration(integration_id):
 
     form = EditIntegration()
+    form_to_data_load = LoadDataMetrikaToClickhouse()
+    form.metrika_key.render_kw = {'disabled': 'disabled'}
+    form.metrika_counter_id.render_kw = {'disabled': 'disabled'}
+    del form.start_date
+    del form.end_date
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):
         flash('Настройка вашего аккаунта еще не закончена')
         return redirect(url_for('main.user_integrations'))
 
     title = integration.integration_name
-    if form.validate_on_submit():
+    if form_to_data_load.validate_on_submit():
+        timing = ['-start_date={}'.format(form_to_data_load.start_date.data)]
+        if form.end_date.data:
+            timing.append('-end_date={}'.format(form_to_data_load.end_date.data))
+        params = ['-source=hits', *timing]
+        params_2 = ['-source=visits', *timing]
+
+        integration.start_date = form_to_data_load.start_date.data
+        integration.end_date = form_to_data_load.end_date.data
+        current_user.launch_task('init_clickhouse_tables', ('Инициализация интеграции...'), current_user.crypto,  integration.id, [params,params_2])
+        # todo only if success - change integration db records
+        db.session.commit()
+    elif form.validate_on_submit():
         integration.integration_name = form.integration_name.data
         integration.api_key = form.api_key.data
         integration.user_domain = form.user_domain.data
-        integration.metrika_key = form.metrika_key.data
-        integration.metrika_counter_id = form.metrika_counter_id.data
-        # integration.clickhouse_login = form.clickhouse_login.data
-        # integration.clickhouse_password = form.clickhouse_password.data
-        # integration.clickhouse_host = form.clickhouse_host.data
-        # integration.clickhouse_db = form.clickhouse_db.data
         db.session.commit()
         flash('Изменения сохранены')
     elif request.method == 'GET':
@@ -154,11 +166,14 @@ def edit_integration(integration_id):
         form.user_domain.data = integration.user_domain
         form.metrika_key.data = integration.metrika_key
         form.metrika_counter_id.data = integration.metrika_counter_id
-        # form.clickhouse_login.data = integration.clickhouse_login
-        # form.clickhouse_password.data = integration.clickhouse_password
-        # form.clickhouse_host.data = integration.clickhouse_host
-        # form.clickhouse_db.data = integration.clickhouse_db
-    return render_template("create_integration.html", form=form, title=title)
+        form.auto_load.data = integration.auto_load
+
+    return render_template("create_integration.html",\
+                            form=form,\
+                            form_to_data_load=form_to_data_load,\
+                            title=title,\
+                            start_date=integration.start_date,\
+                            end_date=integration.end_date)
 
 
 @bp.route('/link_creation', methods=['GET','POST'])
@@ -166,7 +181,15 @@ def edit_integration(integration_id):
 def link_creation():
     form = LinkGenerator()
     if form.validate_on_submit():
-        link = form.link.data + "?utm_campaign=&utm_content=&utm_medium=&utm_source={{CONTACT `subscriber_email`}}&utm_term="
+        input_link = form.link.data.strip()
+        last_sym = input_link[-1:]
+        if (input_link.find('?') == -1):
+            link = input_link + "?mxm={CUSTOM 'hash_metrika'}"
+        else:
+            if (last_sym == "?" or last_sym == "&"):
+                link = input_link + "mxm={CUSTOM 'hash_metrika'}"
+            else:
+                link = input_link + "&mxm={CUSTOM 'hash_metrika'}"
         flash('Ваша ссылка: {} '.format(link))
         return render_template('link_creation.html', form=form)
     return render_template('link_creation.html', form=form)

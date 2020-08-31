@@ -23,9 +23,9 @@ SSL_VERIFY = (config['disable_ssl_verification_for_clickhouse'] == 0)
 
 def get_clickhouse_data(query,host="https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443"):
     '''Returns ClickHouse response'''
-    # print('--get_clickhouse_data--'*5)
-    # print(query)
-    # print()
+    print('--get_clickhouse_data--'*5)
+    print(query)
+    print()
     logger.debug(query)
     if (CH_USER == '') and (CH_PASSWORD == ''):
         r = requests.post(host, data=query, verify=SSL_VERIFY)

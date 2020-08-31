@@ -1,17 +1,23 @@
 import pandas as pd
 import numpy as np
+from urllib.parse import urlparse
+from urllib.parse import parse_qs
 
 def goalId_count(el):
     return sum([len(eval(goals)) for goals in el])
 
-def utm_source_handler(el):
+def hash_group_handler(el):
     set_el = set(el)
     if len(set_el)>1:
         set_el.discard('no-email')
+        # in other words
+        # if visit has different emails
+        # we want mark it to ignore futher
         if len(set_el) > 1:
             return '0'
     return ', '.join(set_el)
 
+#
 def devide_columns_handler(df,numerator_column_name,denominator_column_name):
     result_column = (df[numerator_column_name]/df[denominator_column_name])*100
     result_column.replace(np.nan, 0, regex=True, inplace=True)
@@ -26,46 +32,60 @@ def make_utms_unique(el):
         aggregated.append(utm_groups)
     return ', '.join(set(aggregated))
 
+def start_url_to_hash(url):
+    parsed = urlparse(url)
+    url_params = parse_qs(parsed.query)
+    if 'mxm' in url_params.keys():
+        return url_params['mxm'][0]
+    else:
+        return 'no-email'
+
 def build_conversion_df(visits_all_data_df):
+
+    # replace StartURL with hash
+    visits_all_data_df['hash'] = visits_all_data_df['StartURL'].apply(start_url_to_hash)
+
+    # LEGACY
     # replace NaN UtmSource with 'no-email'
-    visits_all_data_df['UTMSource']\
-        .replace(np.nan, 'no-email', regex=True, inplace=True)
+    # visits_all_data_df['UTMSource']\
+    #     .replace(np.nan, 'no-email', regex=True, inplace=True)
+
     # First raw grouping. Result: not distinct ClientID column values
-    max_df = visits_all_data_df.groupby(['ClientID','UTMSource'])\
+    max_df = visits_all_data_df.groupby(['ClientID','hash'])\
         .agg({'GoalsID': goalId_count, 'VisitID':'count'})
     max_df.reset_index(inplace=True)
     # unique ClientID extraction
     unique_client_ids = max_df['ClientID'].unique()
     # after this loop we got ClientID column with distinct values
     temp_dfs = []
-    # print(visits_all_data_df.head().to_string())
     for client_id in unique_client_ids:
-
         # for every unique ClientID we group rows that belong to it
         temp_df = max_df[max_df['ClientID'] == client_id]
         #calculation metrics for result row
         goals_sum_total = temp_df['GoalsID'].sum()
-        max_email = temp_df[temp_df['UTMSource'] != 'no-email']
+        max_email = temp_df[temp_df['hash'] != 'no-email']
         goals_email = max_email['GoalsID'].sum()
-        max_no_email = temp_df[temp_df['UTMSource'] == 'no-email']
+        max_no_email = temp_df[temp_df['hash'] == 'no-email']
         visits_no_email = max_no_email['VisitID'].sum()
         visits_email = max_email['VisitID'].sum()
-
         # for every unique ClientID we group rows that belong to it
         temp_df = temp_df.groupby(['ClientID'])\
-            .agg({'UTMSource':utm_source_handler,'GoalsID':'sum'})
+            .agg({'hash':hash_group_handler,'GoalsID':'sum'})
         temp_df.reset_index(inplace=True)
-        if temp_df['UTMSource'].values[0] == '0':
+        # ignore cases - when clientID has different emails
+        if temp_df['hash'].values[0] == '0':
             continue
-        if temp_df['UTMSource'].values[0] == 'no-email':
-            temp_df['UTMSource'] += temp_df['ClientID'].astype(str)
+        # mark no-email with clientId
+        # we want all anons to be unique
+        if temp_df['hash'].values[0] == 'no-email':
+            temp_df['hash'] += temp_df['ClientID'].astype(str)
         #assign metricts for result row
         temp_df['Total visits'] = visits_no_email + visits_email
         temp_df['Visits with out email'] = visits_no_email
         temp_df['Visits with email'] = visits_email
         temp_df['Goals complited via email'] = goals_email
         #prettyfing column names and appending result to array
-        temp_df.rename(columns={'UTMSource':'Client identities',\
+        temp_df.rename(columns={'hash':'Client identities',\
             'GoalsID':'Total goals complited'},\
             inplace=True)
         temp_dfs.append(temp_df)
@@ -73,7 +93,6 @@ def build_conversion_df(visits_all_data_df):
     #contatenating unique ClientID row into DataFrame
     max_df = pd.concat(temp_dfs)
     max_df.reset_index(inplace=True, drop=True)
-
     max_df = max_df.groupby(['Client identities'])\
         .agg({'ClientID':leave_last_client_id,\
         'Total goals complited':'sum',
@@ -83,8 +102,8 @@ def build_conversion_df(visits_all_data_df):
         'Goals complited via email':'sum'
         })
     max_df.reset_index(inplace=True, drop=False)
-    # print(max_df.to_string())
 
+    # LEGACY
     # # handle utm intersections
     # temp_dfs = []
     # list_of_utm_sets_raw = merge([ [idx] + utm.split(', ') for idx,utm in max_df['Client identities'].iteritems()])
@@ -101,20 +120,19 @@ def build_conversion_df(visits_all_data_df):
     #                                     'Visits with email':'sum',\
     #                                     'Goals complited via email':'sum'})
     #     temp_dfs.append(temp_df)
-
-
     # #contatenating intersections UTMs into single DataFrame
     # max_df = pd.concat(temp_dfs)
     # max_df.reset_index(inplace=True, drop=True)
+
     #calculating metrics
     max_df['Conversion (TG/TV)'] = devide_columns_handler(max_df,'Total goals complited','Total visits')
     max_df['Email visits share'] = devide_columns_handler(max_df,'Visits with email','Total visits')
     max_df['NO-Email visits share'] = devide_columns_handler(max_df,'Visits with out email','Total visits')
     max_df['Email power proportion'] = devide_columns_handler(max_df,'Goals complited via email','Total goals complited')
 
-
     return max_df
 
+# LEGACY
 # def merge(lsts):
 #     sets = [set(lst) for lst in lsts if lst]
 #     merged = True

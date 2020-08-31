@@ -286,6 +286,7 @@ body {
 .grmax-table > tbody > tr> td.integration-dotes {
   position: relative;
   z-index: 1;
+  width: 40px;
 }
 
 .grmax-table > tbody > tr> td.integration-dotes .integration-settings {
@@ -293,24 +294,25 @@ body {
   position: absolute;
   z-index: 100;
   background-color: #ffffff;
-  border: 1px solid #7990a1;
-  top: 0px;
-  right: 18px;
+  border: 1px solid #e2e2e2;
+  top: 10px;
+  right: 22px;
 }
 
-.grmax-table > tbody > tr> td.integration-dotes #show_settings{
+.grmax-table > tbody > tr> td.integration-dotes .show_settings{
   position: relative;
   z-index: 1;
 }
 
-.grmax-table > tbody > tr> td.integration-dotes #show_settings:hover .integration-settings {
-  display: block !important;
-}
-
-.grmax-table > tbody > tr> td.integration-dotes #show_settings:hover .integration-settings ul {
+.grmax-table > tbody > tr> td.integration-dotes .show_settings .integration-settings ul {
   list-style: none;
   display: block;
-  padding: 10px;
+  padding: 10px 14px 6px 14px;
+}
+
+.grmax-table > tbody > tr> td.integration-dotes .show_settings .integration-settings ul li {
+  padding: 4px 0px;
+  margin: 0px;
 }
 
 .grmax-table > tbody > tr> td.integration-dotes i{
@@ -333,7 +335,6 @@ body {
 }
 
 .grmax-justlink {
-//  color: rgb(0, 186, 255);
   color: #7990a1;
   font-size: 13px;
   font-weight: 500;
@@ -343,4 +344,12 @@ body {
 .grmax-justlink:hover{
   text-decoration: underline;
   color: rgb(0, 186, 255);
+}
+
+.link_creation {
+  padding-top: 40px;
+}
+
+.link_creation .grmax-btn {
+  margin-top: 50px;
 }

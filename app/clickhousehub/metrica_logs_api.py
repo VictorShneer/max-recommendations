@@ -111,11 +111,6 @@ def integrate_with_logs_api(config, user_request):
                 raise e
 
 
-def if_init_correct(crypto, integration_id):
-    pass
-
-def if_delete_correct(crypto, integration_id):
-    pass
 def drop_integration(crypto, integration_id):
     # drop TABLE db1.sweet_hits_2;
     clickhouse_visits_table = '{}_{}_{}'.format(crypto,'visits',integration_id)

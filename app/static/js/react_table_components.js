@@ -49,7 +49,7 @@ class VisitsTable extends React.Component {
     const rows = [];
     const headerNames = [];
     if(this.props.visits){
-      this.props.visits.data.slice(0, 20).forEach((visit) => {
+      this.props.visits.data.slice(0, 5).forEach((visit) => {
         rows.push(
           <VisitRow visit={visit} />
         );
