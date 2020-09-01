@@ -73,3 +73,6 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss):
         drop_integration(crypto, id)
         Integration.query.filter_by(id = id).first_or_404().delete_myself()
         app.logger.error('Unhandled exception', exc_info=sys.exc_info())
+
+def regular_load():
+    pass

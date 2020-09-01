@@ -1,5 +1,6 @@
 from app import create_app
 from app.models import User, Integration
+from app import db
 app = create_app()
 
 
@@ -14,9 +15,9 @@ def regular_load_to_clickhouse():
                                             filter_by(auto_load=True).all()
         print("Integrations:",str(user_integrations))
         for integration in user_integrations:
-            mode = '-mode regular'
+            mode = '-mode=regular'
             params = ['-source=hits', mode]
             params_2 = ['-source=visits', mode]
-            user.launch_task('init_clickhouse_tables', ('Автоматическая загрузка метрик'), user.crypto,  integration.id, [params,params_2])
-
+            user.launch_task('init_clickhouse_tables', ('Автоматическая загрузка метрик'),integration.metrika_key, integration.metrika_counter_id,user.crypto,  integration.id, [params,params_2])
+            db.session.commit()
     print('Done!')
