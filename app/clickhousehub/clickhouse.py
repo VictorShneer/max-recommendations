@@ -20,7 +20,8 @@ CH_VISITS_TABLE = config['clickhouse']['visits_table']
 CH_HITS_TABLE = config['clickhouse']['hits_table']
 CH_DATABASE = config['clickhouse']['database']
 SSL_VERIFY = (config['disable_ssl_verification_for_clickhouse'] == 0)
-
+TOKEN=config['token']
+COUNTER_ID=config['counter_id']
 def get_clickhouse_data(query,host="https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443"):
     '''Returns ClickHouse response'''
     print('--get_clickhouse_data--'*5)

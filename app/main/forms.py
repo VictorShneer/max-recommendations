@@ -10,16 +10,12 @@ class EditIntegration(FlaskForm):
     api_key = StringField('API ключ GetResponse')
     user_domain = StringField('Домен GetResponse')
     metrika_key = StringField('Ключ Яндекс Метрики')
-    metrika_counter_id = IntegerField('ID счетчика Яндекс Метрики')
+    metrika_counter_id = StringField('ID счетчика Яндекс Метрики')
     start_date = DateField('От', validators=[DataRequired()])
     end_date = DateField('До')
     auto_load = BooleanField('Автозагрузка')
     submit = SubmitField("Отправить")
 
-class LoadDataMetrikaToClickhouse(FlaskForm):
-    start_date = DateField('От', validators=[DataRequired()])
-    end_date = DateField('До')
-    submit = SubmitField("Отправить")
 
 class LinkGenerator(FlaskForm):
     link = StringField("Введите ссылку", validators=[DataRequired()])

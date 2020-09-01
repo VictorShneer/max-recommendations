@@ -91,10 +91,6 @@ class User(UserMixin, db.Model):
     def launch_task(self, name, description, *args, **kwargs):
 
         rq_job = current_app.task_queue.enqueue('app.tasks.' + name, *args)
-        # rq_job = current_app.task_queue.enqueue('app.tasks.' + name, args[0])
-        # rq_job = current_app.task_queue.enqueue_call(
-        # func='app.tasks.' + name, args=(args[0],), result_ttl=5000
-        # )
         print('---job_id')
         print(rq_job.get_id())
         print('----')
@@ -127,7 +123,7 @@ class Integration(UserMixin,db.Model):
     metrika_counter_id = db.Column(db.Integer)
     auto_load = db.Column(db.Boolean)
     start_date = db.Column(db.Date)
-    end_date = db.Column(db.Date)
+
 
     def delete_myself(self):
         db.session.delete(self)

@@ -1,4 +1,4 @@
-as.DS_Store
+.DS_Store
 logs
 __pycache__
 venv

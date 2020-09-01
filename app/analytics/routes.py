@@ -24,7 +24,8 @@ def generate_values(integration_id):
         list_of_column_names = ['DeviceCategory','OperatingSystem','RegionCity','URL','GoalsID']
         list_of_answers = []
         for i in range(len(list_of_column_names)):
-            create_url = create_url_for_query('SELECT {smth} FROM db1.george_hits_3 GROUP BY {smth2};'.format(smth=list_of_column_names[i],smth2=list_of_column_names[i]))
+            create_url = create_url_for_query('SELECT {smth} FROM db1.{crypto}_hits_{integration_id} GROUP BY {smth2};'.\
+                            format(crypto= current_user.crypto, integration_id=integration.id,smth=list_of_column_names[i],smth2=list_of_column_names[i]))
             get_data = send_request_to_clickhouse(create_url).text
             list_of_answers.append(get_data)
             i += 1
@@ -62,6 +63,12 @@ def process_values():
             #geting the dict from the form
             dict_of_requests = {}
             dict = request.form.to_dict(flat=False)
+            print('!--'*10)
+            print(request.form.to_dict(flat=False))
+            #todo check if current_user owns Integration
+            integration = Integration.query.filter_by(id=int(dict['integration_id'])).first_or_404()
+            print('!--'*10)
+            print(dict['integration_id'],integration)
             for i in dict:
                 for k in dict[i]:
                     if k == '0' or k == 'Не выбрано' or k == '' or i == 'csrf_token':
@@ -89,7 +96,8 @@ def process_values():
                     word = word + ' ' + str(dict_of_requests[i]).strip('['']' + '    ')
             word = word[:-4]
             #getting the answer from the db
-            create_url = create_url_for_query('SELECT ClientID, URL FROM db1.george_hits_3 {smth};'.format(smth=word))
+            create_url = create_url_for_query('SELECT ClientID, URL FROM db1.{crypto}_hits_{integration_id} {smth};'.\
+                                                format(crypto= current_user.crypto, integration_id=integration.id,smth=word))
             # print(create_url)
             get_data = send_request_to_clickhouse(create_url).text
 

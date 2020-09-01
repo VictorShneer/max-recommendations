@@ -19,6 +19,8 @@ $(document).ready(function(){
       // creates a FormData object and adds chips text
       var formData = new FormData(document.getElementById(form));
       for (var [key, value] of formData.entries()) { console.log('formData', key, value);}
+      formData['integration_id'] = document.URL.split('/').pop();
+      // console.log(formData['integration_id']);
       return formData
   }
 
@@ -93,7 +95,7 @@ $(document).ready(function(){
           },
           success: function ( data ){
               console.log(data)
-              
+
               // if ( !$.trim( data.feedback )) { // response from Flask is empty
               //     toast_error_msg = "An empty response was returned.";
               //     toast_category = "danger";

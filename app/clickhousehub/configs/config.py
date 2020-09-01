@@ -1,6 +1,6 @@
 CONFIG = {
-	"token" : "AgAAAAAOfQzUAAZsVJowlKqpKEEOvNCfAFr78lg",
-	"counter_id": "65168419",
+	"token" : "",
+	"counter_id": "",
 	"disable_ssl_verification_for_clickhouse": 1,
 	"visits_fields": [
 			"ym:s:visitID",
@@ -36,7 +36,7 @@ CONFIG = {
 		"ym:pv:mobilePhoneModel"
 	],
 	"log_level": "INFO",
-	"retries": 1,
+	"retries": 4,
 	"retries_delay": 60,
 	"clickhouse": {
 		"host": "https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443",

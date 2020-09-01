@@ -4,7 +4,7 @@ app = create_app()
 
 
 @app.cli.command()
-def reular_load_to_clickhouse():
+def regular_load_to_clickhouse():
     """Clickhouse cron job."""
     users = User.query.filter_by(active=True).all()
     print('Users:', str(users))

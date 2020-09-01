@@ -118,14 +118,21 @@ def drop_integration(crypto, integration_id):
     url_for_visits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_table))
     url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_hits_table))
 
-def handle_integration(crypto,id, params):
+def handle_integration(token,counter_id, crypto, id, params):
     # print(crypto,type(crypto))
     # print(id,type(id))
     print('##### python', utils.get_python_version())
     start_time = time.time()
     # config = utils.get_config()
+    # clickhouse.
     clickhouse.CH_VISITS_TABLE = clickhouse.config['clickhouse']['visits_table'] = crypto + "_visits_"+str(id)
     clickhouse.CH_HITS_TABLE = clickhouse.config['clickhouse']['hits_table'] = crypto + "_hits_"+str(id)
+    clickhouse.TOKEN = clickhouse.config['token'] = token
+    print('-'*10)
+    print(type(counter_id))
+    print('-'*10)
+    
+    clickhouse.COUNTER_ID = clickhouse.config['counter_id'] = counter_id
     # print(clickhouse.config)
     # nessessary to config
     setup_logging(clickhouse.config)

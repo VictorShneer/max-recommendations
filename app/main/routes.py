@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app.models import User
 import pandas as pd
 from app.main import bp
-from app.main.forms import EditIntegration, LinkGenerator, LoadDataMetrikaToClickhouse
+from app.main.forms import EditIntegration, LinkGenerator
 from app.models import Integration, User
 from app import db
 from app.metrika.secur import current_user_own_integration
@@ -90,8 +90,6 @@ def create_integration():
         metrika_key = form.metrika_key.data,
         metrika_counter_id = form.metrika_counter_id.data,
         auto_load = form.auto_load.data,
-        start_date = form.start_date.data,
-        end_date = form.end_date.data,
         user_id = current_user.id
         )
 
@@ -111,7 +109,7 @@ def create_integration():
                 flash('Нельзя запускать создание больше одной интеграции одновременно!')
                 db.session.rollback()
             else:
-                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), current_user.crypto,  integration.id, [params,params_2])
+                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), integration.metrika_key,integration.metrika_counter_id, current_user.crypto,  integration.id, [params,params_2])
                 db.session.commit()
         except:
             flash("Проблемки..")
@@ -131,30 +129,16 @@ def create_integration():
 def edit_integration(integration_id):
 
     form = EditIntegration()
-    form_to_data_load = LoadDataMetrikaToClickhouse()
     form.metrika_key.render_kw = {'disabled': 'disabled'}
     form.metrika_counter_id.render_kw = {'disabled': 'disabled'}
     del form.start_date
-    del form.end_date
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):
         flash('Настройка вашего аккаунта еще не закончена')
         return redirect(url_for('main.user_integrations'))
 
     title = integration.integration_name
-    if form_to_data_load.validate_on_submit():
-        timing = ['-start_date={}'.format(form_to_data_load.start_date.data)]
-        if form.end_date.data:
-            timing.append('-end_date={}'.format(form_to_data_load.end_date.data))
-        params = ['-source=hits', *timing]
-        params_2 = ['-source=visits', *timing]
-
-        integration.start_date = form_to_data_load.start_date.data
-        integration.end_date = form_to_data_load.end_date.data
-        current_user.launch_task('init_clickhouse_tables', ('Инициализация интеграции...'), current_user.crypto,  integration.id, [params,params_2])
-        # todo only if success - change integration db records
-        db.session.commit()
-    elif form.validate_on_submit():
+    if form.validate_on_submit():
         integration.integration_name = form.integration_name.data
         integration.api_key = form.api_key.data
         integration.user_domain = form.user_domain.data
@@ -170,10 +154,7 @@ def edit_integration(integration_id):
 
     return render_template("create_integration.html",\
                             form=form,\
-                            form_to_data_load=form_to_data_load,\
-                            title=title,\
-                            start_date=integration.start_date,\
-                            end_date=integration.end_date)
+                            title=title)
 
 
 @bp.route('/link_creation', methods=['GET','POST'])
