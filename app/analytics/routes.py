@@ -10,7 +10,7 @@ from pprint import pprint
 import pandas as pd
 from app.analytics.forms import AnalyticsBar
 from collections import defaultdict
-
+from io import StringIO
 
 @bp.route('/analytics/<integration_id>', methods = ['GET', 'POST'])
 @login_required
@@ -76,18 +76,35 @@ def process_values():
                     for j in spravochnik:
                         if k == j and i not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals'):
                             dict_of_requests[i] = spravochnik[j]
-            print(dict_of_requests)
+            # print(dict_of_requests)
 
             #trying to concat the fucking query
-            word = 'WHERE '
+            word = 'WHERE'
             for i in dict_of_requests:
                 if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity'):
-                    pprint(dict_of_requests[i])
                     word = word + ' ' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') and'
-            print(word)
+                elif i in ('clause_visits'):
+                    word = word + ' and Date ' + str(dict_of_requests[i]).strip("'['']'")
+                elif i in ('Date'):
+                    word = word + ' ' + str(dict_of_requests[i]).strip('['']' + '    ')
+            word = word[:-4]
+            #getting the answer from the db
+            create_url = create_url_for_query('SELECT ClientID, URL FROM db1.george_hits_3 {smth};'.format(smth=word))
+            # print(create_url)
+            get_data = send_request_to_clickhouse(create_url).text
 
+            #doing magic with the data
+            file_from_string = StringIO(get_data)
+            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None)
+            pprint(columns_df)
+
+            #making json
+            front_end_df= columns_df.astype(str)
+            json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
+
+            return json_to_return
         except Exception as err:
-            pass
+            print(err)
         return render_template('index.html')
     elif request.method == 'GET':
         print("last hui")

@@ -92,14 +92,16 @@ $(document).ready(function(){
               $('#form-response').html("");
           },
           success: function ( data ){
-              if ( !$.trim( data.feedback )) { // response from Flask is empty
-                  toast_error_msg = "An empty response was returned.";
-                  toast_category = "danger";
-              }
-              else { // response from Flask contains elements
-                  toast_error_msg = data.feedback;
-                  toast_category = data.category;
-              }
+              console.log(data)
+              
+              // if ( !$.trim( data.feedback )) { // response from Flask is empty
+              //     toast_error_msg = "An empty response was returned.";
+              //     toast_category = "danger";
+              // }
+              // else { // response from Flask contains elements
+              //     toast_error_msg = data.feedback;
+              //     toast_category = data.category;
+              // }
           },
           error: function(xhr) {console.log("error. see details below.");
               console.log(xhr.status + ": " + xhr.responseText);
