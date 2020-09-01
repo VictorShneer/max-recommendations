@@ -9,6 +9,8 @@ import traceback
 from pprint import pprint
 import pandas as pd
 from app.analytics.forms import AnalyticsBar
+from collections import defaultdict
+
 
 @bp.route('/analytics/<integration_id>', methods = ['GET', 'POST'])
 @login_required
@@ -22,7 +24,7 @@ def generate_values(integration_id):
         list_of_column_names = ['DeviceCategory','OperatingSystem','RegionCity','URL','GoalsID']
         list_of_answers = []
         for i in range(len(list_of_column_names)):
-            create_url = create_url_for_query('SELECT {smth} FROM db1.hits_georgefinal GROUP BY {smth2};'.format(smth=list_of_column_names[i],smth2=list_of_column_names[i]))
+            create_url = create_url_for_query('SELECT {smth} FROM db1.george_hits_3 GROUP BY {smth2};'.format(smth=list_of_column_names[i],smth2=list_of_column_names[i]))
             get_data = send_request_to_clickhouse(create_url).text
             list_of_answers.append(get_data)
             i += 1
@@ -34,11 +36,11 @@ def generate_values(integration_id):
             a[idx].append('Не выбрано')
 
         # Adding choices to the forms
-        form.device_category.choices = [(g,g) for g in a[0]]
-        form.operating_system.choices = [(g,g) for g in a[1]]
-        form.region_city.choices = [(g,g) for g in a[2]]
-        form.url.choices = [(g,g) for g in a[3]]
-        form.goals_id.choices = [(g,g) for g in a[4]]
+        form.DeviceCategory.choices = [(g,g) for g in a[0]]
+        form.OperatingSystem.choices = [(g,g) for g in a[1]]
+        form.RegionCity.choices = [(g,g) for g in a[2]]
+        form.URL.choices = [(g,g) for g in a[3]]
+        form.GoalsID.choices = [(g,g) for g in a[4]]
         #
         # if form.validate_on_submit():
         #     return redirect(url_for('analytics.after_analytics'))
@@ -57,7 +59,33 @@ def generate_values(integration_id):
 def process_values():
     if request.method == 'POST':
         try:
-            print(request.form['operating_system'])
+            #geting the dict from the form
+            dict_of_requests = {}
+            dict = request.form.to_dict(flat=False)
+            for i in dict:
+                for k in dict[i]:
+                    if k == '0' or k == 'Не выбрано' or k == '' or i == 'csrf_token':
+                        pass
+                    else:
+                        dict_of_requests[i] = dict[i]
+            # print(dict_of_requests)
+            #changing the values for the query
+            spravochnik = {'1':['>='], '2':['<='],'3':['=']}
+            for i in dict_of_requests:
+                for k in dict_of_requests[i]:
+                    for j in spravochnik:
+                        if k == j and i not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals'):
+                            dict_of_requests[i] = spravochnik[j]
+            print(dict_of_requests)
+
+            #trying to concat the fucking query
+            word = 'WHERE '
+            for i in dict_of_requests:
+                if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity'):
+                    pprint(dict_of_requests[i])
+                    word = word + ' ' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') and'
+            print(word)
+
         except Exception as err:
             pass
         return render_template('index.html')
