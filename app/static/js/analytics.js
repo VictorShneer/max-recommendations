@@ -18,9 +18,8 @@ $(document).ready(function(){
   function getContactFormData(form) {
       // creates a FormData object and adds chips text
       var formData = new FormData(document.getElementById(form));
+      formData.append('integration_id', document.URL.split('/').pop());
       for (var [key, value] of formData.entries()) { console.log('formData', key, value);}
-      formData['integration_id'] = document.URL.split('/').pop();
-      // console.log(formData['integration_id']);
       return formData
   }
 
