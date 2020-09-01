@@ -93,8 +93,12 @@ $(document).ready(function(){
               $('#form-response').html("");
           },
           success: function ( data ){
-              console.log(data)
-
+              if (data) {
+                console.log(data);
+              }
+              else {
+                console.log('NO DATAAAA');
+              }
               // if ( !$.trim( data.feedback )) { // response from Flask is empty
               //     toast_error_msg = "An empty response was returned.";
               //     toast_category = "danger";

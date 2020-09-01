@@ -63,12 +63,7 @@ def process_values():
             #geting the dict from the form
             dict_of_requests = {}
             dict = request.form.to_dict(flat=False)
-            print('!--'*10)
-            print(request.form.to_dict(flat=False))
-            #todo check if current_user owns Integration
-            integration = Integration.query.filter_by(id=int(dict['integration_id'])).first_or_404()
-            print('!--'*10)
-            print(dict['integration_id'],integration)
+            integration_id = request.form["integration_id"]
             for i in dict:
                 for k in dict[i]:
                     if k == '0' or k == 'Не выбрано' or k == '' or i == 'csrf_token':
@@ -76,6 +71,7 @@ def process_values():
                     else:
                         dict_of_requests[i] = dict[i]
             # print(dict_of_requests)
+
             #changing the values for the query
             spravochnik = {'1':['>='], '2':['<='],'3':['=']}
             for i in dict_of_requests:
@@ -97,7 +93,7 @@ def process_values():
             word = word[:-4]
             #getting the answer from the db
             create_url = create_url_for_query('SELECT ClientID, URL FROM db1.{crypto}_hits_{integration_id} {smth};'.\
-                                                format(crypto= current_user.crypto, integration_id=integration.id,smth=word))
+                                                format(crypto= current_user.crypto, integration_id=integration_id,smth=word))
             # print(create_url)
             get_data = send_request_to_clickhouse(create_url).text
 
