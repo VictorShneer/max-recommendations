@@ -14,7 +14,7 @@ def regular_load_to_clickhouse():
                                             filter_by(auto_load=True).all()
         app.logger.info("### Integrations: {}".format(str(user_integrations)))
         for integration in user_integrations:
-            app.logger('### user: {} integration {}'.format(user, integration))
+            app.logger.info('### user: {} integration {}'.format(user, integration))
             mode = '-mode=regular'
             params = ['-source=hits', mode]
             params_2 = ['-source=visits', mode]
