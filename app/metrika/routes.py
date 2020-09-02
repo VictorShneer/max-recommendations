@@ -21,6 +21,7 @@ from app.metrika.send_hash_to_gr import add_custom_field
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
 def metrika_get_data(integration_id):
+    current_app.logger.info('### metrika/id/get_data')
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):
         print('Permission abort')
@@ -41,6 +42,8 @@ def metrika_get_data(integration_id):
         )
 
     try:
+
+        current_app.logger.info('### request_clickhouse start urls: {}\n{}'.format(url_for_columns,url_for_visits_all_data))
         # get column names 1
         response_with_columns_names = request_clickhouse(url_for_columns, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
         # get table data and prepare it
@@ -52,12 +55,12 @@ def metrika_get_data(integration_id):
             flash('Некорректная в дата!')
     except:
         flash('{} Ошибки в запросе или в настройках итеграции!'.format(integration.integration_name))
-
+        return redirect(url_for('main.user_integrations'))
 	# goals = r.json()['goals']
 	# my_item = next((item for item in goals if item['name'] == 'form_submit'), None)
 	# print(my_item)
 
-
+    current_app.logger.info('### request_clickhouse done! columns: {}\ndata: {}'.format(response_with_columns_names, response_with_visits_all_data))
     # prepare it column names
     file_from_string = StringIO(response_with_columns_names.text)
     columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, usecols=[0])
@@ -65,10 +68,12 @@ def metrika_get_data(integration_id):
     # finishing visits all table
     file_from_string = StringIO(response_with_visits_all_data.text)
     try:
+        current_app.logger.info("### build_conversion_df start columns: {} ".format(list_of_column_names))
+
         visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID','StartURL'])
         max_df = build_conversion_df(visits_all_data_df)
-    except:
-        print('Table building abort')
+    except Exception as err:
+        current_app.logger.info('### build_conversion_df EXCEPTION {}'.format(err))
         abort(404)
     # building max data frame
 
