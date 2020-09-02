@@ -87,14 +87,15 @@ def process_values():
                 if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity'):
                     word = word + ' ' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') and'
                 elif i in ('clause_visits'):
+                    word = word[:-4]
                     word = word + ' and Date ' + str(dict_of_requests[i]).strip("'['']'")
                 elif i in ('Date'):
-                    word = word + ' ' + str(dict_of_requests[i]).strip('['']' + '    ')
+                    word = word + ' ' + str(dict_of_requests[i]).strip('['']') + '    '
             word = word[:-4]
             #getting the answer from the db
             create_url = create_url_for_query('SELECT ClientID, URL FROM db1.{crypto}_hits_{integration_id} {smth};'.\
                                                 format(crypto= current_user.crypto, integration_id=integration_id,smth=word))
-            # print(create_url)
+            print(create_url)
             get_data = send_request_to_clickhouse(create_url).text
 
             #doing magic with the data

@@ -13,6 +13,9 @@ $(document).ready(function(){
 
       // submit form via AJAX
       send_form(form, form_id, url, type, modular_ajax, formData);
+
+
+
   });
 
   function getContactFormData(form) {
@@ -95,6 +98,56 @@ $(document).ready(function(){
           success: function ( data ){
               if (data) {
                 console.log(data);
+
+                 function GFG_FUN() {
+                     var cols = [];
+
+                     for (var i = 0; i < data.length; i++) {
+                         for (var k in data[i]) {
+                             console.log(j);
+                           if (cols.indexOf(k) === -1) {
+
+                                 // Push all keys to the array
+                                 cols.push(k);
+                             }
+                         }
+                     }
+
+                     // Create a table element
+                     var table = document.createElement("table");
+
+                     // Create table row tr element of a table
+                     var tr = table.insertRow(-1);
+
+                     for (var i = 0; i < cols.length; i++) {
+
+                         // Create the table header th element
+                         var theader = document.createElement("th");
+                         theader.innerHTML = cols[i];
+
+                         // Append columnName to the table row
+                         tr.appendChild(theader);
+                     }
+
+                     // Adding the data to the table
+                     for (var i = 0; i < data.length; i++) {
+
+                         // Create a new row
+                         trow = table.insertRow(-1);
+                         for (var j = 0; j < cols.length; j++) {
+                             var cell = trow.insertCell(-1);
+
+                             // Inserting the cell at particular place
+                             cell.innerHTML = data[i][cols[j]];
+                         }
+                     }
+
+                     // Add the newely created table containing json data
+                     var el = document.getElementById("table");
+                     el.innerHTML = "";
+                     el.appendChild(table);
+                 }
+                 GFG_FUN()
               }
               else {
                 console.log('NO DATAAAA');
