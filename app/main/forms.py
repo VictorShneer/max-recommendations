@@ -12,7 +12,6 @@ class EditIntegration(FlaskForm):
     metrika_key = StringField('Ключ Яндекс Метрики')
     metrika_counter_id = StringField('ID счетчика Яндекс Метрики')
     start_date = DateField('От', validators=[DataRequired()])
-    end_date = DateField('До')
     auto_load = BooleanField('Автозагрузка')
     submit = SubmitField("Отправить")
 

@@ -51,7 +51,7 @@ def _set_task_progress(progress, comment=''):
             task.complete = True
         db.session.commit()
 
-def init_clickhouse_tables(token, counter_id, crypto, id, paramss):
+def init_clickhouse_tables(token, counter_id, crypto, id, paramss, regular_load=True):
     try:
         # В ИДЕАЛЕ узнать за какой период есть данные
         # В ИДЕАЛЕ создать таблицы и выгрузить в них данные за указ. пер.
@@ -70,9 +70,8 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss):
         # обработки непредвиденных ошибок
         # вывести уведомлялку, что была проблема
         _set_task_progress(100)
-        drop_integration(crypto, id)
-        Integration.query.filter_by(id = id).first_or_404().delete_myself()
+        app.logger.info('init_clickhouse_tables exception')
+        if not regular_load:
+            drop_integration(crypto, id)
+            Integration.query.filter_by(id = id).first_or_404().delete_myself()
         app.logger.error('Unhandled exception', exc_info=sys.exc_info())
-
-def regular_load():
-    pass

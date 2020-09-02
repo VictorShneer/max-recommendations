@@ -9,13 +9,4 @@
           <a class="btn btn-info" href="{{url_for('main.user_integrations')}}">Назад</a>
       </div>
   </div>
-  {% if form_to_data_load %}
-  <p>Данные загружены за {{start_date}} - {{end_date}}</p>
-  <p>Воспользуйтесь формой, если хотите загрузить дополнительне данные</p>
-  <div class="row">
-      <div class="col-md-4">
-          {{ wtf.quick_form(form_to_data_load) }}
-      </div>
-  </div>
-  {% endif %}
 {% endblock %}

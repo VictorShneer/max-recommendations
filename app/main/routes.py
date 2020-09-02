@@ -12,6 +12,7 @@ from app.models import Notification
 from flask import jsonify
 from app.clickhousehub.metrica_logs_api import drop_integration
 from wtforms.fields.html5 import DateField
+import datetime
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
@@ -101,8 +102,10 @@ def create_integration():
             # UUID CUSTOM UNIQUE ID FOR ClickHousE integration
             # -start_date 2016-10-10 -end_date 2016-10-18
             timing = ['-start_date={}'.format(form.start_date.data)]
-            if form.end_date.data:
-                timing.append('-end_date={}'.format(form.end_date.data))
+            end_date = datetime.date.today()
+            days = datetime.timedelta(2)
+            end_date = end_date - days
+            timing.append('-end_date={}'.format(str(end_date)))
             params = ['-source=hits', *timing]
             params_2 = ['-source=visits', *timing]
             if current_user.get_task_in_progress('init_clickhouse_tables'):
