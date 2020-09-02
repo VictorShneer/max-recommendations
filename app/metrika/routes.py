@@ -1,4 +1,5 @@
 import traceback
+import requests
 from io import StringIO
 import ast
 import numpy as np
@@ -15,6 +16,7 @@ from app.clickhousehub.clickhouse_custom_request import made_url_for_query,reque
 from app.metrika.conversion_table_builder import build_conversion_df
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
+
 
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
@@ -50,6 +52,11 @@ def metrika_get_data(integration_id):
             flash('Некорректная в дата!')
     except:
         flash('{} Ошибки в запросе или в настройках итеграции!'.format(integration.integration_name))
+
+	# goals = r.json()['goals']
+	# my_item = next((item for item in goals if item['name'] == 'form_submit'), None)
+	# print(my_item)
+
 
     # prepare it column names
     file_from_string = StringIO(response_with_columns_names.text)
@@ -122,6 +129,16 @@ def metrika(integration_id):
         flash('{} Ошибки в настройках интеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
+    # get goals
+    counter_id = integration.metrika_counter_id
+    metrika_key = integration.metrika_key
+    headers = {'Authorization':'OAuth {}'.format(metrika_key)}
+    ROOT = 'https://api-metrika.yandex.net/'
+    url = ROOT+'management/v1/counter/{}/goals'.format(counter_id)
+    r = requests.get(url, headers=headers)
+    current_app.logger.info('### get goals status code: {}'.format(r.status_code))
+    goals = [goal['name'] for goal in r.json()['goals']]
+
     if (current_user.email == 'sales@getresponse.com'):
         return render_template('metrika_example.html')
     else:
@@ -131,7 +148,8 @@ def metrika(integration_id):
             max_date=max_date_text,\
             data_length = data_length_text,\
             integration_name=integration.integration_name,\
-            integration_id=integration_id)
+            integration_id=integration_id,\
+            goals=goals)
 
 @bp.route('/metrika/callback_add_custom_field', methods = ['GET'])
 def callback_add_custom_field():

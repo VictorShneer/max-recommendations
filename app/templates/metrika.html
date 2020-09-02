@@ -7,6 +7,12 @@
   <p><b>Интеграция {{integration_name}}</b></p>
   <p>Доступны данные с <b>{{min_date}}</b> по <b>{{max_date}}</b></p>
   <p>Всего уникальных визитов доступно: <b>{{data_length}}</b></p>
+  <label for="">Выберите цели (Насть сделай плиз выбрать все штучку :))</label>
+  <select name="goals">
+    {% for goal in goals %}
+      <option value="{{ goal }}" SELECTED>{{ goal }}</option>
+    {% endfor %}
+  </select>
 </div>
 
 <div id='mount-button_run_table'></div>
