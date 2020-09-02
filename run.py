@@ -8,16 +8,16 @@ app = create_app()
 def regular_load_to_clickhouse():
     """Clickhouse cron job."""
     users = User.query.filter_by(active=True).all()
-    print('Users:', str(users))
-    print('------')
+    app.logger.info('### Users: {}'.format(str(users)))
     for user in users:
         user_integrations=Integration.query.filter_by(user_id=user.id).\
                                             filter_by(auto_load=True).all()
-        print("Integrations:",str(user_integrations))
+        app.logger.info("### Integrations: {}".format(str(user_integrations)))
         for integration in user_integrations:
+            app.logger('### user: {} integration {}'.format(user, integration))
             mode = '-mode=regular'
             params = ['-source=hits', mode]
             params_2 = ['-source=visits', mode]
-            user.launch_task('regular_load', ('Автоматическая загрузка метрик'),integration.metrika_key, integration.metrika_counter_id,user.crypto,  integration.id, [params,params_2])
+            user.launch_task('init_clickhouse_tables', ('Автоматическая загрузка метрик'),integration.metrika_key, integration.metrika_counter_id,user.crypto,  integration.id, [params,params_2], auto_load=True)
             db.session.commit()
-    print('Done!')
+    app.logger.info('### Done!')

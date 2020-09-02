@@ -124,6 +124,8 @@ class Integration(UserMixin,db.Model):
     auto_load = db.Column(db.Boolean)
     start_date = db.Column(db.Date)
 
+    def __repr__(self):
+        return '<Integration {}>'.format(self.integration_name)
 
     def delete_myself(self):
         db.session.delete(self)
