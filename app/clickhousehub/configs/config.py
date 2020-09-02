@@ -36,7 +36,7 @@ CONFIG = {
 		"ym:pv:mobilePhoneModel"
 	],
 	"log_level": "INFO",
-	"retries": 4,
+	"retries": 1,
 	"retries_delay": 60,
 	"clickhouse": {
 		"host": "https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443",
