@@ -188,7 +188,7 @@ def handle_unique_clientid_chunk(temp_df):
     #     temp_df['hash'] += temp_df['ClientID'].astype(str)
 
     # name -1 to 'no-email'
-    temp_df.loc[temp_df['hash'] == -1, 'hash'] = 'no-email'
+    temp_df.loc[temp_df['hash'] == '-1', 'hash'] = 'no-email'
     #assign metricts for result row
     temp_df['Total visits'] = visits_no_email + visits_email
     temp_df['Visits with out email'] = visits_no_email
