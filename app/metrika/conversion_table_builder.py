@@ -76,7 +76,9 @@ def build_conversion_df(visits_all_data_df):
     # # Handle a single ClientID chunk and return single row ClientID df with ROI stats
     #
     # We can use a with statement to ensure threads are cleaned up promptly
-    with concurrent.futures.ThreadPoolExecutor(max_workers=current_app.config['MAX_WORKERS']) as executor:
+
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=int(current_app.config['MAX_WORKERS'])) as executor:
         # Start the load operations and mark each future with its URL
         future_to_url = [executor.submit(handle_unique_clientid_chunk, max_df[max_df['ClientID'] ==unique_clientid]) for unique_clientid in unique_client_ids]
         for future in concurrent.futures.as_completed(future_to_url):
@@ -186,7 +188,7 @@ def handle_unique_clientid_chunk(temp_df):
     #     temp_df['hash'] += temp_df['ClientID'].astype(str)
 
     # name -1 to 'no-email'
-    temp_df.loc[temp_df['hash'] == '-1', 'hash'] = 'no-email'
+    temp_df.loc[temp_df['hash'] == -1, 'hash'] = 'no-email'
     #assign metricts for result row
     temp_df['Total visits'] = visits_no_email + visits_email
     temp_df['Visits with out email'] = visits_no_email

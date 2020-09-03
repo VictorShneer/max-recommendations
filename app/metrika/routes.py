@@ -76,9 +76,10 @@ def metrika_get_data(integration_id):
     list_of_column_names = columns_df[0].values
     # finishing visits all table
     file_from_string = StringIO(response_with_visits_all_data.text)
+
+
     try:
         current_app.logger.info("### build_conversion_df start columns: {} ".format(list_of_column_names))
-
         visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID','StartURL'])
         max_df = build_conversion_df(visits_all_data_df)
     except Exception as err:
