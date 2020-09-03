@@ -78,13 +78,14 @@ class VisitsTable extends React.Component {
 class SearchBar extends React.Component {
   constructor(props) {
       super(props);
-      this.state = {value: ''};
+      this.state = {value: this.props.default_start_date};
+      // console.log(this.state.value);
       this.handleChange = this.handleChange.bind(this);
     }
 
-    handleChange(event) {
-      this.setState({value: event.target.value});
-    }
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
 
   render() {
 
@@ -114,20 +115,31 @@ class FilterableVisitsTable extends React.Component {
       visits : null,
       isLoading: false,
       error: null,
-      url: '/metrika/'+this.props.atb+'/get_data?start_date=',
+      url: '/metrika/'+this.props.atb+'/get_data?',
+      start_date:this.props.default_start_date,
+
     };
     // &&!7^!^^! WTF
     this.fetch_metrika_view.bind(this.state.visits);
     this.fetch_metrika_view.bind(this.state.isLoading);
     this.fetch_metrika_view.bind(this.state.error);
     this.fetch_metrika_view.bind(this.state.url);
+    this.fetch_metrika_view.bind(this.state.start_date);
+    this.fetch_metrika_view.bind(this.state.goals);
+
+    // console.log('---');
+    // console.log(this.state.start_date);
+    // console.log(this.state.goals);
+    // console.log(this.state.url);
+    // console.log('---');
 
 
   }
 
   fetch_metrika_view(date){
     this.setState({ isLoading: true });
-    const url = this.state.url+date
+    const url = this.state.url+'start_date='+date+"&goals="+getSelectedGoals()
+    console.log(url)
     fetch(url)
         .then(response => {
           if (response.ok) {
@@ -151,6 +163,7 @@ class FilterableVisitsTable extends React.Component {
   }
 
   render() {
+
     const { visits, isLoading, error } = this.state;
 
     if (error) {
@@ -163,9 +176,11 @@ class FilterableVisitsTable extends React.Component {
     }
 
     return (
+
       <div>
         <SearchBar
             onSubmit={(date)=>this.fetch_metrika_view(date)}
+            default_start_date={this.state.start_date}
         />
         <VisitsTable visits={this.state.visits} />
       </div>
@@ -173,7 +188,14 @@ class FilterableVisitsTable extends React.Component {
   }
 }
 
-
-
-React.render(<FilterableVisitsTable atb={document.getElementById('atb').textContent}/>,
+function getSelectedGoals(){
+  var select = document.getElementById('goals');
+  var selected_goals = [...select.selectedOptions]
+                     .map(option => option.value);
+  return selected_goals;
+}
+React.render(<FilterableVisitsTable
+                atb={document.getElementById('atb').textContent}
+                default_start_date={document.getElementById('start_date').textContent}
+                />,
   document.getElementById('mount-visits_table'));

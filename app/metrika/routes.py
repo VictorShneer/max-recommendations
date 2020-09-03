@@ -17,6 +17,8 @@ from app.metrika.conversion_table_builder import build_conversion_df
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
 
+PROPERTY_TO_SQL_DIC = {'start_date':'>','goals':'IN'}
+
 
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
@@ -28,7 +30,14 @@ def metrika_get_data(integration_id):
         abort(404)
 
 
+
     request_start_date = request.args.get('start_date')
+
+    request_goals = request.args.get('goals')
+    print(request_goals)
+    print(request_start_date)
+    print('#'*10)
+    current_app.logger.info("### selected-goals {}".format(request_goals))
     clickhouse_table = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
 
     url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table))
@@ -149,8 +158,8 @@ def metrika(integration_id):
     else:
         return render_template(\
             'metrika.html',\
-            min_date=min_date_text,\
-            max_date=max_date_text,\
+            min_date=min_date_text.strip(),\
+            max_date=max_date_text.strip(),\
             data_length = data_length_text,\
             integration_name=integration.integration_name,\
             integration_id=integration_id,\

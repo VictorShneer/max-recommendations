@@ -5,12 +5,12 @@
 <div class='integration_info text-center'>
   <p id='atb' hidden>{{integration_id}}</p>
   <p><b>Интеграция {{integration_name}}</b></p>
-  <p>Доступны данные с <b>{{min_date}}</b> по <b>{{max_date}}</b></p>
+  <p>Доступны данные с <b id="start_date">{{min_date}}</b> по <b>{{max_date}}</b></p>
   <p>Всего уникальных визитов доступно: <b>{{data_length}}</b></p>
   <label for="">Выберите цели (Насть сделай плиз выбрать все штучку :))</label>
-  <select name="goals">
+  <select multiple id="goals">
     {% for goal in goals %}
-      <option value="{{ goal }}" SELECTED>{{ goal }}</option>
+      <option value="{{ goal }}">{{ goal }}</option>
     {% endfor %}
   </select>
 </div>
