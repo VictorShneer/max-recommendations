@@ -172,10 +172,10 @@ def save_data(api_request, part):
     if len(splitted_text_filtered) > 1:
         output_data = '\n'.join(splitted_text_filtered) #.encode('utf-8')
         output_data = output_data.replace(r"\'", "'") # to correct escapes in params
-
         clickhouse.save_data(api_request.user_request.source,
                              api_request.user_request.fields,
                              output_data)
+
     else:
         logger.warning('### No data to upload')
 

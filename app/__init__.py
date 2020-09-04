@@ -1,5 +1,4 @@
 # init.py
-from urllib.parse import urlparse
 from logging.handlers import RotatingFileHandler
 import os
 import logging

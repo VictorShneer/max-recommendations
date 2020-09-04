@@ -1,16 +1,99 @@
 import pandas as pd
 import numpy as np
-from urllib.parse import urlparse
-from urllib.parse import parse_qs
 from flask import current_app
-
 import concurrent.futures
-import urllib.request
+import numpy as np
+from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
+from app.clickhousehub.clickhouse import upload
+from app.clickhousehub.clickhouse import get_clickhouse_data
+from urllib.parse import urlparse, parse_qs
+from io import StringIO
+from app.clickhousehub.configs.config import CONFIG
 
 
+CREATE_PRE_AGGR_TABLE_QUERY =  '''
+    CREATE TABLE {table_name} (
+        clientid UInt32,
+        clientemail String,
+        totalgoals UInt32,
+        totalvisits UInt32,
+        visitswithoutemail UInt32,
+        visitswithemail UInt32,
+        goalswithemail UInt32
+    ) ENGINE = Log
+'''
+
+def request_visits_all_df(crypto, integration_id):
+    clickhouse_table_name = '{}_{}_{}'.format(crypto, 'visits', integration_id)
+
+    url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table_name))
+    url_for_visits_all_data = made_url_for_query(\
+    "SELECT * FROM {}".format(clickhouse_table_name)\
+    )
+    current_app.logger.info('### request_clickhouse start urls: {}\n{}'.format(url_for_columns,url_for_visits_all_data))
+    # get column names 1
+    response_with_columns_names = request_clickhouse(url_for_columns, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
+    # get table data and prepare it
+    response_with_visits_all_data =request_clickhouse(url_for_visits_all_data, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
+    if any([\
+            response_with_columns_names.status_code != 200,\
+            response_with_visits_all_data.status_code !=200\
+            ]):
+        current_app.logger.error('{} {} Ошибки в запросе или в настройках итеграции!'.format(crypto, integration_id))
+        raise RuntimeError("request_visits_all_df ### Something bad happened")
+
+    current_app.logger.info('### request_clickhouse done!\ncolumns: {}\n data: {}'.format(response_with_columns_names, response_with_visits_all_data))
+    # prepare it column names
+    file_from_string = StringIO(response_with_columns_names.text)
+    columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, usecols=[0])
+    list_of_column_names = columns_df[0].values
+    # finishing visits all table
+    file_from_string = StringIO(response_with_visits_all_data.text)
+
+    try:
+        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID','StartURL'])
+    except Exception as err:
+        current_app.logger.info('### building dataframe from string EXCEPTION {}'.format(err))
+        raise RuntimeError("building dataframe from string ### Something bad happened")
+    return visits_all_data_df
 
 
+def make_clickhouse_aggr_visits(token, counter_id,crypto,id):
+    pass
 
+def make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id, regular_load=False):
+    current_app.logger.info("START cremake_clickhouse_pre_aggr_visitsate pre aggr templates")
+    visits_raw_data_df = request_visits_all_df(crypto,id)
+    current_app.logger.info("SUCCESS request_visits_all_df")
+    if not regular_load:
+        visits_pre_aggr = build_pre_aggr_conversion_df(visits_raw_data_df)
+    else:
+        pass
+        # visits_pre_aggr = build_pre_aggr_conversion_df(visits_raw_data_df) ## add filter
+
+
+    if not regular_load:
+        ### creating pre aggr table
+        current_app.logger.info("create pre aggr templates")
+
+        table_name = '{}.{}_visits_{}_pre_aggr'.format(CONFIG['clickhouse']['database'],crypto,id)
+        # print('$'*20,table_name,'$'*20)
+        query = CREATE_PRE_AGGR_TABLE_QUERY.format(\
+            table_name=table_name\
+        )
+        current_app.logger.info(query)
+        get_clickhouse_data(query)
+        current_app.logger.info('###')
+        current_app.logger.info('{}_visits_{}_pre_aggr'.format(crypto,id))
+        current_app.logger.info(get_clickhouse_data('SHOW TABLES FROM {db}'.format(db=CONFIG['clickhouse']['database']))\
+            .strip().split('\n'))
+        current_app.logger.info('##$$'*20)
+
+    content = visits_pre_aggr.to_csv(path_or_buf=None, sep='\t', index=False)
+    # print(content)
+    # print('^&*'*100)
+    ## db exception here: Cannot parse input: expected \n before: \tVisits with email\tGoals
+    upload(table_name, content)
 
 def goalId_count(el):
     return sum((len(eval(goals)) for goals in el))
@@ -20,12 +103,11 @@ def hash_group_handler(el):
     # current_app.logger.info('   ### hash_group_handler HASHS:{}'.format(set_el))
     if len(set_el)>1:
         set_el.discard(-1)
-        # in other words
         # if visit has different emails
         # we want mark it to ignore futher
         ## OPTIMIZE:
         if len(set_el) > 1:
-            return None
+            return np.nan
     return str(set_el.pop())
 
 #
@@ -53,16 +135,10 @@ def start_url_to_hash(url):
         ## OPTIMIZE:
         return -1
 
-def build_conversion_df(visits_all_data_df):
+def build_pre_aggr_conversion_df(visits_all_data_df):
     current_app.logger.info('### visits_all_data_df start')
     # replace StartURL with hash
     visits_all_data_df['hash'] = visits_all_data_df['StartURL'].apply(start_url_to_hash)
-    # TODO delet start url from df
-    # LEGACY
-    # replace NaN UtmSource with 'no-email'
-    # visits_all_data_df['UTMSource']\
-    #     .replace(np.nan, 'no-email', regex=True, inplace=True)
-
     # First raw grouping. Result: not distinct ClientID column values
     max_df = visits_all_data_df.groupby(['ClientID','hash'])\
         .agg({'GoalsID': goalId_count, 'VisitID':'count'})
@@ -76,8 +152,6 @@ def build_conversion_df(visits_all_data_df):
     # # Handle a single ClientID chunk and return single row ClientID df with ROI stats
     #
     # We can use a with statement to ensure threads are cleaned up promptly
-
-
     with concurrent.futures.ThreadPoolExecutor(max_workers=int(current_app.config['MAX_WORKERS'])) as executor:
         # Start the load operations and mark each future with its URL
         future_to_url = [executor.submit(handle_unique_clientid_chunk, max_df[max_df['ClientID'] ==unique_clientid]) for unique_clientid in unique_client_ids]
@@ -89,84 +163,29 @@ def build_conversion_df(visits_all_data_df):
             else:
                 # print('%r clientId result is \n %s' % (future, data.to_string()))
                 temp_dfs.append(data)
-    # # LEGACY
-    # for step,client_id in enumerate(unique_client_ids):
-    #     print(' {} of {}\r'.format(step,len(unique_client_ids)), end="")
-    #     # for every unique ClientID we group rows that belong to it
-    #     temp_df = max_df[max_df['ClientID'] == client_id]
-    #     #calculation metrics for result row
-    #     # goals_sum_total = temp_df['GoalsID'].sum() ???
-    #     max_email = temp_df[temp_df['hash'] != 'no-email']
-    #     goals_email = max_email['GoalsID'].sum()
-    #     max_no_email = temp_df[temp_df['hash'] == 'no-email']
-    #     visits_no_email = max_no_email['VisitID'].sum()
-    #     visits_email = max_email['VisitID'].sum()
-    #     # for every unique ClientID we group rows that belong to it
-    #     temp_df = temp_df.groupby(['ClientID'])\
-    #         .agg({'hash':hash_group_handler,'GoalsID':'sum'})
-    #     temp_df.reset_index(inplace=True)
-    #     # ignore cases - when clientID has different emails
-    #     if temp_df['hash'].values[0] == '0':
-    #         continue
-    #     # mark no-email with clientId
-    #     # we want all anons to be unique
-    #     # if temp_df['hash'].values[0] == 'no-email':
-    #     #     temp_df['hash'] += temp_df['ClientID'].astype(str)
-    #
-    #     #assign metricts for result row
-    #     temp_df['Total visits'] = visits_no_email + visits_email
-    #     temp_df['Visits with out email'] = visits_no_email
-    #     temp_df['Visits with email'] = visits_email
-    #     temp_df['Goals complited via email'] = goals_email
-    #     #prettyfing column names and appending result to array
-    #     temp_df.rename(columns={'hash':'Client identities',\
-    #         'GoalsID':'Total goals complited'},\
-    #         inplace=True)
-    #     temp_dfs.append(temp_df)
 
     current_app.logger.info('### visits_all_data_df unique_client_ids loop finish <<<<----')
     #contatenating unique ClientID row into DataFrame
     max_df = pd.concat(temp_dfs)
-    # current_app.logger.info('### len of result {}'.format(len(max_df)))
-    # max_df.dropna(inplace=True)
-    # current_app.logger.info('### len of not none result {}'.format(len(max_df)))
-    max_df.reset_index(inplace=True, drop=True)
-    max_df = max_df.groupby(['Client identities'])\
-        .agg({'ClientID':leave_last_client_id,\
-        'Total goals complited':'sum',
-        'Total visits':'sum',
-        'Visits with out email':'sum',
-        'Visits with email' :'sum',
-        'Goals complited via email':'sum'
-        })
-    max_df.reset_index(inplace=True, drop=False)
+    current_app.logger.info('### len of result {}'.format(len(max_df)))
+    max_df.dropna(inplace=True)
+    current_app.logger.info('### DONE! len of not none result {}'.format(len(max_df)))
 
-    # LEGACY
-    # # handle utm intersections
-    # temp_dfs = []
-    # list_of_utm_sets_raw = merge([ [idx] + utm.split(', ') for idx,utm in max_df['Client identities'].iteritems()])
-    # list_of_utm_indx_lists = [[el for el in list(set) if type(el) == int] for set in list_of_utm_sets_raw]
-    # for list_of_utm_indx in list_of_utm_indx_lists:
-    #     temp_df = max_df.loc[list_of_utm_indx]
-    #     temp_df['temp_col'] = 0
-    #     temp_df = temp_df.groupby(['temp_col']).agg(\
-    #                                     {'ClientID':leave_last_client_id,\
-    #                                     'Client identities':make_utms_unique,\
-    #                                     'Total goals complited':'sum',\
-    #                                     'Total visits':'sum',\
-    #                                     'Visits with out email':'sum',\
-    #                                     'Visits with email':'sum',\
-    #                                     'Goals complited via email':'sum'})
-    #     temp_dfs.append(temp_df)
-    # #contatenating intersections UTMs into single DataFrame
-    # max_df = pd.concat(temp_dfs)
     # max_df.reset_index(inplace=True, drop=True)
-
-    #calculating metrics
-    max_df['Conversion (TG/TV)'] = devide_columns_handler(max_df,'Total goals complited','Total visits')
-    max_df['Email visits share'] = devide_columns_handler(max_df,'Visits with email','Total visits')
-    max_df['NO-Email visits share'] = devide_columns_handler(max_df,'Visits with out email','Total visits')
-    max_df['Email power proportion'] = devide_columns_handler(max_df,'Goals complited via email','Total goals complited')
+    # max_df = max_df.groupby(['Client identities'])\
+    #     .agg({'ClientID':leave_last_client_id,\
+    #     'Total goals complited':'sum',
+    #     'Total visits':'sum',
+    #     'Visits with out email':'sum',
+    #     'Visits with email' :'sum',
+    #     'Goals complited via email':'sum'
+    #     })
+    # max_df.reset_index(inplace=True, drop=False)
+    # #calculating metrics
+    # max_df['Conversion (TG/TV)'] = devide_columns_handler(max_df,'Total goals complited','Total visits')
+    # max_df['Email visits share'] = devide_columns_handler(max_df,'Visits with email','Total visits')
+    # max_df['NO-Email visits share'] = devide_columns_handler(max_df,'Visits with out email','Total visits')
+    # max_df['Email power proportion'] = devide_columns_handler(max_df,'Goals complited via email','Total goals complited')
 
     return max_df
 
@@ -181,12 +200,6 @@ def handle_unique_clientid_chunk(temp_df):
     temp_df = temp_df.groupby(['ClientID'])\
         .agg({'hash':hash_group_handler,'GoalsID':'sum'})
     temp_df.reset_index(inplace=True)
-    # ignore cases - when clientID has different emails
-    # mark no-email with clientId
-    # we want all anons to be unique
-    # if temp_df['hash'].values[0] == 'no-email':
-    #     temp_df['hash'] += temp_df['ClientID'].astype(str)
-
     # name -1 to 'no-email'
     temp_df.loc[temp_df['hash'] == '-1', 'hash'] = 'no-email'
     #assign metricts for result row
@@ -199,23 +212,3 @@ def handle_unique_clientid_chunk(temp_df):
         'GoalsID':'Total goals complited'},\
         inplace=True)
     return temp_df
-
-# LEGACY
-# def merge(lsts):
-#     sets = [set(lst) for lst in lsts if lst]
-#     merged = True
-#     while merged:
-#         merged = False
-#         results = []
-#         while sets:
-#             common, rest = sets[0], sets[1:]
-#             sets = []
-#             for x in rest:
-#                 if x.isdisjoint(common):
-#                     sets.append(x)
-#                 else:
-#                     merged = True
-#                     common |= x
-#             results.append(common)
-#         sets = results
-#     return sets

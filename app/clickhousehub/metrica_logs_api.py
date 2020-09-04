@@ -87,7 +87,6 @@ def integrate_with_logs_api(config, user_request):
             for api_request in api_requests:
                 logger.info('### CREATING TASK')
                 logs_api.create_task(api_request)
-                print(api_request)
 
                 delay = 20
                 while api_request.status != 'processed':
@@ -102,12 +101,14 @@ def integrate_with_logs_api(config, user_request):
                     logger.info('Part #' + str(part))
                     logs_api.save_data(api_request, part)
 
+
                 logger.info('### CLEANING DATA')
                 logs_api.clean_data(api_request)
         except Exception as e:
             logger.critical('Iteration #{i} failed'.format(i=i + 1))
             logger.critical(e);
             if i == config['retries'] - 1:
+                logger.critical("Raising Exception");
                 raise e
 
 
@@ -115,8 +116,11 @@ def drop_integration(crypto, integration_id):
     # drop TABLE db1.sweet_hits_2;
     clickhouse_visits_table = '{}_{}_{}'.format(crypto,'visits',integration_id)
     clickhouse_hits_table = '{}_{}_{}'.format(crypto,'hits',integration_id)
+    clickhouse_visits_aggr_table_name = '{}_visits_{}_pre_aggr'.format(crypto,integration_id)
+
     url_for_visits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_table))
     url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_hits_table))
+    url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_aggr_table_name))
 
 def handle_integration(token,counter_id, crypto, id, params):
     # print(crypto,type(crypto))
@@ -128,10 +132,6 @@ def handle_integration(token,counter_id, crypto, id, params):
     clickhouse.CH_VISITS_TABLE = clickhouse.config['clickhouse']['visits_table'] = crypto + "_visits_"+str(id)
     clickhouse.CH_HITS_TABLE = clickhouse.config['clickhouse']['hits_table'] = crypto + "_hits_"+str(id)
     clickhouse.TOKEN = clickhouse.config['token'] = token
-    print('-'*10)
-    print(type(counter_id))
-    print('-'*10)
-    
     clickhouse.COUNTER_ID = clickhouse.config['counter_id'] = counter_id
     # print(clickhouse.config)
     # nessessary to config
@@ -149,6 +149,8 @@ def handle_integration(token,counter_id, crypto, id, params):
 
 
     integrate_with_logs_api(clickhouse.config, user_request)
+
+
 
     end_time = time.time()
     logger.info('### TOTAL TIME: %d minutes %d seconds' % (

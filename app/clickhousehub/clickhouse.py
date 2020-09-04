@@ -6,7 +6,7 @@ import urllib3
 import app.clickhousehub.utils as utils
 import sys
 import logging
-
+from flask import current_app
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 logger = logging.getLogger('logs_api')
@@ -24,9 +24,9 @@ TOKEN=config['token']
 COUNTER_ID=config['counter_id']
 def get_clickhouse_data(query,host="https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443"):
     '''Returns ClickHouse response'''
-    print('--get_clickhouse_data--'*5)
-    print(query)
-    print()
+    # print('--get_clickhouse_data--'*5)
+    # print(query)
+    # print()
     logger.debug(query)
     if (CH_USER == '') and (CH_PASSWORD == ''):
         r = requests.post(host, data=query, verify=SSL_VERIFY)
@@ -40,6 +40,8 @@ def get_clickhouse_data(query,host="https://rc1b-6wcv9d6xfzgvj459.mdb.yandexclou
 
 def upload(table, content,host="https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443"):
     '''Uploads data to table in ClickHous'''
+    # current_app.logger.info('### \n {content}'.format(content=type(content)))
+    # current_app.logger.info('### \n\n {content}\n\n'.format(content=content))
     content = content.encode('utf-8')
     query_dict = {
              'query': 'INSERT INTO ' + table + ' FORMAT TabSeparatedWithNames '
@@ -113,6 +115,7 @@ def drop_table(source):
 
 
 def create_table(source, fields):
+
     '''Creates table in ClickHouse for hits/visits with particular fields'''
     tmpl = '''
         CREATE TABLE {table_name} (

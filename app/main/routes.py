@@ -13,7 +13,6 @@ from flask import jsonify
 from app.clickhousehub.metrica_logs_api import drop_integration
 from wtforms.fields.html5 import DateField
 import datetime
-
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
 def delete_integration():
@@ -108,7 +107,7 @@ def create_integration():
             timing.append('-end_date={}'.format(str(end_date)))
             params = ['-source=hits', *timing]
             params_2 = ['-source=visits', *timing]
-            if current_user.get_task_in_progress('init_clickhouse_tables'):
+            if current_user.get_task_in_progress('init_clickhouse_tablesssss'):
                 flash('Нельзя запускать создание больше одной интеграции одновременно!')
                 db.session.rollback()
             else:

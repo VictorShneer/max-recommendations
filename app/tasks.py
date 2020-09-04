@@ -30,33 +30,26 @@ def _set_task_progress(progress, comment=''):
         db.session.commit()
 
 def init_clickhouse_tables(token, counter_id, crypto, id, paramss, regular_load=False):
+
+    _set_task_progress(0)
+    print('task', crypto, id, paramss)
+    for count,params in enumerate(paramss):
+        _set_task_progress(50 * count // len(paramss))
+        handle_integration(token, counter_id,crypto,id,params)
     try:
-        # В ИДЕАЛЕ узнать за какой период есть данные
-        # В ИДЕАЛЕ создать таблицы и выгрузить в них данные за указ. пер.
-        # В ИДЕАЛЕ проверить все ли ок
-
-        # сейчас - создать таблицы
-        # и выгрузить в них все доступные данные
-        _set_task_progress(0)
-        print('task', crypto, id, paramss)
-        for count,params in enumerate(paramss):
-            _set_task_progress(50 * count // len(paramss))
-            handle_integration(token, counter_id,crypto,id,params)
-
+        app.logger.info('### GOOOO make_clickhouse_pre_aggr_visits')
         make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id)
         _set_task_progress(75)
         make_clickhouse_aggr_visits(token, counter_id,crypto,id)
         _set_task_progress(100)
 
-    except:
-        # обработки непредвиденных ошибок
-        # вывести уведомлялку, что была проблема
+    except Exception as err:
         _set_task_progress(100)
         if not regular_load:
             drop_integration(crypto, id)
             Integration.query.filter_by(id = id).first_or_404().delete_myself()
         app.logger.info('### init_clickhouse_tables EXCEPTION auto_load={}'.format(regular_load))
-        app.logger.error('### Unhandled exception'.format(exc_info=sys.exc_info()))
+        app.logger.error('### Unhandled exception {exc_info}\n{err}'.format(exc_info=sys.exc_info(), err=err))
 
 def example(seconds):
     job = get_current_job()
