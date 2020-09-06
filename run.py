@@ -18,6 +18,6 @@ def regular_load_to_clickhouse():
             mode = '-mode=regular'
             params = ['-source=hits', mode]
             params_2 = ['-source=visits', mode]
-            user.launch_task('init_clickhouse_tables', ('Автоматическая загрузка метрик'),integration.metrika_key, integration.metrika_counter_id,user.crypto,  integration.id, [params,params_2], auto_load=True)
+            user.launch_task('init_clickhouse_tables', ('Автоматическая загрузка метрик'),integration.metrika_key, integration.metrika_counter_id,user.crypto,  integration.id, [params,params_2], True)
             db.session.commit()
     app.logger.info('### Done!')

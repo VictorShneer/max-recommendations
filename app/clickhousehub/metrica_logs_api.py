@@ -112,15 +112,19 @@ def integrate_with_logs_api(config, user_request):
                 raise e
 
 
-def drop_integration(crypto, integration_id):
+def drop_integration(crypto, integration_id, source = None):
     # drop TABLE db1.sweet_hits_2;
-    clickhouse_visits_table = '{}_{}_{}'.format(crypto,'visits',integration_id)
-    clickhouse_hits_table = '{}_{}_{}'.format(crypto,'hits',integration_id)
-    clickhouse_visits_aggr_table_name = '{}_visits_{}_pre_aggr'.format(crypto,integration_id)
+    if source:
+        clickhouse_target_table_name = '{}_{}_{}'.format(crypto,source,integration_id)
+        clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_target_table_name))
+    else:
+        clickhouse_visits_table = '{}_{}_{}'.format(crypto,'visits',integration_id)
+        clickhouse_hits_table = '{}_{}_{}'.format(crypto,'hits',integration_id)
+        clickhouse_visits_aggr_table_name = '{}_visits_{}_pre_aggr'.format(crypto,integration_id)
 
-    url_for_visits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_table))
-    url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_hits_table))
-    url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_aggr_table_name))
+        url_for_visits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_table))
+        url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_hits_table))
+        url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_aggr_table_name))
 
 def handle_integration(token,counter_id, crypto, id, params):
     # print(crypto,type(crypto))

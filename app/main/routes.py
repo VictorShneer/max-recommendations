@@ -144,6 +144,7 @@ def edit_integration(integration_id):
         integration.integration_name = form.integration_name.data
         integration.api_key = form.api_key.data
         integration.user_domain = form.user_domain.data
+        integration.auto_load = form.auto_load.data
         db.session.commit()
         flash('Изменения сохранены')
     elif request.method == 'GET':

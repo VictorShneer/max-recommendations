@@ -130,44 +130,21 @@ def request_visits_all_df(crypto, integration_id):
     return visits_all_data_df
 
 
-def make_clickhouse_aggr_visits(token, counter_id,crypto,id):
-    pass
 
 def make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id, regular_load=False):
     current_app.logger.info("START cremake_clickhouse_pre_aggr_visitsate pre aggr templates")
     visits_raw_data_df = request_visits_all_df(crypto,id)
     current_app.logger.info("SUCCESS request_visits_all_df")
-    if not regular_load:
-        visits_pre_aggr = build_pre_aggr_conversion_df(visits_raw_data_df)
-    else:
-        pass
-        # visits_pre_aggr = build_pre_aggr_conversion_df(visits_raw_data_df) ## add filter
-
+    visits_pre_aggr = build_pre_aggr_conversion_df(visits_raw_data_df)
+    table_name = '{}.{}_visits_{}_pre_aggr'.format(CONFIG['clickhouse']['database'],crypto,id)
     if not regular_load:
         ### creating pre aggr table
         current_app.logger.info("create pre aggr templates")
-
-        table_name = '{}.{}_visits_{}_pre_aggr'.format(CONFIG['clickhouse']['database'],crypto,id)
-        # print('$'*20,table_name,'$'*20)
         query = CREATE_PRE_AGGR_TABLE_QUERY.format(\
             table_name=table_name\
         )
-        # current_app.logger.info(query)
         get_clickhouse_data(query)
-        current_app.logger.info('###')
-        # current_app.logger.info('{}_visits_{}_pre_aggr'.format(crypto,id))
-        # current_app.logger.info(get_clickhouse_data('SHOW TABLES FROM {db}'.format(db=CONFIG['clickhouse']['database']))\
-        #     .strip().split('\n'))
-        # current_app.logger.info('##$$'*20)
-    # print('^&*'*100)
     content = visits_pre_aggr.to_csv(path_or_buf=None, sep='\t', index=False)
-    # current_app.logger.info(visits_pre_aggr.columns)
-    # current_app.logger.info(visits_pre_aggr.head().to_string())
-    # current_app.logger.info(visits_pre_aggr.info())
-
-
-    # print(content)
-    # print('^&*'*100)
     upload(table_name, content)
 
 def goalId_count(el):
@@ -175,12 +152,10 @@ def goalId_count(el):
 
 def hash_group_handler(el):
     set_el = set(el)
-    # current_app.logger.info('   ### hash_group_handler HASHS:{}'.format(set_el))
     if len(set_el)>1:
         set_el.discard(-1)
         # if visit has different emails
         # we want mark it to ignore futher
-        ## OPTIMIZE:
         if len(set_el) > 1:
             return np.nan
     return str(set_el.pop())
@@ -218,10 +193,6 @@ def goalsId_handler(el):
         [all_goals.extend(eval(str(goals))) for goals in el]
     except Exception as err:
         print('here it is',err, type(el), el)
-    # [(print(eval(goals)), print(goals), print(type(goals))) for goals in el]
-    # print(el)
-    # print(all_goals)
-    # print('----------X----------')
     return str(all_goals)
 
 
@@ -259,7 +230,6 @@ def build_pre_aggr_conversion_df(visits_all_data_df):
 
     current_app.logger.info('### visits_all_data_df unique_client_ids loop finish <<<<----')
     #contatenating unique ClientID row into DataFrame
-    # print(temp_dfs[0].info())
     max_df = pd.concat(temp_dfs)
     current_app.logger.info('### len of result {}'.format(len(max_df)))
     max_df.dropna(inplace=True)
@@ -274,8 +244,6 @@ def handle_unique_clientid_chunk(temp_df):
     max_email = temp_df[temp_df['hash'] != -1]
     goals_email_count = max_email['GoalsID'].sum()
     goals_email = goalsId_handler(max_email['GoalsID_2'].values)
-    # print(temp_df.to_string())
-    # print(goals_email)
     max_no_email = temp_df[temp_df['hash'] == -1]
     visits_no_email = max_no_email['VisitID'].sum()
     visits_email = max_email['VisitID'].sum()
@@ -297,11 +265,9 @@ def handle_unique_clientid_chunk(temp_df):
     temp_df['Count goals complited with email'] = goals_email_count
     temp_df['Goals complited with email'] = goals_email
     #prettyfing column names
-    # turn this useless shit off
+    ## TODO:  turn this useless shit off
     temp_df.rename(columns={'hash':'Client identities',\
         'GoalsID':'Total goals complited',\
         'GoalsID_2':'Goals complited list'},\
         inplace=True)
-
-
     return temp_df

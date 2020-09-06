@@ -127,11 +127,11 @@ def metrika(integration_id):
         'X-ClickHouse-User': current_app.config['CLICKHOUSE_LOGIN'],
         'X-ClickHouse-Key': current_app.config['CLICKHOUSE_PASSWORD']
         }
-        clickhouse_raw_table_name = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
+        # clickhouse_raw_table_name = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
         clickhouse_pre_aggr_table_name = '{}_{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
         query_data_length = made_url_for_query('SELECT count(clientid) FROM {}'.format(clickhouse_pre_aggr_table_name))
-        query_min_date = made_url_for_query('SELECT min(Date) FROM {}'.format(clickhouse_raw_table_name))
-        query_max_date = made_url_for_query('SELECT max(Date) FROM {}'.format(clickhouse_raw_table_name))
+        query_min_date = made_url_for_query('SELECT min(firsttimevisit) FROM {}'.format(clickhouse_pre_aggr_table_name))
+        query_max_date = made_url_for_query('SELECT max(firsttimevisit) FROM {}'.format(clickhouse_pre_aggr_table_name))
         data_length_text =request_clickhouse(query_data_length, auth, certificate_path).text
         min_date_text = request_clickhouse(query_min_date, auth, certificate_path).text
         max_date_text = request_clickhouse(query_max_date, auth, certificate_path).text
@@ -149,7 +149,7 @@ def metrika(integration_id):
     url = ROOT+'management/v1/counter/{}/goals'.format(counter_id)
     r = requests.get(url, headers=headers)
     current_app.logger.info('### get goals status code: {}'.format(r.status_code))
-    print(r.json())
+    # print(r.json())
     goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
 
     if (current_user.email == 'sales@getresponse.com'):

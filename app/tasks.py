@@ -8,8 +8,7 @@ from app.models import Task, Integration
 from app.clickhousehub.metrica_logs_api import handle_integration
 from app.clickhousehub.metrica_logs_api import drop_integration
 from app.clickhousehub.clickhouse import get_tables
-from app.metrika.conversion_table_builder import make_clickhouse_aggr_visits,\
-                                            make_clickhouse_pre_aggr_visits
+from app.metrika.conversion_table_builder import make_clickhouse_pre_aggr_visits
 
 
 app = create_app(adminFlag=False)
@@ -30,27 +29,33 @@ def _set_task_progress(progress, comment=''):
         db.session.commit()
 
 def init_clickhouse_tables(token, counter_id, crypto, id, paramss, regular_load=False):
-
+    print()
     _set_task_progress(0)
-    print('task', crypto, id, paramss)
+    print('task', crypto, id, paramss,regular_load)
+
     for count,params in enumerate(paramss):
-        _set_task_progress(50 * count // len(paramss))
-        handle_integration(token, counter_id,crypto,id,params)
+        try:
+            _set_task_progress(50 * count // len(paramss))
+            handle_integration(token, counter_id,crypto,id,params)
+        except SystemExit as err:
+            app.logger.info('### DATA already in click  -  {}'.format(err))
+            continue
+
     try:
         _set_task_progress(50)
         app.logger.info('### GOOOO make_clickhouse_pre_aggr_visits')
-        make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id)
+        make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id, regular_load)
         _set_task_progress(75)
-        make_clickhouse_aggr_visits(token, counter_id,crypto,id)
+        drop_integration(crypto, id, source = 'visits')
         _set_task_progress(100)
-
     except Exception as err:
         _set_task_progress(100)
         if not regular_load:
             drop_integration(crypto, id)
             Integration.query.filter_by(id = id).first_or_404().delete_myself()
-        app.logger.info('### init_clickhouse_tables EXCEPTION auto_load={}'.format(regular_load))
+        app.logger.info('### init_clickhouse_tables EXCEPTION regular_load={}'.format(regular_load))
         app.logger.error('### Unhandled exception {exc_info}\n{err}'.format(exc_info=sys.exc_info(), err=err))
+
 
 def example(seconds):
     job = get_current_job()
