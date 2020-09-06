@@ -49,7 +49,7 @@ def create_app(adminFlag=True,config_class=Config):
         admin.add_view(MyModefView(Notification, db.session))
 
     app.redis = Redis.from_url(app.config['REDIS_URL'])
-    app.task_queue = rq.Queue('max-tasks', connection=app.redis)
+    app.task_queue = rq.Queue('max-tasks', connection=app.redis, default_timeout=1200)
 
     # app.task_queue = rq.Queue('max-tasks', connection=app.redis)
     # blueprint for auth routes in our app

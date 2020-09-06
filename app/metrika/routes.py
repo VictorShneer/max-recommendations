@@ -15,14 +15,20 @@ from app.metrika import bp
 from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
+from app.metrika.conversion_table_builder import build_conversion_df
 
 PROPERTY_TO_SQL_DIC = {'start_date':'>','goals':'IN'}
+
+VISITS_AGGR_QUERY = '''
+    SELECT *
+    FROM {clickhouse_table_name}
+'''
 
 
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
 def metrika_get_data(integration_id):
-    current_app.logger.info('### metrika/id/get_data')
+    # current_app.logger.info('### metrika/id/get_data')
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):
         print('Permission abort')
@@ -31,23 +37,25 @@ def metrika_get_data(integration_id):
 
 
     request_start_date = request.args.get('start_date')
-
     request_goals = request.args.get('goals')
     # print(request_goals)
     # print(request_start_date)
     # print('#'*10)
     current_app.logger.info("### selected-goals {}".format(request_goals))
-    clickhouse_table = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
+    clickhouse_table_name = '{}_{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
 
-    url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table))
-    if request_start_date =='':
-        url_for_visits_all_data = made_url_for_query(\
-        "SELECT * FROM {}".format(clickhouse_table)\
+    url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table_name))
+    url_for_visits_all_data = made_url_for_query(\
+        VISITS_AGGR_QUERY.format(clickhouse_table_name=clickhouse_table_name)\
         )
-    else:
-        url_for_visits_all_data = made_url_for_query(\
-        "SELECT * FROM {} WHERE Date > toDate('{}')".format(clickhouse_table,request_start_date)\
-        )
+    # if request_start_date =='':
+    #     url_for_visits_all_data = made_url_for_query(\
+    #     "SELECT * FROM {}".format(clickhouse_table)\
+    #     )
+    # else:
+    #     url_for_visits_all_data = made_url_for_query(\
+    #     "SELECT * FROM {} WHERE Date > toDate('{}')".format(clickhouse_table,request_start_date)\
+    #     )
 
     try:
 
@@ -79,7 +87,7 @@ def metrika_get_data(integration_id):
 
     try:
         current_app.logger.info("### build_conversion_df start columns: {} ".format(list_of_column_names))
-        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID','StartURL'])
+        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names)
         max_df = build_conversion_df(visits_all_data_df)
     except Exception as err:
         current_app.logger.info('### build_conversion_df EXCEPTION {}'.format(err))
@@ -87,25 +95,23 @@ def metrika_get_data(integration_id):
     # building max data frame
 
 
-
-    max_no_email_1graph = [ [int(max_row['Visits with out email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Visits with out email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
-    max_email_1graph = [ [int(max_row['Visits with email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Visits with email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
-
+    max_no_email_1graph = [ [int(max_row['Total Visits No Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits No Email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
+    max_email_1graph = [ [int(max_row['Total Visits Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits Email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
 
 
-    max_no_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Visits with email'] != 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
-    max_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Visits with email'] == 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
+    max_no_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Total Visits Email'] != 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
+    max_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Total Visits Email'] == 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
     if (len(max_no_email_1graph) == 0):
         max_no_email_1graph = [[0,0]]
     if (len(max_email_1graph) == 0):
         max_email_1graph = [[0,0]]
 
 
-    conv_email_sum = max_df[max_df['Visits with email'] != 0]['Conversion (TG/TV)'].sum()
-    conv_no_email_sum = max_df[max_df['Visits with email'] == 0]['Conversion (TG/TV)'].sum()
+    conv_email_sum = max_df[max_df['Total Visits Email'] != 0]['Conversion (TG/TV)'].sum()
+    conv_no_email_sum = max_df[max_df['Total Visits Email'] == 0]['Conversion (TG/TV)'].sum()
 
 
-    front_end_df = max_df[['ClientID', 'Client identities', 'Total goals complited', 'Total visits', 'Visits with email','Goals complited via email', 'Conversion (TG/TV)', 'Email power proportion']]
+    front_end_df = max_df[['ClientID', 'Client identities', 'Total goals complited', 'Total visits', 'Total Visits Email', 'Total goals with Email', 'Conversion (TG/TV)', 'Email power proportion']]
     front_end_df= front_end_df.astype(str)
     json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
 
@@ -130,10 +136,11 @@ def metrika(integration_id):
         'X-ClickHouse-User': current_app.config['CLICKHOUSE_LOGIN'],
         'X-ClickHouse-Key': current_app.config['CLICKHOUSE_PASSWORD']
         }
-        clickhouse_table = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
-        query_data_length = made_url_for_query('SELECT count(Date) FROM {}'.format(clickhouse_table))
-        query_min_date = made_url_for_query('SELECT min(Date) FROM {}'.format(clickhouse_table))
-        query_max_date = made_url_for_query('SELECT max(Date) FROM {}'.format(clickhouse_table))
+        clickhouse_raw_table_name = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
+        clickhouse_pre_aggr_table_name = '{}_{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
+        query_data_length = made_url_for_query('SELECT count(clientid) FROM {}'.format(clickhouse_pre_aggr_table_name))
+        query_min_date = made_url_for_query('SELECT min(Date) FROM {}'.format(clickhouse_raw_table_name))
+        query_max_date = made_url_for_query('SELECT max(Date) FROM {}'.format(clickhouse_raw_table_name))
         data_length_text =request_clickhouse(query_data_length, auth, certificate_path).text
         min_date_text = request_clickhouse(query_min_date, auth, certificate_path).text
         max_date_text = request_clickhouse(query_max_date, auth, certificate_path).text

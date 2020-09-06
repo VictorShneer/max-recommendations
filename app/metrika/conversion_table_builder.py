@@ -19,9 +19,49 @@ CREATE_PRE_AGGR_TABLE_QUERY =  '''
         totalvisits UInt32,
         visitswithoutemail UInt32,
         visitswithemail UInt32,
-        goalswithemail UInt32
+        countgoalswithemail UInt32,
+        goalswithemail String
     ) ENGINE = Log
 '''
+
+RENAME = {\
+    'clientid':'ClientID',\
+    'clientemail':'Client identities',\
+    'totalgoals':'Total goals complited',\
+    'totalvisits':'Total visits',\
+    'visitswithoutemail':'Total Visits No Email',\
+    'visitswithemail': 'Total Visits Email',\
+    'countgoalswithemail':'Total goals with Email',\
+    'goalswithemail':'Goals complited with email'\
+    }
+
+def build_conversion_df(visits_pre_aggr_df):
+    ## group that shit
+    max_df = visits_pre_aggr_df.groupby(['clientemail'])\
+        .agg({'clientid':leave_last_client_id,\
+        'totalgoals':'sum',\
+        'totalvisits':'sum',\
+        'visitswithoutemail':'sum',\
+        'visitswithemail' :'sum',\
+        'countgoalswithemail':'sum',\
+        'goalswithemail':goalsId_handler
+        })
+    # max_df = visits_pre_aggr_df.groupby(['Client identities'])\
+    #     .agg({'ClientID':leave_last_client_id,\
+    #     'Total goals complited':'sum',
+    #     'Total visits':'sum',
+    #     'Visits with out email':'sum',
+    #     'Visits with email' :'sum',
+    #     'Goals complited via email':'sum'
+    #     })
+    max_df.reset_index(inplace=True, drop=False)
+    max_df.rename(columns=RENAME, inplace=True)
+    #calculating metrics
+    max_df['Conversion (TG/TV)'] = devide_columns_handler(max_df,'Total goals complited','Total visits')
+    max_df['Email visits share'] = devide_columns_handler(max_df,'Total Visits Email','Total visits')
+    max_df['NO-Email visits share'] = devide_columns_handler(max_df,'Total Visits No Email','Total visits')
+    max_df['Email power proportion'] = devide_columns_handler(max_df,'Total goals with Email','Total goals complited')
+    return max_df
 
 def request_visits_all_df(crypto, integration_id):
     clickhouse_table_name = '{}_{}_{}'.format(crypto, 'visits', integration_id)
@@ -81,18 +121,22 @@ def make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id, regular_load=Fa
         query = CREATE_PRE_AGGR_TABLE_QUERY.format(\
             table_name=table_name\
         )
-        current_app.logger.info(query)
+        # current_app.logger.info(query)
         get_clickhouse_data(query)
-        current_app.logger.info('###')
-        current_app.logger.info('{}_visits_{}_pre_aggr'.format(crypto,id))
-        current_app.logger.info(get_clickhouse_data('SHOW TABLES FROM {db}'.format(db=CONFIG['clickhouse']['database']))\
-            .strip().split('\n'))
-        current_app.logger.info('##$$'*20)
-
+        # current_app.logger.info('###')
+        # current_app.logger.info('{}_visits_{}_pre_aggr'.format(crypto,id))
+        # current_app.logger.info(get_clickhouse_data('SHOW TABLES FROM {db}'.format(db=CONFIG['clickhouse']['database']))\
+        #     .strip().split('\n'))
+        # current_app.logger.info('##$$'*20)
+    # print('^&*'*100)
     content = visits_pre_aggr.to_csv(path_or_buf=None, sep='\t', index=False)
+    # current_app.logger.info(visits_pre_aggr.columns)
+    # current_app.logger.info(visits_pre_aggr.head().to_string())
+    # current_app.logger.info(visits_pre_aggr.info())
+
+
     # print(content)
     # print('^&*'*100)
-    ## db exception here: Cannot parse input: expected \n before: \tVisits with email\tGoals
     upload(table_name, content)
 
 def goalId_count(el):
@@ -130,18 +174,36 @@ def start_url_to_hash(url):
     parsed = urlparse(url)
     url_params = parse_qs(parsed.query)
     if 'mxm' in url_params.keys():
+        # print('mxm', url_params['mxm'][0])
         return url_params['mxm'][0]
     else:
+        # print('-1')
         ## OPTIMIZE:
         return -1
+
+def goalsId_handler(el):
+    all_goals = []
+    try:
+        [all_goals.extend(eval(str(goals))) for goals in el]
+    except Exception as err:
+        print('here it is',err, type(el), el)
+    # [(print(eval(goals)), print(goals), print(type(goals))) for goals in el]
+    # print(el)
+    # print(all_goals)
+    # print('----------X----------')
+    return str(all_goals)
+
+
 
 def build_pre_aggr_conversion_df(visits_all_data_df):
     current_app.logger.info('### visits_all_data_df start')
     # replace StartURL with hash
     visits_all_data_df['hash'] = visits_all_data_df['StartURL'].apply(start_url_to_hash)
+    # make a copy of GolsID to save ids for ROI filter
+    visits_all_data_df['GoalsID_2'] = visits_all_data_df['GoalsID']
     # First raw grouping. Result: not distinct ClientID column values
     max_df = visits_all_data_df.groupby(['ClientID','hash'])\
-        .agg({'GoalsID': goalId_count, 'VisitID':'count'})
+        .agg({'GoalsID':goalId_count, 'VisitID':'count',"GoalsID_2":goalsId_handler})
     max_df.reset_index(inplace=True)
     # unique ClientID extraction
     unique_client_ids = max_df['ClientID'].unique()
@@ -171,28 +233,17 @@ def build_pre_aggr_conversion_df(visits_all_data_df):
     max_df.dropna(inplace=True)
     current_app.logger.info('### DONE! len of not none result {}'.format(len(max_df)))
 
-    # max_df.reset_index(inplace=True, drop=True)
-    # max_df = max_df.groupby(['Client identities'])\
-    #     .agg({'ClientID':leave_last_client_id,\
-    #     'Total goals complited':'sum',
-    #     'Total visits':'sum',
-    #     'Visits with out email':'sum',
-    #     'Visits with email' :'sum',
-    #     'Goals complited via email':'sum'
-    #     })
-    # max_df.reset_index(inplace=True, drop=False)
-    # #calculating metrics
-    # max_df['Conversion (TG/TV)'] = devide_columns_handler(max_df,'Total goals complited','Total visits')
-    # max_df['Email visits share'] = devide_columns_handler(max_df,'Visits with email','Total visits')
-    # max_df['NO-Email visits share'] = devide_columns_handler(max_df,'Visits with out email','Total visits')
-    # max_df['Email power proportion'] = devide_columns_handler(max_df,'Goals complited via email','Total goals complited')
-
     return max_df
+
+
 
 def handle_unique_clientid_chunk(temp_df):
     #calculation metrics for result row
     max_email = temp_df[temp_df['hash'] != -1]
-    goals_email = max_email['GoalsID'].sum()
+    goals_email_count = max_email['GoalsID'].sum()
+    goals_email = goalsId_handler(max_email['GoalsID_2'].values)
+    # print(temp_df.to_string())
+    # print(goals_email)
     max_no_email = temp_df[temp_df['hash'] == -1]
     visits_no_email = max_no_email['VisitID'].sum()
     visits_email = max_email['VisitID'].sum()
@@ -200,15 +251,21 @@ def handle_unique_clientid_chunk(temp_df):
     temp_df = temp_df.groupby(['ClientID'])\
         .agg({'hash':hash_group_handler,'GoalsID':'sum'})
     temp_df.reset_index(inplace=True)
+    #make anons unique
     # name -1 to 'no-email'
-    temp_df.loc[temp_df['hash'] == '-1', 'hash'] = 'no-email'
+    temp_df.loc[temp_df['hash'] == '-1', 'hash'] = 'no-email' + str(temp_df['ClientID'].values[0])
+
     #assign metricts for result row
     temp_df['Total visits'] = visits_no_email + visits_email
     temp_df['Visits with out email'] = visits_no_email
     temp_df['Visits with email'] = visits_email
-    temp_df['Goals complited via email'] = goals_email
-    #prettyfing column names and appending result to array
+    temp_df['Count goals complited with email'] = goals_email_count
+    temp_df['Goals complited with email'] = goals_email
+    #prettyfing column names
+    # turn this useless shit off
     temp_df.rename(columns={'hash':'Client identities',\
         'GoalsID':'Total goals complited'},\
         inplace=True)
+
+
     return temp_df
