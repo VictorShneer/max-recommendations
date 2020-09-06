@@ -15,15 +15,13 @@ from app.metrika import bp
 from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
-from app.metrika.conversion_table_builder import build_conversion_df
-
-PROPERTY_TO_SQL_DIC = {'start_date':'>','goals':'IN'}
+from app.metrika.conversion_table_builder import build_conversion_df, generate_where_statement
 
 VISITS_AGGR_QUERY = '''
     SELECT *
     FROM {clickhouse_table_name}
+    WHERE {where_statesments}
 '''
-
 
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
@@ -34,31 +32,21 @@ def metrika_get_data(integration_id):
         print('Permission abort')
         abort(404)
 
-
-
     request_start_date = request.args.get('start_date')
     request_goals = request.args.get('goals')
-    # print(request_goals)
-    # print(request_start_date)
-    # print('#'*10)
+
     current_app.logger.info("### selected-goals {}".format(request_goals))
     clickhouse_table_name = '{}_{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
-
+    where_statesments = generate_where_statement({'start_date':[request_start_date], 'goals':request_goals.split(',')})
     url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table_name))
     url_for_visits_all_data = made_url_for_query(\
-        VISITS_AGGR_QUERY.format(clickhouse_table_name=clickhouse_table_name)\
+        VISITS_AGGR_QUERY.format(\
+            clickhouse_table_name=clickhouse_table_name,\
+            where_statesments = where_statesments
+            )\
         )
-    # if request_start_date =='':
-    #     url_for_visits_all_data = made_url_for_query(\
-    #     "SELECT * FROM {}".format(clickhouse_table)\
-    #     )
-    # else:
-    #     url_for_visits_all_data = made_url_for_query(\
-    #     "SELECT * FROM {} WHERE Date > toDate('{}')".format(clickhouse_table,request_start_date)\
-    #     )
 
     try:
-
         current_app.logger.info('### request_clickhouse start urls: {}\n{}'.format(url_for_columns,url_for_visits_all_data))
         # get column names 1
         response_with_columns_names = request_clickhouse(url_for_columns, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
@@ -69,6 +57,9 @@ def metrika_get_data(integration_id):
                 response_with_visits_all_data.status_code !=200\
                 ]):
             flash('Некорректная в дата!')
+            print(response_with_visits_all_data.text)
+            print()
+            print(response_with_columns_names.text)
     except:
         flash('{} Ошибки в запросе или в настройках итеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
@@ -95,12 +86,12 @@ def metrika_get_data(integration_id):
     # building max data frame
 
 
-    max_no_email_1graph = [ [int(max_row['Total Visits No Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits No Email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
-    max_email_1graph = [ [int(max_row['Total Visits Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits Email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
-
+    # max_no_email_1graph = [ [int(max_row['Total Visits No Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits No Email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
+    # max_email_1graph = [ [int(max_row['Total Visits Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits Email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
 
     max_no_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Total Visits Email'] != 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
     max_email_1graph = [ [int(max_row['Total visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Total Visits Email'] == 0][['Total visits','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
+
     if (len(max_no_email_1graph) == 0):
         max_no_email_1graph = [[0,0]]
     if (len(max_email_1graph) == 0):
@@ -158,7 +149,8 @@ def metrika(integration_id):
     url = ROOT+'management/v1/counter/{}/goals'.format(counter_id)
     r = requests.get(url, headers=headers)
     current_app.logger.info('### get goals status code: {}'.format(r.status_code))
-    goals = [goal['name'] for goal in r.json()['goals']]
+    print(r.json())
+    goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
 
     if (current_user.email == 'sales@getresponse.com'):
         return render_template('metrika_example.html')

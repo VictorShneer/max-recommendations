@@ -6,11 +6,11 @@
   <p id='atb' hidden>{{integration_id}}</p>
   <p><b>Интеграция {{integration_name}}</b></p>
   <p>Доступны данные с <b id="start_date">{{min_date}}</b> по <b>{{max_date}}</b></p>
-  <p>Всего уникальных визитов доступно: <b>{{data_length}}</b></p>
+  <p><b>{{data_length}} уникальных посетителей</b></p>
   <label for="">Выберите цели (Насть сделай плиз выбрать все штучку :))</label>
   <select multiple id="goals">
     {% for goal in goals %}
-      <option value="{{ goal }}">{{ goal }}</option>
+      <option value="{{ goal[0] }}">{{ goal[1] }}</option>
     {% endfor %}
   </select>
 </div>

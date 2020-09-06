@@ -16,6 +16,8 @@ CREATE_PRE_AGGR_TABLE_QUERY =  '''
         clientid UInt32,
         clientemail String,
         totalgoals UInt32,
+        firsttimevisit Date,
+        goalsall String,
         totalvisits UInt32,
         visitswithoutemail UInt32,
         visitswithemail UInt32,
@@ -32,8 +34,36 @@ RENAME = {\
     'visitswithoutemail':'Total Visits No Email',\
     'visitswithemail': 'Total Visits Email',\
     'countgoalswithemail':'Total goals with Email',\
-    'goalswithemail':'Goals complited with email'\
+    'goalswithemail':'Goals complited with email',\
     }
+
+PROPERTY_TO_SQL_DIC = {'start_date':'''firsttimevisit >= '{res}' ''',\
+                        'goals':'''position(goalsall, '{res}') != 0 '''}
+
+def generate_where_statement(restrictions):
+    where_clause = ''
+    # delete empty restrictions, for the cases when you have no goals to filter with
+    restrictions_not_empty = {k: v for k, v in restrictions.items() if v != ['']}
+    for key,values in restrictions_not_empty.items():
+        # every where state should be in (   )
+        where_clause += '('
+        # every where state come as array
+        for i,value in enumerate(values):
+            # every where state has its own format in PROPERTY_TO_SQL_DIC
+            state = PROPERTY_TO_SQL_DIC[key].format(res=value)
+            # if it is last restrition in array we don't put OR
+            if i != len(values)-1:
+                where_clause += (state + ' OR ')
+            else:
+                where_clause+=state
+        # close ) and add AND for the new WHERE state
+        where_clause += ')'
+        where_clause += ' AND '
+    # delete last AND
+    where_clause = where_clause[:-4]
+    print(where_clause)
+    return where_clause
+
 
 def build_conversion_df(visits_pre_aggr_df):
     ## group that shit
@@ -44,7 +74,9 @@ def build_conversion_df(visits_pre_aggr_df):
         'visitswithoutemail':'sum',\
         'visitswithemail' :'sum',\
         'countgoalswithemail':'sum',\
-        'goalswithemail':goalsId_handler
+        'goalswithemail':goalsId_handler,\
+        'goalsall':goalsId_handler,\
+        'firsttimevisit':min
         })
     # max_df = visits_pre_aggr_df.groupby(['Client identities'])\
     #     .agg({'ClientID':leave_last_client_id,\
@@ -91,7 +123,7 @@ def request_visits_all_df(crypto, integration_id):
     file_from_string = StringIO(response_with_visits_all_data.text)
 
     try:
-        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID','StartURL'])
+        visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID','StartURL','Date'])
     except Exception as err:
         current_app.logger.info('### building dataframe from string EXCEPTION {}'.format(err))
         raise RuntimeError("building dataframe from string ### Something bad happened")
@@ -111,7 +143,6 @@ def make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id, regular_load=Fa
         pass
         # visits_pre_aggr = build_pre_aggr_conversion_df(visits_raw_data_df) ## add filter
 
-
     if not regular_load:
         ### creating pre aggr table
         current_app.logger.info("create pre aggr templates")
@@ -123,7 +154,7 @@ def make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id, regular_load=Fa
         )
         # current_app.logger.info(query)
         get_clickhouse_data(query)
-        # current_app.logger.info('###')
+        current_app.logger.info('###')
         # current_app.logger.info('{}_visits_{}_pre_aggr'.format(crypto,id))
         # current_app.logger.info(get_clickhouse_data('SHOW TABLES FROM {db}'.format(db=CONFIG['clickhouse']['database']))\
         #     .strip().split('\n'))
@@ -203,7 +234,7 @@ def build_pre_aggr_conversion_df(visits_all_data_df):
     visits_all_data_df['GoalsID_2'] = visits_all_data_df['GoalsID']
     # First raw grouping. Result: not distinct ClientID column values
     max_df = visits_all_data_df.groupby(['ClientID','hash'])\
-        .agg({'GoalsID':goalId_count, 'VisitID':'count',"GoalsID_2":goalsId_handler})
+        .agg({'GoalsID':goalId_count, 'VisitID':'count',"GoalsID_2":goalsId_handler, 'Date':'min'})
     max_df.reset_index(inplace=True)
     # unique ClientID extraction
     unique_client_ids = max_df['ClientID'].unique()
@@ -228,6 +259,7 @@ def build_pre_aggr_conversion_df(visits_all_data_df):
 
     current_app.logger.info('### visits_all_data_df unique_client_ids loop finish <<<<----')
     #contatenating unique ClientID row into DataFrame
+    # print(temp_dfs[0].info())
     max_df = pd.concat(temp_dfs)
     current_app.logger.info('### len of result {}'.format(len(max_df)))
     max_df.dropna(inplace=True)
@@ -249,7 +281,10 @@ def handle_unique_clientid_chunk(temp_df):
     visits_email = max_email['VisitID'].sum()
     # for every unique ClientID we group rows that belong to it
     temp_df = temp_df.groupby(['ClientID'])\
-        .agg({'hash':hash_group_handler,'GoalsID':'sum'})
+        .agg({'hash':hash_group_handler,\
+                'GoalsID':'sum',\
+                'Date':'min',\
+                'GoalsID_2':goalsId_handler})
     temp_df.reset_index(inplace=True)
     #make anons unique
     # name -1 to 'no-email'
@@ -264,7 +299,8 @@ def handle_unique_clientid_chunk(temp_df):
     #prettyfing column names
     # turn this useless shit off
     temp_df.rename(columns={'hash':'Client identities',\
-        'GoalsID':'Total goals complited'},\
+        'GoalsID':'Total goals complited',\
+        'GoalsID_2':'Goals complited list'},\
         inplace=True)
 
 

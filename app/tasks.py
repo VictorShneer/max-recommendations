@@ -37,6 +37,7 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss, regular_load=
         _set_task_progress(50 * count // len(paramss))
         handle_integration(token, counter_id,crypto,id,params)
     try:
+        _set_task_progress(50)
         app.logger.info('### GOOOO make_clickhouse_pre_aggr_visits')
         make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id)
         _set_task_progress(75)
