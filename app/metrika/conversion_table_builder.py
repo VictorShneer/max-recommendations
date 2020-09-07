@@ -37,6 +37,7 @@ RENAME = {\
     'goalswithemail':'Goals complited with email',\
     }
 
+
 PROPERTY_TO_SQL_DIC = {'start_date':'''firsttimevisit >= '{res}' ''',\
                         'goals':'''position(goalsall, '{res}') != 0 '''}
 

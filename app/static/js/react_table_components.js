@@ -17,8 +17,8 @@ class VisitRow extends React.Component {
     "Client identities",
     "Total goals complited",
     "Total visits",
-    "Visits with email",
-    "Goals complited via email",
+    "Total Visits Email",
+    "Total goals with Email",
     "Conversion (TG/TV)",
     "Email power proportion"];
 

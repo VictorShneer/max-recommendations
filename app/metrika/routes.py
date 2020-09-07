@@ -34,7 +34,7 @@ def metrika_get_data(integration_id):
 
     request_start_date = request.args.get('start_date')
     request_goals = request.args.get('goals')
-
+    # TODO: validate start_date, goals
     current_app.logger.info("### selected-goals {}".format(request_goals))
     clickhouse_table_name = '{}_{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
     where_statesments = generate_where_statement({'start_date':[request_start_date], 'goals':request_goals.split(',')})
