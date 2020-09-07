@@ -3,12 +3,17 @@ from flask_admin import AdminIndexView
 from flask_login import current_user
 from flask import redirect, url_for
 
-class MyModefView(ModelView):
-    def is_accessible(self):
-        return (current_user.is_authenticated)
+class MyModelView(ModelView):
+    def __init__(self, model, session, name=None, category=None, endpoint=None, url=None, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+        super(MyModelView, self).__init__(model, session, name=name, category=category, endpoint=endpoint, url=url)
 
-    def inaccessible_callback(self, name, **kwargs):
-        return redirect(url_for('auth.login'))
+        def is_accessible(self):
+            return (current_user.is_authenticated)
+
+        def inaccessible_callback(self, name, **kwargs):
+            return redirect(url_for('auth.login'))
 
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):

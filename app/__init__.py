@@ -11,7 +11,7 @@ from config import Config
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_admin import Admin
-from app.admin_security import MyModefView, MyAdminIndexView
+from app.admin_security import MyModelView, MyAdminIndexView
 from rq import Queue
 import rq
 from redis import Redis
@@ -41,12 +41,13 @@ def create_app(adminFlag=True,config_class=Config):
     #ADMIN PANEL
     if (adminFlag):
         from app.models import User, Integration, Role, Task, Notification
+        from sqlalchemy import inspect
         admin.init_app(app,index_view = MyAdminIndexView())
-        admin.add_view(MyModefView(User, db.session))
-        admin.add_view(MyModefView(Integration, db.session))
-        admin.add_view(MyModefView(Role, db.session))
-        admin.add_view(MyModefView(Task, db.session))
-        admin.add_view(MyModefView(Notification, db.session))
+        admin.add_view(MyModelView(User, db.session, column_list=inspect(User).columns.keys()))
+        admin.add_view(MyModelView(Integration, db.session))
+        admin.add_view(MyModelView(Role, db.session))
+        admin.add_view(MyModelView(Task, db.session))
+        admin.add_view(MyModelView(Notification, db.session))
 
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('max-tasks', connection=app.redis, default_timeout=1200)

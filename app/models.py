@@ -58,7 +58,6 @@ class User(UserMixin, db.Model):
     tasks = db.relationship('Task', backref='user', lazy='dynamic')
     notifications = db.relationship('Notification', backref='user',
                                     lazy='dynamic')
-
     def __repr__(self):
         return '<User {}>'.format(self.name)
 

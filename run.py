@@ -21,3 +21,9 @@ def regular_load_to_clickhouse():
             user.launch_task('init_clickhouse_tables', ('Автоматическая загрузка метрик'),integration.metrika_key, integration.metrika_counter_id,user.crypto,  integration.id, [params,params_2], True)
             db.session.commit()
     app.logger.info('### Done!')
+
+@app.cli.command()
+def init_user_in_clickhouse(crypto):
+    """Clickhouse user initialization."""
+    
+    app.logger.info('### Done!')
