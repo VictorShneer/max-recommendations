@@ -11,6 +11,9 @@ import pandas as pd
 from app.analytics.forms import AnalyticsBar
 from collections import defaultdict
 from io import StringIO
+import base64
+import urllib.parse
+import numpy as np
 
 @bp.route('/analytics/<integration_id>', methods = ['GET', 'POST'])
 @login_required
@@ -34,7 +37,7 @@ def generate_values(integration_id):
         a = df.Values.str.split("\n")
         for idx,val in a.items():
             a[idx] = [v for v in val if v != '']
-            a[idx].append('Не выбрано')
+            # a[idx].append('Не выбрано')
 
         # Adding choices to the forms
         form.DeviceCategory.choices = [(g,g) for g in a[0]]
@@ -82,7 +85,8 @@ def process_values():
             # print(dict_of_requests)
 
             #trying to concat the fucking query
-            word = 'WHERE'
+            #TO DO: last value
+            word = "WHERE URL LIKE '%mxm=%' and "
             for i in dict_of_requests:
                 if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity'):
                     word = word + ' ' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') and'
@@ -92,19 +96,29 @@ def process_values():
                 elif i in ('Date'):
                     word = word + ' ' + str(dict_of_requests[i]).strip('['']') + '    '
             word = word[:-4]
+            word = word + " GROUP BY ClientID, extractURLParameter(URL, 'mxm')"
             #getting the answer from the db
-            create_url = create_url_for_query('SELECT ClientID, URL FROM db1.{crypto}_hits_{integration_id} {smth};'.\
+            create_url = create_url_for_query("SELECT ClientID, extractURLParameter(URL, 'mxm') FROM db1.{crypto}_hits_{integration_id} {smth};".\
                                                 format(crypto= current_user.crypto, integration_id=integration_id,smth=word))
             print(create_url)
             get_data = send_request_to_clickhouse(create_url).text
 
             #doing magic with the data
             file_from_string = StringIO(get_data)
-            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None)
+            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = ["ClientID", "Hash"])
             pprint(columns_df)
-
+            list_of_emails = []
+            for index, row in columns_df[['Hash']].iterrows():
+                if row.values[0] is not np.nan:
+                    d = base64.b64decode(row.values[0])
+                    s2 = d.decode("UTF-8")
+                    list_of_emails.append(s2)
+                else:
+                    pass
+            df_of_emails = pd.DataFrame(list_of_emails, columns = ["Email"])
+            pprint(df_of_emails)
             #making json
-            front_end_df= columns_df.astype(str)
+            front_end_df= df_of_emails.astype(str)
             json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
 
             return json_to_return

@@ -97,69 +97,24 @@ $(document).ready(function(){
           },
           success: function ( data ){
               if (data) {
-                console.log(data);
+                const unparsed_data = JSON.parse(data);
 
-                 function GFG_FUN() {
-                     var cols = [];
-
-                     for (var i = 0; i < data.length; i++) {
-                         for (var k in data[i]) {
-                             console.log(j);
-                           if (cols.indexOf(k) === -1) {
-
-                                 // Push all keys to the array
-                                 cols.push(k);
-                             }
-                         }
-                     }
-
-                     // Create a table element
-                     var table = document.createElement("table");
-
-                     // Create table row tr element of a table
-                     var tr = table.insertRow(-1);
-
-                     for (var i = 0; i < cols.length; i++) {
-
-                         // Create the table header th element
-                         var theader = document.createElement("th");
-                         theader.innerHTML = cols[i];
-
-                         // Append columnName to the table row
-                         tr.appendChild(theader);
-                     }
-
-                     // Adding the data to the table
-                     for (var i = 0; i < data.length; i++) {
-
-                         // Create a new row
-                         trow = table.insertRow(-1);
-                         for (var j = 0; j < cols.length; j++) {
-                             var cell = trow.insertCell(-1);
-
-                             // Inserting the cell at particular place
-                             cell.innerHTML = data[i][cols[j]];
-                         }
-                     }
-
-                     // Add the newely created table containing json data
-                     var el = document.getElementById("table");
-                     el.innerHTML = "";
-                     el.appendChild(table);
-                 }
-                 GFG_FUN()
-              }
-              else {
+                unparsed_data.data.forEach(item => {
+                output = `
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            ${item.Email}
+                        </div>
+                    </div>
+                </div>
+                `;
+                target.innerHTML += output
+                });
+                }
+            else {
                 console.log('NO DATAAAA');
               }
-              // if ( !$.trim( data.feedback )) { // response from Flask is empty
-              //     toast_error_msg = "An empty response was returned.";
-              //     toast_category = "danger";
-              // }
-              // else { // response from Flask contains elements
-              //     toast_error_msg = data.feedback;
-              //     toast_category = data.category;
-              // }
           },
           error: function(xhr) {console.log("error. see details below.");
               console.log(xhr.status + ": " + xhr.responseText);
