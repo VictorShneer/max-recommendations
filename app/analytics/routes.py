@@ -37,7 +37,7 @@ def generate_values(integration_id):
         a = df.Values.str.split("\n")
         for idx,val in a.items():
             a[idx] = [v for v in val if v != '']
-            a[idx].append('Не выбрано')
+            # a[idx].append('Не выбрано')
 
         # Adding choices to the forms
         form.DeviceCategory.choices = [(g,g) for g in a[0]]

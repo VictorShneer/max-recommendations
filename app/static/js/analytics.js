@@ -97,18 +97,22 @@ $(document).ready(function(){
           },
           success: function ( data ){
               if (data) {
-                console.log(data);
                 const unparsed_data = JSON.parse(data);
-                console.log(unparsed_data.data);
-                const smth = unparsed_data.data
-                var i;
-                for (i = 0; i < smth.length; i++) {
-                  console.log(smth);
-                  text += smth[i];
-                  console.log(text);
+
+                unparsed_data.data.forEach(item => {
+                output = `
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            ${item.Email}
+                        </div>
+                    </div>
+                </div>
+                `;
+                target.innerHTML += output
+                });
                 }
-              }
-              else {
+            else {
                 console.log('NO DATAAAA');
               }
           },

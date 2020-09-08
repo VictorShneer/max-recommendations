@@ -2,9 +2,28 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-Свойства:
 
-<div class="row">
+
+<div class="container">
+      <h3>Свойства:</h3>
+  <div class="row">
+    <div class="col-sm-5">
+      {% if title %} <h2>{{title}}</h2> {% endif %}
+            {{ wtf.quick_form(form, id="analyticsform") }}
+            <br>
+            <a class="btn btn-info" href="{{url_for('main.user_integrations')}}">Назад</a>
+    </div>
+    <div class="col-sm-4">
+      <div id="target">
+        <h3>Список адресов:</h3>
+      </div>
+        <br>
+        <button onclick="lolkek">Отправить в GetResponse</button>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="row">
   {% if title %} <h2>{{title}}</h2> {% endif %}
       <div class="col-md-4">
         {{ wtf.quick_form(form, id="analyticsform") }}
@@ -13,9 +32,7 @@
     </div>
 </div>
 
- <p id = "GFG_UP" style ="font-size: 15px; font-weight: bold;"></p>
- <table id="table" align = "center" border="1px"></table>
-
+<div id="target"></div> -->
 
 {% endblock %}
 
@@ -36,7 +53,7 @@
       maxHeight: 400,
       buttonText: function(options, select) {
                 if (options.length === 0) {
-                    return 'Тут пусто ...';
+                    return 'Не выбрано...';
                 }
                 else {
                      var labels = [];
@@ -62,6 +79,8 @@
     $('#clause_visits').multiselect(select_options);
     $('#GoalsID').multiselect(select_options);
     $('#URL').multiselect(select_options);
+    $('#clause_visits_from_to').multiselect(select_options);
+    $('#clause_goals').multiselect(select_options);
   });
 </script>
 
