@@ -9,11 +9,11 @@ class AnalyticsBar(FlaskForm):
     RegionCity = SelectMultipleField('Город', default = 'Не выбрано')
     clause_visits = SelectField('От/До/Равно', choices=[(0,'Не выбрано'), (1,'От'), (2,'До'), (3,'Равно')], coerce=int, default =0)
     Date = DateField('Дата последнего визита', format='%d-%m-%Y')
-
-    # clause_visits_from_to = SelectField('От/До/Равно', choices=[(0,'Не выбрано'), (1,'От'), (2,'До'), (3,'Равно')], coerce=int, default=0)
-    # amount_of_visits = IntegerField('Количество визитов', default = '0')
-    # clause_goals = SelectField('От/До/Равно', choices=[(0,'Не выбрано'), (1,'От'), (2,'До'), (3,'Равно')],coerce=int, default=0)
-    # amount_of_goals = IntegerField('Количество выполненных целей', default = '0')
     GoalsID = SelectMultipleField('ID Цели', default = 'Не выбрано')
+    clause_visits_from_to = SelectField('От/До/Равно', choices=[(0,'Не выбрано'), (1,'От'), (2,'До'), (3,'Равно')], coerce=int, default=0)
+    amount_of_visits = IntegerField('Количество визитов', default = '0')
+    clause_goals = SelectField('От/До/Равно', choices=[(0,'Не выбрано'), (1,'От'), (2,'До'), (3,'Равно')],coerce=int, default=0)
+    amount_of_goals = IntegerField('Количество выполненных целей', default = '0')
     URL = SelectMultipleField('URL', default = 'Не выбрано')
+
     submit = SubmitField("Отправить")
