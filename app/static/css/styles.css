@@ -353,3 +353,52 @@ body {
 .link_creation .grmax-btn {
   margin-top: 50px;
 }
+
+.grmax-select-button, .grmax-select-button:hover {
+  background: #ffffff !important;
+//  box-shadow: rgba(0, 0, 0, 0.03) 0px 1px 1px 0px;
+  display: flex;
+  font-size: 14px;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  border: 1px solid rgb(226, 226, 226);
+  padding: 0px 10px;
+  height: 37px;
+  align-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+}
+
+.grmax-select-button:hover, .open>.grmax-select-button:hover, .open>.grmax-select-button{
+  border-color: rgb(0, 186, 255) !important;
+  box-shadow: none;
+}
+
+.grmax-select-button .caret {
+  position: absolute;
+  right: 10px;
+  border-style: solid;
+  border-width: 4px 4px 0px;
+  border-color: rgb(121, 144, 161) transparent transparent;
+}
+
+.grmax-select.open .caret {
+  border-color: transparent transparent rgb(121, 144, 161);
+  border-width: 0px 4px 4px;
+}
+
+.grmax-multiselect-selected {
+  background: #ffffff;
+}
+
+.grmax-select .dropdown-menu {
+  border-color: rgb(0, 186, 255) !important;
+  box-shadow: none;
+  min-width: 270px;
+}
+
+#analyticsform label {
+  display: block !important;
+}
+#analyticsform #Date {
+  width: 270px;
+}
