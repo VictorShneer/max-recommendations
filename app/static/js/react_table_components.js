@@ -151,6 +151,7 @@ class FilterableVisitsTable extends React.Component {
         .then(data => {
           // for table
           this.setState({visits: data, isLoading: false });
+          console.log(data);
           // for graph
           drawChart(
             data.max_no_email_1graph,

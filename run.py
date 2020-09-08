@@ -1,6 +1,10 @@
 from app import create_app
 from app.models import User, Integration
 from app import db
+import click
+from app.clickhousehub.clickhouse import get_dbs
+from app.clickhousehub.clickhouse_custom_request import create_ch_db
+from app.clickhousehub.clickhouse_custom_request import give_user_grant
 app = create_app()
 
 
@@ -23,7 +27,42 @@ def regular_load_to_clickhouse():
     app.logger.info('### Done!')
 
 @app.cli.command()
-def init_user_in_clickhouse(crypto):
+@click.option('--id', help='User id')
+@click.option('--crypto', help='Crypto you want to set')
+def init_user_in_clickhouse(id,crypto):
     """Clickhouse user initialization."""
-    
+    # check if arguments passed
+    if not all([id,crypto]):
+        app.logger.info('Hey dog! I need id and crypto to work')
+        return -1
+    # check if db already exists
+    if crypto in get_dbs():
+        app.logger.info('db already exists dog')
+    # get user from db by id or except
+    try:
+        user = User.query.filter_by(id=id).one()
+        app.logger.info('User {} found #id: {}'.format(user.email, user.id))
+    except Exception as e:
+        app.logger.info('No user was foung for {}'.format(id))
+        return -1
+    # check if user already got crypto
+    if user.crypto != None:
+        app.logger.info('This user already set up dog')
+        return -1
+    # assign crypto if it unique
+    try:
+        user.crypto = crypto
+        db.session.commit()
+        app.logger.info('{} assigned to {} with id: {}'.format(crypto, user.email, user.id))
+    except Exception as e:
+        app.logger.info('{} - this crypto already exists'.format(crypto))
+        return -1
+    # now let's create clickhouse db
+    create_ch_db(crypto)
+    # give user grant access to crypto db
+    try:
+        give_user_grant('user1', crypto)
+    except Exception as err:
+        app.logger.info(err + '\nsmth went wrong dog :(( try again later..')
+
     app.logger.info('### Done!')
