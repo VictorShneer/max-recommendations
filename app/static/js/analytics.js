@@ -38,31 +38,6 @@ $(document).ready(function(){
       }
       else {
         console.log('hui')
-          // // first, scan the page for labels, and assign a reference to the label from the actual form element:
-          // var labels = document.getElementsByTagName('LABEL');
-          // for (var i = 0; i < labels.length; i++) {
-          //     if (labels[i].htmlFor != '') {
-          //          var elem = document.getElementById(labels[i].htmlFor);
-          //          if (elem)
-          //             elem.label = labels[i];
-          //     }
-          // }
-          //
-          // // then find all invalid input elements (form fields)
-          // var Form = document.getElementById(form_id);
-          // var invalidList = Form.querySelectorAll(':invalid');
-          //
-          // if ( typeof invalidList !== 'undefined' && invalidList.length > 0 ) {
-          //     // errors were found in the form (required fields not filled out)
-          //
-          //     // for each invalid input element (form field) return error
-          //     for (var item of invalidList) {
-          //         M.toast({html: "Please fill the "+item.label.innerHTML+"", classes: 'bg-danger text-white'});
-          //     }
-          // }
-          // else {
-          //     M.toast({html: "Another error occured, please try again.", classes: 'bg-danger text-white'});
-          // }
       }
   }
 
@@ -98,7 +73,6 @@ $(document).ready(function(){
           success: function ( data ){
               if (data) {
                 const unparsed_data = JSON.parse(data);
-
                 unparsed_data.data.forEach(item => {
                 output = `
                 <div class="container">
@@ -118,8 +92,6 @@ $(document).ready(function(){
           },
           error: function(xhr) {console.log("error. see details below.");
               console.log(xhr.status + ": " + xhr.responseText);
-              toast_error_msg = "An error occured";
-              toast_category = "danger";
           },
       }).done(function() {
         console.log('Hello world!');
@@ -134,5 +106,76 @@ $(document).ready(function(){
       }
   });
 
-
+  // $('#sendGR').click(function(event){
+  //
+  //     event.preventDefault()
+  //     // Prevent redirection with AJAX for contact form
+  //     var form = $('#analyticsform');
+  //     var form_id = 'analyticsform';
+  //     var url = '/analytics/getdata123';
+  //     var type = 'post';
+  //     var formData = 'hui';
+  //
+  //     // submit form via AJAX
+  //     send_form1(form, form_id, url, type, modular_ajax1, formData);
+  // });
+  //
+  // function modular_ajax1(url, type, formData) {
+  //     // Most simple modular AJAX building block
+  //     $.ajax({
+  //         url: url,
+  //         type: type,
+  //         data: formData,
+  //         processData: false,
+  //         contentType: false,
+  //         beforeSend: function() {
+  //             // show the preloader (progress bar)
+  //             $('#form-response').html("<div class='progress'><div class='indeterminate'></div></div>");
+  //         },
+  //         complete: function () {
+  //             // hide the preloader (progress bar)
+  //             $('#form-response').html("");
+  //         },
+  //         success: function ( data ){
+  //             if (data) {
+  //               const unparsed_data = JSON.parse(data);
+  //               unparsed_data.data.forEach(item => {
+  //               output = `
+  //               <div class="container">
+  //                   <div class="row">
+  //                       <div class="col">
+  //                           ${item.Email}
+  //                       </div>
+  //                   </div>
+  //               </div>
+  //               `;
+  //               target.innerHTML += output
+  //               });
+  //               }
+  //           else {
+  //               console.log('NO DATAAAA');
+  //             }
+  //         },
+  //         error: function(xhr) {console.log("error. see details below.");
+  //             console.log(xhr.status + ": " + xhr.responseText);
+  //         },
+  //     }).done(function() {
+  //       console.log('Hello world!');
+  //     });
+  // };
+  //
+  // function send_form1(form, form_id, url, type, modular_ajax, formData) {
+  //     // form validation and sending of form items
+  //
+  //     if ( form[0].checkValidity() && isFormDataEmpty(formData) == false ) { // checks if form is empty
+  //         event.preventDefault();
+  //
+  //         // inner AJAX call
+  //         modular_ajax1(url, type, formData);
+  //
+  //     }
+  //     else {
+  //       console.log('hui')
+  //     }
+  // }
 });
