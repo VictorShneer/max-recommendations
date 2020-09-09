@@ -5,8 +5,14 @@ import click
 from app.clickhousehub.clickhouse import get_dbs
 from app.clickhousehub.clickhouse_custom_request import create_ch_db
 from app.clickhousehub.clickhouse_custom_request import give_user_grant
+from app.clickhousehub.clickhouse_custom_request import request_iam
+
 app = create_app()
 
+
+@app.cli.command()
+def check_ch_auth():
+    request_iam()
 
 @app.cli.command()
 def regular_load_to_clickhouse():
@@ -58,11 +64,18 @@ def init_user_in_clickhouse(id,crypto):
         app.logger.info('{} - this crypto already exists'.format(crypto))
         return -1
     # now let's create clickhouse db
-    create_ch_db(crypto)
+    # and
     # give user grant access to crypto db
     try:
+        # dont forget to update iam token
+        iam_token = request_iam()
+        if not iam_token:
+            raise Exception('Failed to request iam')
+        create_ch_db(crypto)
         give_user_grant('user1', crypto)
     except Exception as err:
-        app.logger.info(err + '\nsmth went wrong dog :(( try again later..')
+        user.crypto = None
+        db.session.commit()
+        app.logger.info(str(err) + '\nsmth went wrong dog :(( try again later..')
 
     app.logger.info('### Done!')
