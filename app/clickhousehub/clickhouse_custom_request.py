@@ -109,9 +109,9 @@ def create_ch_db(db_name):
         current_app.logger.info(r.text)
         raise Exception('Status code not 200')
 
-def made_url_for_query(query):
+def made_url_for_query(query, db_name):
     host = current_app.config['CLICKHOUSE_HOST']
-    db = current_app.config['CLICKHOUSE_DB']
+    db = db_name
 
     return 'https://{host}:8443/?database={db}&query={query}'.format(
         host=host,

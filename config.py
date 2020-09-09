@@ -33,7 +33,6 @@ class Config(object):
     CLICKHOUSE_LOGIN = 'user1'
     CLICKHOUSE_PASSWORD = 'password'
     CLICKHOUSE_HOST = 'rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net'
-    CLICKHOUSE_DB = 'db1'
     CERTIFICATE_PATH = 'app/YandexInternalRootCA.crt'
     AUTH = {
         'X-ClickHouse-User': 'user1',

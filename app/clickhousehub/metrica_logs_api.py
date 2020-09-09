@@ -115,16 +115,17 @@ def integrate_with_logs_api(config, user_request):
 def drop_integration(crypto, integration_id, source = None):
     # drop TABLE db1.sweet_hits_2;
     if source:
-        clickhouse_target_table_name = '{}_{}_{}'.format(crypto,source,integration_id)
-        clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_target_table_name))
+        clickhouse_target_table_name = '{}_raw_{}'.format(source,integration_id)
+        clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS {db_name}.{table_name}'.\
+                                        format(db_name = crypto, table_name = clickhouse_target_table_name))
     else:
-        clickhouse_visits_table = '{}_{}_{}'.format(crypto,'visits',integration_id)
-        clickhouse_hits_table = '{}_{}_{}'.format(crypto,'hits',integration_id)
-        clickhouse_visits_aggr_table_name = '{}_visits_{}_pre_aggr'.format(crypto,integration_id)
+        clickhouse_visits_table = '{}_raw_{}'.format('visits',integration_id)
+        clickhouse_hits_table = '{}_raw_{}'.format('hits',integration_id)
+        clickhouse_visits_aggr_table_name = 'visits_{}_pre_aggr'.format(integration_id)
 
-        url_for_visits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_table))
-        url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_hits_table))
-        url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS db1.{}'.format(clickhouse_visits_aggr_table_name))
+        url_for_visits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS {db_name}.{table_name}'.format(db_name = crypto, table_name = clickhouse_visits_table))
+        url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS {db_name}.{table_name}'.format(db_name = crypto, table_name = clickhouse_hits_table))
+        url_for_visits_aggr_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS {db_name}.{table_name}'.format(db_name = crypto, table_name = clickhouse_visits_aggr_table_name))
 
 def handle_integration(token,counter_id, crypto, id, params):
     # print(crypto,type(crypto))
@@ -133,10 +134,11 @@ def handle_integration(token,counter_id, crypto, id, params):
     start_time = time.time()
     # config = utils.get_config()
     # clickhouse.
-    clickhouse.CH_VISITS_TABLE = clickhouse.config['clickhouse']['visits_table'] = crypto + "_visits_"+str(id)
-    clickhouse.CH_HITS_TABLE = clickhouse.config['clickhouse']['hits_table'] = crypto + "_hits_"+str(id)
+    clickhouse.CH_VISITS_TABLE = clickhouse.config['clickhouse']['visits_table'] = "visits_raw_"+str(id)
+    clickhouse.CH_HITS_TABLE = clickhouse.config['clickhouse']['hits_table'] = "hits_raw_"+str(id)
     clickhouse.TOKEN = clickhouse.config['token'] = token
     clickhouse.COUNTER_ID = clickhouse.config['counter_id'] = counter_id
+    clickhouse.CH_DATABASE = clickhouse.config['clickhouse']['database'] = crypto
     # print(clickhouse.config)
     # nessessary to config
     setup_logging(clickhouse.config)

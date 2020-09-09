@@ -97,12 +97,10 @@ def build_conversion_df(visits_pre_aggr_df):
     return max_df
 
 def request_visits_all_df(crypto, integration_id):
-    clickhouse_table_name = '{}_{}_{}'.format(crypto, 'visits', integration_id)
+    clickhouse_table_name = '{}_raw_{}'.format('visits', integration_id)
 
-    url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table_name))
-    url_for_visits_all_data = made_url_for_query(\
-    "SELECT * FROM {}".format(clickhouse_table_name)\
-    )
+    url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table_name), crypto)
+    url_for_visits_all_data = made_url_for_query("SELECT * FROM {}".format(clickhouse_table_name), crypto)
     current_app.logger.info('### request_clickhouse start urls: {}\n{}'.format(url_for_columns,url_for_visits_all_data))
     # get column names 1
     response_with_columns_names = request_clickhouse(url_for_columns, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
@@ -137,7 +135,7 @@ def make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id, regular_load=Fa
     visits_raw_data_df = request_visits_all_df(crypto,id)
     current_app.logger.info("SUCCESS request_visits_all_df")
     visits_pre_aggr = build_pre_aggr_conversion_df(visits_raw_data_df)
-    table_name = '{}.{}_visits_{}_pre_aggr'.format(CONFIG['clickhouse']['database'],crypto,id)
+    table_name = '{db_name}.visits_{integration_id}_pre_aggr'.format(db_name=crypto,integration_id=id)
     if not regular_load:
         ### creating pre aggr table
         current_app.logger.info("create pre aggr templates")

@@ -113,8 +113,9 @@ def create_integration():
             else:
                 current_user.launch_task('init_clickhouse_tables', ('Init integration...'), integration.metrika_key,integration.metrika_counter_id, current_user.crypto,  integration.id, [params,params_2])
                 db.session.commit()
-        except:
+        except Exception as err:
             flash("Проблемки..")
+            current_app.logger.info(err)
             db.session.rollback()
             abort(404)
 

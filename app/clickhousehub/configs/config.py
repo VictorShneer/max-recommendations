@@ -44,6 +44,6 @@ CONFIG = {
 		"password": "password",
 		"visits_table": "",
 		"hits_table": "",
-		"database": "db1"
+		"database": ""
 	}
 }
