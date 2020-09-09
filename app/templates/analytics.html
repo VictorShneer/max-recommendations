@@ -15,10 +15,11 @@
     </div>
     <div class="col-sm-4">
       <div id="target">
+        <div id="form-response"></div>
         <h3>Список адресов:</h3>
       </div>
         <br>
-        <button onclick="lolkek">Отправить в GetResponse</button>
+        <input class="btn btn-default" id="sendGR" name="sendGR" type="sendGR" value="Отправить в GR">
     </div>
   </div>
 </div>
@@ -81,6 +82,9 @@
     $('#URL').multiselect(select_options);
     $('#clause_visits_from_to').multiselect(select_options);
     $('#clause_goals').multiselect(select_options);
+    $('#MobilePhone').multiselect(select_options);
+    $('#MobilePhoneModel').multiselect(select_options);
+    $('#Browser').multiselect(select_options);
   });
 </script>
 
