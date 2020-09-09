@@ -128,10 +128,13 @@ def metrika(integration_id):
         'X-ClickHouse-Key': current_app.config['CLICKHOUSE_PASSWORD']
         }
         # clickhouse_raw_table_name = '{}_{}_{}'.format(current_user.crypto, 'visits', integration_id)
-        clickhouse_pre_aggr_table_name = '{}_{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
-        query_data_length = made_url_for_query('SELECT count(clientid) FROM {}'.format(clickhouse_pre_aggr_table_name))
-        query_min_date = made_url_for_query('SELECT min(firsttimevisit) FROM {}'.format(clickhouse_pre_aggr_table_name))
-        query_max_date = made_url_for_query('SELECT max(firsttimevisit) FROM {}'.format(clickhouse_pre_aggr_table_name))
+        clickhouse_pre_aggr_table_name = '{}.{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
+        query_count = 'SELECT count(clientid) FROM {}'.format(clickhouse_pre_aggr_table_name)
+        query_min = 'SELECT min(firsttimevisit) FROM {}'.format(clickhouse_pre_aggr_table_name)
+        query_max = 'SELECT max(firsttimevisit) FROM {}'.format(clickhouse_pre_aggr_table_name)
+        query_data_length = made_url_for_query(query_count, current_user.crypto)
+        query_min_date = made_url_for_query(query_min, current_user.crypto)
+        query_max_date = made_url_for_query(query_max, current_user.crypto)
         data_length_text =request_clickhouse(query_data_length, auth, certificate_path).text
         min_date_text = request_clickhouse(query_min_date, auth, certificate_path).text
         max_date_text = request_clickhouse(query_max_date, auth, certificate_path).text
