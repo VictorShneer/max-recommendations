@@ -36,14 +36,14 @@ def metrika_get_data(integration_id):
     request_goals = request.args.get('goals')
     # TODO: validate start_date, goals
     current_app.logger.info("### selected-goals {}".format(request_goals))
-    clickhouse_table_name = '{}_{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
+    clickhouse_table_name = '{}.{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
     where_statesments = generate_where_statement({'start_date':[request_start_date], 'goals':request_goals.split(',')})
-    url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table_name))
+    url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table_name), current_user.crypto)
     url_for_visits_all_data = made_url_for_query(\
         VISITS_AGGR_QUERY.format(\
             clickhouse_table_name=clickhouse_table_name,\
             where_statesments = where_statesments
-            )\
+            ), current_user.crypto \
         )
 
     try:
