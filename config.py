@@ -15,7 +15,7 @@ class Config(object):
     LOG_TO_STDOUT = os.environ.get('LOG_TO_STDOUT')
 
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-        'sqlite:///' + os.path.join(basedir, 'app.db')
+        'sqlite:///' + os.path.join(basedir, 'app 2.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     KEY = 'u0bwk7n5i3u9w2g2hndz8yn346x361g0'

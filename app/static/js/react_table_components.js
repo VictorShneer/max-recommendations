@@ -12,15 +12,13 @@ class VisitRow extends React.Component {
 
   render() {
     const visits_data = [];
-    const columnsOrder = [
-    "ClientID",
-    "Client identities",
-    "Total goals complited",
-    "Total visits",
-    "Total Visits Email",
-    "Total goals with Email",
-    "Conversion (TG/TV)",
-    "Email power proportion"];
+    const columnsOrder = ['Email',
+                          'Total Visits',
+                          'Total Visits From Newsletter',
+                          'Total Goals Complited',
+                          'Total Goals From Newsletter',
+                          'Conversion (TG/TV)',
+                          'Email power proportion'];
 
     for(let columnName of columnsOrder) {
       visits_data.push(
