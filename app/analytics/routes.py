@@ -27,8 +27,8 @@ def generate_values(integration_id):
         list_of_column_names = ['DeviceCategory','OperatingSystem','RegionCity','URL','GoalsID','MobilePhone','MobilePhoneModel', 'Browser']
         list_of_answers = []
         for i in range(len(list_of_column_names)):
-            create_url = create_url_for_query('SELECT {smth} FROM db1.{crypto}_hits_{integration_id} GROUP BY {smth2};'.\
-                            format(crypto= current_user.crypto, integration_id=integration.id,smth=list_of_column_names[i],smth2=list_of_column_names[i]))
+            create_url = create_url_for_query('SELECT {smth} FROM {crypto}.hits_raw_{integration_id} GROUP BY {smth2};'.\
+                            format(crypto = current_user.crypto, integration_id = integration.id,smth = list_of_column_names[i],smth2 = list_of_column_names[i]), current_user.crypto)
             get_data = send_request_to_clickhouse(create_url).text
             list_of_answers.append(get_data)
             i += 1
@@ -39,12 +39,27 @@ def generate_values(integration_id):
             a[idx] = [v for v in val if v != '']
             # a[idx].append('Не выбрано')
 
+
+
+        # get goals
+        counter_id = integration.metrika_counter_id
+        metrika_key = integration.metrika_key
+        headers = {'Authorization':'OAuth {}'.format(metrika_key)}
+        ROOT = 'https://api-metrika.yandex.net/'
+        url = ROOT+'management/v1/counter/{}/goals'.format(counter_id)
+        r = requests.get(url, headers=headers)
+        current_app.logger.info('### get goals status code: {}'.format(r.status_code))
+        # print(r.json())
+        goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
+        print(goals)
+
+
         # Adding choices to the forms
         form.DeviceCategory.choices = [(g,g) for g in a[0]]
         form.OperatingSystem.choices = [(g,g) for g in a[1]]
         form.RegionCity.choices = [(g,g) for g in a[2]]
         form.URL.choices = [(g,g) for g in a[3]]
-        form.GoalsID.choices = [(g,g) for g in a[4]]
+        form.GoalsID.choices = [(g[0],g[1]) for g in goals]
         form.MobilePhone.choices = [(g,g) for g in a[5]]
         form.MobilePhoneModel.choices = [(g,g) for g in a[6]]
         form.Browser.choices = [(g,g) for g in a[7]]
@@ -99,13 +114,16 @@ def process_values():
                 elif i in ('Date'):
                     word = word + ' ' + str(dict_of_requests[i]).strip('['']') + ' and'
                 elif i in ('GoalsID'):
-                    word = word[:-4]
-                    word = word + ' and GoalsID  IN (' + str(dict_of_requests[i]).strip('['']') + ') and'
+                    print(type(dict_of_requests[i]))
+                    for j in dict_of_requests[i]:
+                        print('Here is j' + j)
+                        word = word + ' has(GoalsID,' + str(j) + ') !=0 or'
+
             word = word[:-4]
             word = word + " GROUP BY ClientID, extractURLParameter(URL, 'mxm')"
             #getting the answer from the db
-            create_url = create_url_for_query("SELECT ClientID, extractURLParameter(URL, 'mxm') FROM db1.{crypto}_hits_{integration_id} {smth};".\
-                                                format(crypto= current_user.crypto, integration_id=integration_id,smth=word))
+            create_url = create_url_for_query("SELECT ClientID, base64Decode(extractURLParameter(URL, 'mxm')) FROM {crypto}.hits_raw_{integration_id} {smth};".\
+                                                format(crypto= current_user.crypto, integration_id=integration_id,smth=word),current_user.crypto)
             print(create_url)
             get_data = send_request_to_clickhouse(create_url).text
 
@@ -113,18 +131,7 @@ def process_values():
             file_from_string = StringIO(get_data)
             columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = ["ClientID", "Hash"])
             pprint(columns_df)
-            list_of_emails = []
-            for index, row in columns_df[['Hash']].iterrows():
-                if row.values[0] is not np.nan:
-                    d = base64.b64decode(row.values[0])
-                    s2 = d.decode("UTF-8")
-                    list_of_emails.append(s2)
-                else:
-                    pass
-            df_of_emails = pd.DataFrame(list_of_emails, columns = ["Email"])
-            pprint(df_of_emails)
-            #making json
-            front_end_df= df_of_emails.astype(str)
+            front_end_df= columns_df.astype(str)
             json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
 
             return json_to_return

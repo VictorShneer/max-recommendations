@@ -72,13 +72,14 @@ $(document).ready(function(){
           },
           success: function ( data ){
               if (data) {
+                console.log(data)
                 const unparsed_data = JSON.parse(data);
                 unparsed_data.data.forEach(item => {
                 output = `
                 <div class="container">
                     <div class="row">
                         <div class="col">
-                            ${item.Email}
+                            ${item.Hash}
                         </div>
                     </div>
                 </div>
