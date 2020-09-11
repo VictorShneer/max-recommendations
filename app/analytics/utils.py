@@ -14,10 +14,9 @@ def current_user_own_integration(function):
             return function(integration_id)
     return wrapper
 
-def create_url_for_query(query):
+def create_url_for_query(query,db_name):
     host = current_app.config['CLICKHOUSE_HOST']
-    db = current_app.config['CLICKHOUSE_DB']
-    return 'https://{host}:8443/?database={db}&query={query}'.format(host=host, db=db, query=query)
+    return 'https://{host}:8443/?database={db}&query={query}'.format(host=host, db=db_name, query=query)
 
 def send_request_to_clickhouse(url):
     certificate_path = 'app/YandexInternalRootCA.crt'
