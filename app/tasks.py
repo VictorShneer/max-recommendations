@@ -32,21 +32,10 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss, regular_load=
     print()
     _set_task_progress(0)
     print('task', crypto, id, paramss,regular_load)
-
-    for count,params in enumerate(paramss):
-        try:
+    try:
+        for count,params in enumerate(paramss):
             _set_task_progress(50 * count // len(paramss))
             handle_integration(token, counter_id,crypto,id,params)
-        except SystemExit as err:
-            app.logger.info('### DATA already in click  -  {}'.format(err))
-            continue
-
-    try:
-        _set_task_progress(50)
-        app.logger.info('### GOOOO make_clickhouse_pre_aggr_visits')
-        make_clickhouse_pre_aggr_visits(token, counter_id,crypto,id, regular_load)
-        _set_task_progress(75)
-        drop_integration(crypto, id, source = 'visits')
         _set_task_progress(100)
     except Exception as err:
         _set_task_progress(100)

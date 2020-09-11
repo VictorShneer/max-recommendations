@@ -41,6 +41,10 @@ RENAME = {\
 PROPERTY_TO_SQL_DIC = {'start_date':'''firsttimevisit >= '{res}' ''',\
                         'goals':'''position(goalsall, '{res}') != 0 '''}
 
+def generate_grouped_columns_sql(restrictions):
+    return ''
+
+
 def generate_where_statement(restrictions):
     where_clause = ''
     # delete empty restrictions, for the cases when you have no goals to filter with
@@ -120,7 +124,7 @@ def request_visits_all_df(crypto, integration_id):
     list_of_column_names = columns_df[0].values
     # finishing visits all table
     file_from_string = StringIO(response_with_visits_all_data.text)
-
+    current_app.logger.info(list_of_column_names)
     try:
         visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=list_of_column_names, usecols=['ClientID','GoalsID', 'UTMSource','VisitID','StartURL','Date'])
     except Exception as err:
@@ -217,7 +221,7 @@ def build_pre_aggr_conversion_df(visits_all_data_df):
     # We can use a with statement to ensure threads are cleaned up promptly
     with concurrent.futures.ThreadPoolExecutor(max_workers=int(current_app.config['MAX_WORKERS'])) as executor:
         # Start the load operations and mark each future with its URL
-        future_to_url = [executor.submit(handle_unique_clientid_chunk, max_df[max_df['ClientID'] ==unique_clientid]) for unique_clientid in unique_client_ids]
+        future_to_url = [executor.submit(handle_unique_clientid_chunk, max_df[max_df['ClientID'] == unique_clientid]) for unique_clientid in unique_client_ids]
         for future in concurrent.futures.as_completed(future_to_url):
             try:
                 data = future.result()

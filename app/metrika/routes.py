@@ -23,6 +23,11 @@ VISITS_AGGR_QUERY = '''
     WHERE {where_statesments}
 '''
 
+VISITS_RAW_QUERY = '''
+    SELECT ClientID, {grouped_columns}
+    FROM {clickhouse_table_name}
+'''
+
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
 def metrika_get_data(integration_id):
@@ -38,6 +43,12 @@ def metrika_get_data(integration_id):
     current_app.logger.info("### selected-goals {}".format(request_goals))
     clickhouse_table_name = '{}.{}_{}_pre_aggr'.format(current_user.crypto, 'visits', integration_id)
     where_statesments = generate_where_statement({'start_date':[request_start_date], 'goals':request_goals.split(',')})
+    grouped_columns_sql = generate_grouped_columns_sql({'start_date':[request_start_date], 'goals':request_goals.split(',')})
+    print(VISITS_RAW_QUERY.format(\
+        clickhouse_table_name=clickhouse_table_name,\
+        grouped_columns = grouped_columns_sql
+        ), current_user.crypto \
+    )
     url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table_name), current_user.crypto)
     url_for_visits_all_data = made_url_for_query(\
         VISITS_AGGR_QUERY.format(\
