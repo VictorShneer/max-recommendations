@@ -24,7 +24,7 @@ def generate_values(integration_id):
     # print(form)
     try:
         # Getting the data needed for the drop down menu
-        list_of_column_names = ['DeviceCategory','OperatingSystem','RegionCity','URL','GoalsID','MobilePhone','MobilePhoneModel', 'Browser']
+        list_of_column_names = ['OperatingSystem','RegionCity','URL','MobilePhone','MobilePhoneModel', 'Browser']
         list_of_answers = []
         for i in range(len(list_of_column_names)):
             create_url = create_url_for_query('SELECT {smth} FROM {crypto}.hits_raw_{integration_id} GROUP BY {smth2};'.\
@@ -39,8 +39,6 @@ def generate_values(integration_id):
             a[idx] = [v for v in val if v != '']
             # a[idx].append('Не выбрано')
 
-
-
         # get goals
         counter_id = integration.metrika_counter_id
         metrika_key = integration.metrika_key
@@ -49,20 +47,17 @@ def generate_values(integration_id):
         url = ROOT+'management/v1/counter/{}/goals'.format(counter_id)
         r = requests.get(url, headers=headers)
         current_app.logger.info('### get goals status code: {}'.format(r.status_code))
-        # print(r.json())
         goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
-        print(goals)
 
 
         # Adding choices to the forms
-        form.DeviceCategory.choices = [(g,g) for g in a[0]]
-        form.OperatingSystem.choices = [(g,g) for g in a[1]]
-        form.RegionCity.choices = [(g,g) for g in a[2]]
-        form.URL.choices = [(g,g) for g in a[3]]
+        form.OperatingSystem.choices = [(g,g) for g in a[0]]
+        form.RegionCity.choices = [(g,g) for g in a[1]]
+        form.URL.choices = [(g,g) for g in a[2]]
         form.GoalsID.choices = [(g[0],g[1]) for g in goals]
-        form.MobilePhone.choices = [(g,g) for g in a[5]]
-        form.MobilePhoneModel.choices = [(g,g) for g in a[6]]
-        form.Browser.choices = [(g,g) for g in a[7]]
+        form.MobilePhone.choices = [(g,g) for g in a[3]]
+        form.MobilePhoneModel.choices = [(g,g) for g in a[4]]
+        form.Browser.choices = [(g,g) for g in a[5]]
         #
         # if form.validate_on_submit():
         #     return redirect(url_for('analytics.after_analytics'))
@@ -104,25 +99,22 @@ def process_values():
 
             #trying to concat the fucking query
             #TO DO: last value
-            word = "WHERE URL LIKE '%mxm=%' and "
-            for i in dict_of_requests:
+            word = "WHERE"
+            for index, i in enumerate(dict_of_requests):
                 if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity', 'MobilePhone', 'MobilePhoneModel', 'Browser'):
-                    word = word + ' ' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') and'
+                    word = word + ' h.' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') AND'
                 elif i in ('clause_visits'):
-                    word = word[:-4]
-                    word = word + ' and Date ' + str(dict_of_requests[i]).strip("'['']'")
+                    word = word + ' h.Date ' + str(dict_of_requests[i]).strip("'['']'")
                 elif i in ('Date'):
-                    word = word + ' ' + str(dict_of_requests[i]).strip('['']') + ' and'
+                    word = word + ' ' + str(dict_of_requests[i]).strip('['']') + ' AND'
                 elif i in ('GoalsID'):
-                    print(type(dict_of_requests[i]))
                     for j in dict_of_requests[i]:
                         print('Here is j' + j)
-                        word = word + ' has(GoalsID,' + str(j) + ') !=0 or'
-
-            word = word[:-4]
-            word = word + " GROUP BY ClientID, extractURLParameter(URL, 'mxm')"
+                        word = word + ' has(h.GoalsID,' + str(j) + ') !=0 or'
+            word = word[:-3]
+            word = word + " GROUP BY emails, ClientID"
             #getting the answer from the db
-            create_url = create_url_for_query("SELECT ClientID, base64Decode(extractURLParameter(URL, 'mxm')) FROM {crypto}.hits_raw_{integration_id} {smth};".\
+            create_url = create_url_for_query("SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails FROM {crypto}.hits_raw_{integration_id} h JOIN georgelocal.visits_raw_1 v on v.ClientID = h.ClientID  {smth};".\
                                                 format(crypto= current_user.crypto, integration_id=integration_id,smth=word),current_user.crypto)
             print(create_url)
             get_data = send_request_to_clickhouse(create_url).text
@@ -130,6 +122,8 @@ def process_values():
             #doing magic with the data
             file_from_string = StringIO(get_data)
             columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = ["ClientID", "Hash"])
+            columns_df = columns_df.dropna()
+            columns_df = columns_df.drop_duplicates()
             pprint(columns_df)
             front_end_df= columns_df.astype(str)
             json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
