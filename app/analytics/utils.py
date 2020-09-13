@@ -12,6 +12,8 @@ def current_user_own_integration(function):
             abort(404)
         else:
             return function(integration_id)
+    # Renaming the function name:
+    wrapper.__name__ = function.__name__
     return wrapper
 
 def create_url_for_query(query,db_name):
@@ -32,3 +34,10 @@ def get_gr_campaigns(api_key):
         print(r.text)
         raise Exception(('Нет контакта с GetResponse'))
     return [(campaign['campaignId'],campaign['name']) for campaign in r.json()]
+
+
+def create_gr_campaign(campaing_name,api_key):
+    r = requests.post('https://api.getresponse.com/v3/campaigns', \
+                headers={'X-Auth-Token': 'api-key {}'.format(api_key)}, \
+                json = {'name':campaing_name})
+    return r

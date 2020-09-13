@@ -1,5 +1,7 @@
 $(document).ready(function(){
 
+  const create_campaign_link = document.getElementById('create_campaign');
+  create_campaign_link.addEventListener('click', drop_down_input_create_campaign);
 
   $('#submit').click(function(event){
 
@@ -107,12 +109,32 @@ $(document).ready(function(){
       }
   });
 
-  const create_campaign_link = document.getElementById('create_campaign');
-  create_campaign_link.addEventListener('click', drop_down_input_create_campaign);
 
-  function drop_down_input_create_campaign(){
-      console.log('yeah');
-      return ''
+
+  function drop_down_input_create_campaign(event){
+      event.preventDefault();
+      $form = $("<form id='create_campaign_form'></form>");
+      $noformsuccess = $('<p id="newcampaingform" style="color:green;">Успех! Перезагрузите страницу, чтобы выбрать новый список.<p>')
+      $noformfail = $('<p id="newcampaingform" style="color:red;">Не удалось создать список. Попробуйте другое имя<p>')
+      inputs = '<input type="text" placeholder="Название">\
+                <input type="submit" value="Создать">';
+      $form.append(inputs);
+      $('#newcampaingform').replaceWith($form);
+      $("#create_campaign_form").submit(function( event ) {
+        event.preventDefault();
+        create_gr_campaign($('#create_campaign_form :input').first().val());
+      });
+
+    }
+  function create_gr_campaign(campaign_name){
+    integration_id = window.location.href.split('/').pop()
+    $.post('/analytics/create_gr_campaign/'+integration_id, {
+        gr_campaign_name : campaign_name,
+    }).done(function(response) {
+        $('#create_campaign_form').replaceWith($noformsuccess);
+    }).fail(function() {
+        $('#create_campaign_form').replaceWith($noformfail);
+    });
   }
   // $('#sendGR').click(function(event){
   //

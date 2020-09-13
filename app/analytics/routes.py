@@ -7,7 +7,8 @@ import requests
 from app.analytics.utils import current_user_own_integration, \
                                 create_url_for_query, \
                                 send_request_to_clickhouse, \
-                                get_gr_campaigns
+                                get_gr_campaigns, \
+                                create_gr_campaign
 import traceback
 from pprint import pprint
 import pandas as pd
@@ -17,6 +18,22 @@ from io import StringIO
 import base64
 import urllib.parse
 import numpy as np
+
+
+@bp.route('/analytics/create_gr_campaign/<integration_id>', methods=["POST"])
+@current_user_own_integration
+@login_required
+def create_gr_campaign_route(integration_id):
+    integration = Integration.query.filter_by(id = integration_id).first_or_404()
+    response = create_gr_campaign(\
+                        request.form['gr_campaign_name'], \
+                        integration.api_key)
+    if response.status_code != 201:
+        print(response.status_code)
+        print(response.text)
+        abort(404)
+    return '<200>'
+
 
 @bp.route('/analytics/<integration_id>', methods = ['GET', 'POST'])
 @login_required
