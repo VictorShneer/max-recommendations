@@ -33,39 +33,36 @@ COLUMNS = ['Email', \
             'Conversion (TG/TV)', \
             'Email power proportion']
 
-    # "ClientID",
-    # "Client identities",
-    # "Total goals complited",
-    # "Total visits",
-    # "Total Visits Email",
-    # "Total goals with Email",
-    # "Conversion (TG/TV)",
-    # "Email power proportion"];
-
 
 VISITS_RAW_QUERY = '''
-    SELECT
-        CASE  when extractURLParameter(StartURL, 'mxm') != ''
-              then base64Decode(extractURLParameter(StartURL, 'mxm'))
-              else concat('no-email',toString(ClientID)) end as email,
+    select * from(
+        SELECT
+            CASE  when extractURLParameter(StartURL, 'mxm') != ''
+                  then base64Decode(extractURLParameter(StartURL, 'mxm'))
+                  else concat('no-email',toString(ClientID)) end as email,
 
-        count(VisitID) as total_visits,
+            sum(case when Date >= '{start_date}'
+                then 1 else 0 end) as total_visits,
 
-        sum(case when extractURLParameter(StartURL, 'mxm') != ''
-            and (Date >= '{start_date}')
-            then 1 else 0 end) as total_visits_from_newsletter,
+            sum(case when extractURLParameter(StartURL, 'mxm') != ''
+                and (Date >= '{start_date}')
+                then 1 else 0 end) as total_visits_from_newsletter,
 
-        sum(length(GoalsID)) as total_goals,
+            sum(case when Date >= '{start_date}'
+                then length(GoalsID) else 0 end) as total_goals,
 
-        sum(case when extractURLParameter(StartURL, 'mxm') != ''
-            {grouped_columns}
-            then 1 else 0 end) as total_goals_from_newsletter,
+            sum(case when extractURLParameter(StartURL, 'mxm') != ''
+                {grouped_columns}
+                then length(GoalsID) else 0 end) as total_goals_from_newsletter,
 
-        total_goals/total_visits,
-        total_goals_from_newsletter/total_goals
-    FROM {clickhouse_table_name}
-    group by email
+            total_goals/total_visits,
+            total_goals_from_newsletter/total_goals
+        FROM {clickhouse_table_name}
+        group by email
+    )
+    where total_visits != 0
 '''
+
 
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
@@ -108,16 +105,14 @@ def metrika_get_data(integration_id):
         flash('{} Ошибки в запросе или в настройках итеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
-    current_app.logger.info('### request_clickhouse done! columns: {}\ndata: {}'.format(response_with_columns_names, response_with_visits_all_data))
+    # current_app.logger.info('### request_clickhouse done! columns: {}\ndata: {}'.format(response_with_columns_names, response_with_visits_all_data))
     file_from_string = StringIO(response_with_visits_all_data.text)
     visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=COLUMNS)
-    print(visits_all_data_df.head())
-    # try:
-    #     max_df = build_conversion_df(visits_all_data_df)
-    # except Exception as err:
-    #     current_app.logger.info('### build_conversion_df EXCEPTION {}'.format(err))
-    #     abort(404)
-    # building max data frame
+    if request_goals:
+        print('Before and after goals filter')
+        print(visits_all_data_df.shape[0])
+        visits_all_data_df = visits_all_data_df[visits_all_data_df['Total Goals Complited']!=0]
+        print(visits_all_data_df.shape[0])
     max_df = visits_all_data_df
 
     # max_no_email_1graph = [ [int(max_row['Total Visits No Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits No Email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
@@ -135,7 +130,7 @@ def metrika_get_data(integration_id):
     conv_email_sum = max_df[max_df['Total Visits From Newsletter'] != 0]['Conversion (TG/TV)'].sum()
     conv_no_email_sum = max_df[max_df['Total Visits From Newsletter'] == 0]['Conversion (TG/TV)'].sum()
 
-    front_end_df = max_df[['Email', 'Total Goals Complited', 'Total Visits', 'Total Visits From Newsletter', 'Total Goals From Newsletter', 'Conversion (TG/TV)', 'Email power proportion']]
+    front_end_df = max_df[['Email', 'Total Visits', 'Total Visits From Newsletter','Total Goals Complited', 'Total Goals From Newsletter', 'Conversion (TG/TV)', 'Email power proportion']]
     front_end_df= front_end_df.astype(str)
     json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
 

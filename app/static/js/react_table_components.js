@@ -47,7 +47,7 @@ class VisitsTable extends React.Component {
     const rows = [];
     const headerNames = [];
     if(this.props.visits){
-      this.props.visits.data.slice(0, 5).forEach((visit) => {
+      this.props.visits.data.slice(0, 60).forEach((visit) => {
         rows.push(
           <VisitRow visit={visit} />
         );
@@ -77,7 +77,6 @@ class SearchBar extends React.Component {
   constructor(props) {
       super(props);
       this.state = {value: this.props.default_start_date};
-      // console.log(this.state.value);
       this.handleChange = this.handleChange.bind(this);
     }
 
@@ -125,19 +124,11 @@ class FilterableVisitsTable extends React.Component {
     this.fetch_metrika_view.bind(this.state.start_date);
     this.fetch_metrika_view.bind(this.state.goals);
 
-    // console.log('---');
-    // console.log(this.state.start_date);
-    // console.log(this.state.goals);
-    // console.log(this.state.url);
-    // console.log('---');
-
-
   }
 
   fetch_metrika_view(date){
     this.setState({ isLoading: true });
     const url = this.state.url+'start_date='+date+"&goals="+getSelectedGoals()
-    console.log(url)
     fetch(url)
         .then(response => {
           if (response.ok) {
@@ -149,7 +140,6 @@ class FilterableVisitsTable extends React.Component {
         .then(data => {
           // for table
           this.setState({visits: data, isLoading: false });
-          console.log(data);
           // for graph
           drawChart(
             data.max_no_email_1graph,

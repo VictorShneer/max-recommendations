@@ -69,10 +69,7 @@ def generate_grouped_columns_sql(restrictions):
             else:
                 columns_claise+=state
         # close ) and add AND for the new WHERE state
-        columns_claise += ')'
-    # delete last AND
-    # where_clause = where_clause[:-4]
-    print(columns_claise)
+        columns_claise += ') '
     return columns_claise
 
 def generate_where_statement(restrictions):

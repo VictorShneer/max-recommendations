@@ -6,3 +6,4 @@ app.db
 *.pyc
 dump.rdb
 app 2.db
+/migrations
