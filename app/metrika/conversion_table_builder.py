@@ -1,33 +1,7 @@
-CREATE_PRE_AGGR_TABLE_QUERY =  '''
-    CREATE TABLE {table_name} (
-        clientid UInt32,
-        clientemail String,
-        totalgoals UInt32,
-        firsttimevisit Date,
-        goalsall String,
-        totalvisits UInt32,
-        visitswithoutemail UInt32,
-        visitswithemail UInt32,
-        countgoalswithemail UInt32,
-        goalswithemail String
-    ) ENGINE = Log
-'''
-
-RENAME = {\
-    'clientid':'ClientID',\
-    'clientemail':'Client identities',\
-    'totalgoals':'Total goals complited',\
-    'totalvisits':'Total visits',\
-    'visitswithoutemail':'Total Visits No Email',\
-    'visitswithemail': 'Total Visits Email',\
-    'countgoalswithemail':'Total goals with Email',\
-    'goalswithemail':'Goals complited with email',\
-    }
-
-
 PROPERTY_TO_SQL_DIC = {'start_date':'''Date >= '{res}' ''',\
                         'goals':'''has(GoalsID, {res}) != 0 '''}
 
+# this is what generate_grouped_columns_sql does
 '''
 
 --         and Date > '2020-06-20'
