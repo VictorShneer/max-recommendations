@@ -190,9 +190,9 @@ function getSelectedGoals(){
 
 function setTotalUniqueVisitors(total_unique_visitors){
   document.getElementById('total_unique_visitors').innerHTML =
-                                            'Выбрано ' +
+                                            'Выбрано <b>' +
                                             total_unique_visitors +
-                                            " уникальных посетителей"
+                                            "</b> уникальных посетителей"
                                             ;
 }
 React.render(<FilterableVisitsTable
