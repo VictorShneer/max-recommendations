@@ -82,7 +82,7 @@ def create_integration():
         flash('Настройка вашего аккаунта еще не закончена')
         return redirect(url_for('main.user_integrations'))
     form = EditIntegration()
-    if form.validate_on_submit():
+    if form.validate_on_submit():            
         integration = Integration(
         integration_name = form.integration_name.data,
         api_key = form.api_key.data,
