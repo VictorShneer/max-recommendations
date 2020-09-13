@@ -24,3 +24,11 @@ def send_request_to_clickhouse(url):
     }
     r = requests.get(url = url, headers=auth, verify=certificate_path)
     return r
+
+def get_gr_campaigns(api_key):
+    r = requests.get('https://api.getresponse.com/v3/campaigns?perPage=1000', \
+                headers={'X-Auth-Token': 'api-key {}'.format(api_key)})
+    if r.status_code != 200 :
+        print(r.text)
+        raise Exception(('Нет контакта с GetResponse'))
+    return [(campaign['campaignId'],campaign['name']) for campaign in r.json()]

@@ -131,8 +131,8 @@ def create_integration():
 def edit_integration(integration_id):
 
     form = EditIntegration()
-    form.metrika_key.render_kw = {'disabled': 'disabled'}
-    form.metrika_counter_id.render_kw = {'disabled': 'disabled'}
+    form.metrika_key.render_kw = {'readonly': True}
+    form.metrika_counter_id.render_kw = {'readonly':True}
     del form.start_date
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):

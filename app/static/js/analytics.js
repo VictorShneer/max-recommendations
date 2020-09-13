@@ -107,6 +107,13 @@ $(document).ready(function(){
       }
   });
 
+  const create_campaign_link = document.getElementById('create_campaign');
+  create_campaign_link.addEventListener('click', drop_down_input_create_campaign);
+
+  function drop_down_input_create_campaign(){
+      console.log('yeah');
+      return ''
+  }
   // $('#sendGR').click(function(event){
   //
   //     event.preventDefault()

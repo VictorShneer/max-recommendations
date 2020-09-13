@@ -4,7 +4,10 @@ from app.models import User, Integration
 from app import db
 from app.analytics import bp
 import requests
-from app.analytics.utils import current_user_own_integration, create_url_for_query, send_request_to_clickhouse
+from app.analytics.utils import current_user_own_integration, \
+                                create_url_for_query, \
+                                send_request_to_clickhouse, \
+                                get_gr_campaigns
 import traceback
 from pprint import pprint
 import pandas as pd
@@ -49,7 +52,8 @@ def generate_values(integration_id):
         current_app.logger.info('### get goals status code: {}'.format(r.status_code))
         goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
 
-
+        # get gr campaigns
+        gr_campaigns = get_gr_campaigns(integration.api_key)
         # Adding choices to the forms
         form.OperatingSystem.choices = [(g,g) for g in a[0]]
         form.RegionCity.choices = [(g,g) for g in a[1]]
@@ -66,7 +70,7 @@ def generate_values(integration_id):
         flash('{} Ошибки в настройках интеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
         # return render_template('analytics.html')
-    return render_template('analytics.html', list=a, form=form)
+    return render_template('analytics.html', list=a, form=form, gr_campaigns = gr_campaigns)
 
 
 
