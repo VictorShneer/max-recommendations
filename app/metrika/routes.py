@@ -48,8 +48,8 @@ VISITS_RAW_QUERY = '''
                 {grouped_columns}
                 then length(GoalsID) else 0 end) as total_goals_from_newsletter,
 
-            intDivOrZero(total_goals, total_visits),
-            intDivOrZero(total_goals_from_newsletter, total_goals)
+            multiply(intDivOrZero(total_goals, total_visits),100) as conversion,
+            multiply(intDivOrZero(total_goals_from_newsletter, total_goals),100) as emailpower
         FROM {clickhouse_table_name}
         group by email
     )
@@ -98,18 +98,11 @@ def metrika_get_data(integration_id):
         flash('{} Ошибки в запросе или в настройках итеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
-    # current_app.logger.info('### request_clickhouse done! columns: {}\ndata: {}'.format(response_with_columns_names, response_with_visits_all_data))
     file_from_string = StringIO(response_with_visits_all_data.text)
     visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=COLUMNS)
     if request_goals:
-        # print('Before and after goals filter')
-        # print(visits_all_data_df.shape[0])
         visits_all_data_df = visits_all_data_df[visits_all_data_df['Total Goals Complited']!=0]
-        # print(visits_all_data_df.shape[0])
     max_df = visits_all_data_df
-
-    # max_no_email_1graph = [ [int(max_row['Total Visits No Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits No Email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
-    # max_email_1graph = [ [int(max_row['Total Visits Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits Email','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
 
     max_no_email_1graph = [ [int(max_row['Total Visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Total Visits From Newsletter'] != 0][['Total Visits','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
     max_email_1graph = [ [int(max_row['Total Visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Total Visits From Newsletter'] == 0][['Total Visits','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
@@ -172,7 +165,6 @@ def metrika(integration_id):
     url = ROOT+'management/v1/counter/{}/goals'.format(counter_id)
     r = requests.get(url, headers=headers)
     current_app.logger.info('### get goals status code: {}'.format(r.status_code))
-    # print(r.json())
     goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
 
     if (current_user.email == 'sales@getresponse.com'):
