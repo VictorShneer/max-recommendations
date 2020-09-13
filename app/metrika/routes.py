@@ -15,9 +15,7 @@ from app.metrika import bp
 from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
-from app.metrika.conversion_table_builder import build_conversion_df,\
-                                                    generate_where_statement,\
-                                                    generate_grouped_columns_sql
+from app.metrika.conversion_table_builder import generate_grouped_columns_sql
 
 VISITS_AGGR_QUERY = '''
     SELECT *
