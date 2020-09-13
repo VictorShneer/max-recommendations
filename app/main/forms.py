@@ -21,6 +21,14 @@ class EditIntegration(FlaskForm):
         if r.status_code != 200 :
             raise ValidationError(('Нет контакта с GetResponse'))
 
+    def validate_metrika_counter_id(self, metrika_counter_id):
+        headers = {'Authorization':'OAuth {}'.format(self.metrika_key.data)}
+        ROOT = 'https://api-metrika.yandex.net/'
+        url = ROOT+'management/v1/counter/{}/logrequests'.format(metrika_counter_id.data)
+        r = requests.get(url, headers=headers)
+        if r.status_code != 200 :
+            raise ValidationError(('Нет контакта с Yandex Метрикой'))
+
 class LinkGenerator(FlaskForm):
     link = StringField("Введите ссылку", validators=[DataRequired()])
     submit = SubmitField("Получить ссылку")
