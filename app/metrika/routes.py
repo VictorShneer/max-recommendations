@@ -48,8 +48,8 @@ VISITS_RAW_QUERY = '''
                 {grouped_columns}
                 then length(GoalsID) else 0 end) as total_goals_from_newsletter,
 
-            total_goals/total_visits,
-            total_goals_from_newsletter/total_goals
+            intDivOrZero(total_goals, total_visits),
+            intDivOrZero(total_goals_from_newsletter, total_goals)
         FROM {clickhouse_table_name}
         group by email
     )
@@ -102,10 +102,10 @@ def metrika_get_data(integration_id):
     file_from_string = StringIO(response_with_visits_all_data.text)
     visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=COLUMNS)
     if request_goals:
-        print('Before and after goals filter')
-        print(visits_all_data_df.shape[0])
+        # print('Before and after goals filter')
+        # print(visits_all_data_df.shape[0])
         visits_all_data_df = visits_all_data_df[visits_all_data_df['Total Goals Complited']!=0]
-        print(visits_all_data_df.shape[0])
+        # print(visits_all_data_df.shape[0])
     max_df = visits_all_data_df
 
     # max_no_email_1graph = [ [int(max_row['Total Visits No Email']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[['Total Visits No Email','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
