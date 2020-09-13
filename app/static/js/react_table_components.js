@@ -138,6 +138,8 @@ class FilterableVisitsTable extends React.Component {
           }
         })
         .then(data => {
+          // for unique visitors counterID
+          setTotalUniqueVisitors(data.total_unique_visitors)
           // for table
           this.setState({visits: data, isLoading: false });
           // for graph
@@ -182,6 +184,14 @@ function getSelectedGoals(){
   var selected_goals = [...select.selectedOptions]
                      .map(option => option.value);
   return selected_goals;
+}
+
+function setTotalUniqueVisitors(total_unique_visitors){
+  document.getElementById('total_unique_visitors').innerHTML =
+                                            'Выбрано ' +
+                                            total_unique_visitors +
+                                            " уникальных посетителей"
+                                            ;
 }
 React.render(<FilterableVisitsTable
                 atb={document.getElementById('atb').textContent}

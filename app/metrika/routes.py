@@ -125,7 +125,7 @@ def metrika_get_data(integration_id):
     json_to_return['conv_no_email_sum'] = str(conv_no_email_sum)
     json_to_return['max_no_email_1graph'] = json.dumps(max_no_email_1graph)
     json_to_return['max_email_1graph'] = json.dumps(max_email_1graph)
-
+    json_to_return['total_unique_visitors'] = str(front_end_df.shape[0])
     return json_to_return
 
 @bp.route('/metrika/<integration_id>', methods = ['GET'])
@@ -142,13 +142,13 @@ def metrika(integration_id):
         'X-ClickHouse-Key': current_app.config['CLICKHOUSE_PASSWORD']
         }
         clickhouse_raw_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'visits', integration_id)
-        query_count = 'SELECT count(Date) FROM {}'.format(clickhouse_raw_table_name)
+        # query_count = 'SELECT count(Date) FROM {}'.format(clickhouse_raw_table_name)
         query_min = 'SELECT min(Date) FROM {}'.format(clickhouse_raw_table_name)
         query_max = 'SELECT max(Date) FROM {}'.format(clickhouse_raw_table_name)
-        query_data_length = made_url_for_query(query_count, current_user.crypto)
+        # query_data_length = made_url_for_query(query_count, current_user.crypto)
         query_min_date = made_url_for_query(query_min, current_user.crypto)
         query_max_date = made_url_for_query(query_max, current_user.crypto)
-        data_length_text =request_clickhouse(query_data_length, auth, certificate_path).text
+        # data_length_text =request_clickhouse(query_data_length, auth, certificate_path).text
         min_date_text = request_clickhouse(query_min_date, auth, certificate_path).text
         max_date_text = request_clickhouse(query_max_date, auth, certificate_path).text
 
@@ -174,7 +174,6 @@ def metrika(integration_id):
             'metrika.html',\
             min_date=min_date_text.strip(),\
             max_date=max_date_text.strip(),\
-            data_length = data_length_text,\
             integration_name=integration.integration_name,\
             integration_id=integration_id,\
             goals=goals)
