@@ -138,6 +138,8 @@ class FilterableVisitsTable extends React.Component {
           }
         })
         .then(data => {
+          // for date input field
+          this.setState({start_date: date});
           // for unique visitors counterID
           setTotalUniqueVisitors(data.total_unique_visitors)
           // for table
