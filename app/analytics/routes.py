@@ -20,6 +20,7 @@ import urllib.parse
 import numpy as np
 
 
+
 @bp.route('/analytics/create_gr_campaign/<integration_id>', methods=["POST"])
 @current_user_own_integration
 @login_required
@@ -154,9 +155,12 @@ def process_values():
                 having = having[:-6]
             else:
                 having = having[:-3]
+
+            whole = "SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails FROM {crypto}.hits_raw_{integration_id} h JOIN georgelocal.visits_raw_1 v on v.ClientID = h.ClientID {where} GROUP BY emails, ClientID {having};".\
+                                                format(crypto= current_user.crypto, integration_id=integration_id,where=where, having=having)
+            whole = whole. replace("#", "%") 
             #getting the answer from the db
-            create_url = create_url_for_query("SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails FROM {crypto}.hits_raw_{integration_id} h JOIN georgelocal.visits_raw_1 v on v.ClientID = h.ClientID {where} GROUP BY emails, ClientID {having};".\
-                                                format(crypto= current_user.crypto, integration_id=integration_id,where=where, having=having),current_user.crypto)
+            create_url = create_url_for_query(whole,current_user.crypto)
             print(create_url)
             get_data = send_request_to_clickhouse(create_url).text
 
