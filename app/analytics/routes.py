@@ -44,7 +44,7 @@ def generate_values(integration_id):
     # print(form)
     try:
         # Getting the data needed for the drop down menu
-        list_of_column_names = ['OperatingSystem','RegionCity','URL','MobilePhone','MobilePhoneModel', 'Browser']
+        list_of_column_names = ['OperatingSystem','RegionCity','cutQueryString(URL)','MobilePhone','MobilePhoneModel', 'Browser']
         list_of_answers = []
         for i in range(len(list_of_column_names)):
             create_url = create_url_for_query('SELECT {smth} FROM {crypto}.hits_raw_{integration_id} GROUP BY {smth2};'.\
@@ -148,7 +148,7 @@ def process_values():
                 elif i in ('URL'):
                     for j in dict_of_requests['URL']:
                         if str(dict_of_requests['clause_url']).strip("'['']'") == '1':
-                            having = having + " arrayStringConcat(groupArray(h.URL)) like '" + j + "%' OR "
+                            having = having + " arrayStringConcat(groupArray(h.URL)) like '%" + j + "%' OR "
                         elif str(dict_of_requests['clause_url']).strip("'['']'") == '2':
                             having = having + " has(groupArray(h.URL), '" + j + "') OR "
 
