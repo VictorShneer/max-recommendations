@@ -114,29 +114,51 @@ def process_values():
             for i in dict_of_requests:
                 for k in dict_of_requests[i]:
                     for j in spravochnik:
-                        if k == j and i not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals'):
+                        if k == j and i not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url'):
                             dict_of_requests[i] = spravochnik[j]
             # print(dict_of_requests)
 
             #trying to concat the fucking query
             #TO DO: last value
-            word = "WHERE"
+            where = "WHERE has(v.WatchIDs, h.WatchID) = 1 AND"
+            having = "HAVING"
             for index, i in enumerate(dict_of_requests):
                 if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity', 'MobilePhone', 'MobilePhoneModel', 'Browser'):
-                    word = word + ' h.' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') AND'
+                    where = where + ' h.' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') AND'
                 elif i in ('clause_visits'):
-                    word = word + ' h.Date ' + str(dict_of_requests[i]).strip("'['']'")
+                    where = where + ' h.Date ' + str(dict_of_requests[i]).strip("'['']'")
                 elif i in ('Date'):
-                    word = word + ' ' + str(dict_of_requests[i]).strip('['']') + ' AND'
+                    where = where + ' ' + str(dict_of_requests[i]).strip('['']') + ' AND'
                 elif i in ('GoalsID'):
                     for j in dict_of_requests[i]:
-                        print('Here is j' + j)
-                        word = word + ' has(h.GoalsID,' + str(j) + ') !=0 or'
-            word = word[:-3]
-            word = word + " GROUP BY emails, ClientID"
+                        where = where + ' has(h.GoalsID,' + str(j) + ') !=0 or'
+                elif i in ('amount_of_visits'):
+                    print('hui te')
+            where = where[:-3]
+
+            for index, i in enumerate(dict_of_requests):
+                if i in ('clause_visits_from_to'):
+                    having = having + ' count(v.VisitID) ' + str(dict_of_requests[i]).strip("'['']'")
+                elif i in ('amount_of_visits'):
+                    having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
+                elif i in ('clause_goals'):
+                    having = having + ' sum(length(h.GoalsID)) ' + str(dict_of_requests[i]).strip("'['']'")
+                elif i in ('amount_of_goals'):
+                    having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
+                elif i in ('URL'):
+                    for j in dict_of_requests['URL']:
+                        if str(dict_of_requests['clause_url']).strip("'['']'") == '1':
+                            having = having + " arrayStringConcat(groupArray(h.URL)) like '" + j + "%' OR "
+                        elif str(dict_of_requests['clause_url']).strip("'['']'") == '2':
+                            having = having + " has(groupArray(h.URL), '" + j + "') OR "
+
+            if having == 'HAVING':
+                having = having[:-6]
+            else:
+                having = having[:-3]
             #getting the answer from the db
-            create_url = create_url_for_query("SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails FROM {crypto}.hits_raw_{integration_id} h JOIN georgelocal.visits_raw_1 v on v.ClientID = h.ClientID  {smth};".\
-                                                format(crypto= current_user.crypto, integration_id=integration_id,smth=word),current_user.crypto)
+            create_url = create_url_for_query("SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails FROM {crypto}.hits_raw_{integration_id} h JOIN georgelocal.visits_raw_1 v on v.ClientID = h.ClientID {where} GROUP BY emails, ClientID {having};".\
+                                                format(crypto= current_user.crypto, integration_id=integration_id,where=where, having=having),current_user.crypto)
             print(create_url)
             get_data = send_request_to_clickhouse(create_url).text
 
@@ -156,81 +178,3 @@ def process_values():
     elif request.method == 'GET':
         print("last hui")
     return render_template('after_analytics.html')
-
-
-
-
-    @bp.route('/analytics/getdata123', methods = ['GET','POST'])
-    @login_required
-    # @current_user_own_integration
-    def process_values():
-        if request.method == 'POST':
-            try:
-                #geting the dict from the form
-                dict_of_requests = {}
-                dict = request.form.to_dict(flat=False)
-                pprint(dict)
-            #     for i in dict:
-            #         for k in dict[i]:
-            #             if k == '0' or k == 'Не выбрано' or k == '' or i == 'csrf_token':
-            #                 pass
-            #             else:
-            #                 dict_of_requests[i] = dict[i]
-            #     # print(dict_of_requests)
-            #
-            #     #changing the values for the query
-            #     spravochnik = {'1':['>='], '2':['<='],'3':['=']}
-            #     for i in dict_of_requests:
-            #         for k in dict_of_requests[i]:
-            #             for j in spravochnik:
-            #                 if k == j and i not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals'):
-            #                     dict_of_requests[i] = spravochnik[j]
-            #     # print(dict_of_requests)
-            #
-            #     #trying to concat the fucking query
-            #     #TO DO: last value
-            #     word = "WHERE URL LIKE '%mxm=%' and "
-            #     for i in dict_of_requests:
-            #         if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity', 'MobilePhone', 'MobilePhoneModel', 'Browser'):
-            #             word = word + ' ' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') and'
-            #         elif i in ('clause_visits'):
-            #             word = word[:-4]
-            #             word = word + ' and Date ' + str(dict_of_requests[i]).strip("'['']'")
-            #         elif i in ('Date'):
-            #             word = word + ' ' + str(dict_of_requests[i]).strip('['']') + ' and'
-            #         elif i in ('GoalsID'):
-            #             word = word[:-4]
-            #             word = word + ' and GoalsID  IN (' + str(dict_of_requests[i]).strip('['']') + ') and'
-            #     word = word[:-4]
-            #     word = word + " GROUP BY ClientID, extractURLParameter(URL, 'mxm')"
-            #     #getting the answer from the db
-            #     create_url = create_url_for_query("SELECT ClientID, extractURLParameter(URL, 'mxm') FROM db1.{crypto}_hits_{integration_id} {smth};".\
-            #                                         format(crypto= current_user.crypto, integration_id=integration_id,smth=word))
-            #     print(create_url)
-            #     get_data = send_request_to_clickhouse(create_url).text
-            #
-            #     #doing magic with the data
-            #     file_from_string = StringIO(get_data)
-            #     columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = ["ClientID", "Hash"])
-            #     pprint(columns_df)
-            #     list_of_emails = []
-            #     for index, row in columns_df[['Hash']].iterrows():
-            #         if row.values[0] is not np.nan:
-            #             d = base64.b64decode(row.values[0])
-            #             s2 = d.decode("UTF-8")
-            #             list_of_emails.append(s2)
-            #         else:
-            #             pass
-            #     df_of_emails = pd.DataFrame(list_of_emails, columns = ["Email"])
-            #     pprint(df_of_emails)
-            #     #making json
-            #     front_end_df= df_of_emails.astype(str)
-            #     json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
-            #
-            #     return json_to_return
-            except Exception as err:
-                print(err)
-            return render_template('index.html')
-        elif request.method == 'GET':
-            print("last hui")
-        return render_template('after_analytics.html')
