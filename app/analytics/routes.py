@@ -132,8 +132,6 @@ def process_values():
                 elif i in ('GoalsID'):
                     for j in dict_of_requests[i]:
                         where = where + ' has(h.GoalsID,' + str(j) + ') !=0 or'
-                elif i in ('amount_of_visits'):
-                    print('hui te')
             where = where[:-3]
 
             for index, i in enumerate(dict_of_requests):
@@ -150,7 +148,7 @@ def process_values():
                         if str(dict_of_requests['clause_url']).strip("'['']'") == '1':
                             having = having + " arrayStringConcat(groupArray(h.URL)) like '%" + j + "%' OR "
                         elif str(dict_of_requests['clause_url']).strip("'['']'") == '2':
-                            having = having + " has(groupArray(h.URL), '" + j + "') OR "
+                            having = having + " has(groupArray(cutQueryString(h.URL)), '" + j + "') OR "
 
             if having == 'HAVING':
                 having = having[:-6]
