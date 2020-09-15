@@ -73,6 +73,7 @@ $(document).ready(function(){
               $('#form-response').html("");
           },
           success: function ( data ){
+              target.innerHTML = ''
               if (data) {
                 console.log(data)
                 const unparsed_data = JSON.parse(data);
