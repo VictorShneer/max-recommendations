@@ -2,6 +2,35 @@ $(document).ready(function(){
 
   const create_campaign_link = document.getElementById('create_campaign');
   create_campaign_link.addEventListener('click', drop_down_input_create_campaign);
+  const send_gr_button = document.getElementById('sendGR');
+  send_gr_button.addEventListener('click', send_to_gr_handler)
+
+  function send_to_gr_handler(event){
+    event.preventDefault()
+    $noformsuccess = $('<p id="newcampaingform" style="color:green;">Успех! <p>')
+    $noformfail = $('<p id="newcampaingform" style="color:red;">Что-то пошло не так..<p>')
+    // get search contacts
+    var contactsList = [];
+    $('#target').children('div').each(function() {
+        contactsList.push($( this ).context.innerText);
+    });
+    if(contactsList[0]==""){
+      $('#newcampaingform').replaceWith('<p id="newcampaingform" style="color:red">Невозможно экспортировать 0 контактов</p>')
+      return -1
+    };
+    // get campaign id
+    campaingId = $('#gr_campaigns').val()
+    //send it to backend
+    integration_id = window.location.href.split('/').pop()
+    $.post('/analytics/send_search_contacts/' + integration_id, {
+        campaignId : campaingId,
+        contactsList : contactsList.join(),
+      }).done(function(response) {
+          $('#newcampaingform').replaceWith($noformsuccess);
+      }).fail(function() {
+          $('#newcampaingform').replaceWith($noformfail);
+      });
+  }
 
   $('#submit').click(function(event){
 
@@ -75,7 +104,6 @@ $(document).ready(function(){
           success: function ( data ){
               target.innerHTML = ''
               if (data) {
-                console.log(data)
                 const unparsed_data = JSON.parse(data);
                 unparsed_data.data.forEach(item => {
                 output = `

@@ -8,7 +8,8 @@ from app.analytics.utils import current_user_own_integration, \
                                 create_url_for_query, \
                                 send_request_to_clickhouse, \
                                 get_gr_campaigns, \
-                                create_gr_campaign
+                                create_gr_campaign, \
+                                send_search_contacts_to_gr
 import traceback
 from pprint import pprint
 import pandas as pd
@@ -19,7 +20,14 @@ import base64
 import urllib.parse
 import numpy as np
 
-
+@bp.route('/analytics/send_search_contacts/<integration_id>', methods=['POST'])
+@current_user_own_integration
+@login_required
+def send_search_contacts(integration_id):
+    integration = Integration.query.filter_by(id = integration_id).first_or_404()
+    send_result = send_search_contacts_to_gr(request.form['contactsList'].split(','), \
+                                        request.form['campaignId'],integration.api_key)
+    return {'send_result':send_result}
 
 @bp.route('/analytics/create_gr_campaign/<integration_id>', methods=["POST"])
 @current_user_own_integration
@@ -158,7 +166,7 @@ def process_values():
 
             whole = "SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails FROM {crypto}.hits_raw_{integration_id} h JOIN georgelocal.visits_raw_1 v on v.ClientID = h.ClientID {where} GROUP BY emails, ClientID {having};".\
                                                 format(crypto= current_user.crypto, integration_id=integration_id,where=where, having=having)
-            whole = whole. replace("#", "%") 
+            whole = whole. replace("#", "%")
             #getting the answer from the db
             create_url = create_url_for_query(whole,current_user.crypto)
             print(create_url)

@@ -17,7 +17,6 @@ from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
 from app.metrika.conversion_table_builder import generate_grouped_columns_sql
 
-
 COLUMNS = ['Email', \
             'Total Visits', \
             'Total Visits From Newsletter', \
@@ -25,7 +24,6 @@ COLUMNS = ['Email', \
             'Total Goals From Newsletter', \
             'Conversion (TG/TV)', \
             'Email power proportion']
-
 
 VISITS_RAW_QUERY = '''
     select * from(
