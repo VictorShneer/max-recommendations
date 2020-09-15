@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import TextAreaField, StringField, SubmitField, SelectField
+from wtforms import SelectMultipleField, StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired
 
 class Available_newsletters(FlaskForm):
@@ -8,12 +8,9 @@ class Available_newsletters(FlaskForm):
     submit = SubmitField('Получить список ссылок в письме')
 
 class Available_links(FlaskForm):
-    available_links = TextAreaField('Доступные ссылки в выбранном письме')
-    submit = SubmitField('Обернуть ссылки в UTM')
+    available_links = SelectMultipleField('Доступные ссылки в выбранном письме', choices=[])
+    submit = SubmitField('Обернуть выбранные ссылки и отправить в GetResponse')
 
 class Api_key(FlaskForm):
     key = StringField('API ключ', validators=[DataRequired()])
     submit = SubmitField('Получить список доступных писем и черновиков')
-
-class Converted_links(FlaskForm):
-    converted_links = TextAreaField('Обернутые ссылки. Можно редактировать')

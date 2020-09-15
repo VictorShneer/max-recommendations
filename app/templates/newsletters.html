@@ -7,6 +7,7 @@
       <div class="col-md-4">
           {{ wtf.quick_form(api_key_form) }}
       </div>
+      <a class="btn btn-info" id='enable_key_form_button'>Ввести другой ключ</a>
   </div>
   <div class="row" id="availablenewslettersform">
       <div class="col-md-4">
@@ -18,11 +19,7 @@
           {{ wtf.quick_form(available_links_form) }}
       </div>
   </div>
-  <div class="row" id='utmedlinksform'>
-      <div class="col-md-4">
-          {{ wtf.quick_form(converted_links_form) }}
-      </div>
-  </div>
+  <div id='info'></div>
   <div class="row">
       <div class="col-md-4">
           <a class="btn btn-info" href="{{url_for('main.profile')}}">Назад</a>
