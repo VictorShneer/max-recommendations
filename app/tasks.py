@@ -8,7 +8,6 @@ from app.models import Task, Integration
 from app.clickhousehub.metrica_logs_api import handle_integration
 from app.clickhousehub.metrica_logs_api import drop_integration
 from app.clickhousehub.clickhouse import get_tables
-from app.metrika.conversion_table_builder import make_clickhouse_pre_aggr_visits
 
 
 app = create_app(adminFlag=False)
