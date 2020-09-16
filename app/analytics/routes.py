@@ -107,16 +107,9 @@ def process_values():
     if request.method == 'POST':
         try:
             #geting the dict from the form
-            dict_of_requests = {}
             dict = request.form.to_dict(flat=False)
             integration_id = request.form["integration_id"]
-            for i in dict:
-                for k in dict[i]:
-                    if k == '0' or k == 'Не выбрано' or k == '' or i == 'csrf_token':
-                        pass
-                    else:
-                        dict_of_requests[i] = dict[i]
-            # print(dict_of_requests)
+            dict_of_requests = {value: dict[value] for value in dict if dict[value] not in ([''], ['0'],['Не выбрано']) if value != 'csrf_token'}
 
             #changing the values for the query
             spravochnik = {'1':['>='], '2':['<='],'3':['=']}
@@ -164,8 +157,14 @@ def process_values():
             else:
                 having = having[:-3]
 
-            whole = "SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails FROM {crypto}.hits_raw_{integration_id} h JOIN georgelocal.visits_raw_1 v on v.ClientID = h.ClientID {where} GROUP BY emails, ClientID {having};".\
-                                                format(crypto= current_user.crypto, integration_id=integration_id,where=where, having=having)
+            whole = f"""
+            SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails
+            FROM {current_user.crypto}.hits_raw_{integration_id} h
+            JOIN georgelocal.visits_raw_1 v on v.ClientID = h.ClientID
+            {where}
+            GROUP BY emails, ClientID
+            {having};"""
+
             whole = whole. replace("#", "%")
             #getting the answer from the db
             create_url = create_url_for_query(whole,current_user.crypto)
