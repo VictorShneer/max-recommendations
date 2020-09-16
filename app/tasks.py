@@ -37,7 +37,7 @@ def send_search_contacts_to_gr(search_contacts_list, campaignId, api_key):
             except Exception as exc:
                 print('%r generated an exception: %s' % (email, exc))
             else:
-                print('%r address loaded with status %d' % (email, response_status))
+                print('%r address loaded with status %d' % (email, response_status[0]))
     _set_task_progress(100)
     # return {'total':len(responses), 'success':len([response for response in responses if response == 201])}
 
@@ -50,7 +50,7 @@ def _set_task_progress(progress, comment=''):
         task = Task.query.get(job.get_id())
         task.user.add_notification('task_progress', {'task_id': job.get_id(),
                                                      'progress': comment if comment else progress})
-
+        task.user.add_notification('unread_notification_count', task.user.new_notifications())
         if  progress >= 100:
             task.complete = True
         db.session.commit()
