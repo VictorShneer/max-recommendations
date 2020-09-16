@@ -192,7 +192,7 @@ function setTotalUniqueVisitors(total_unique_visitors){
   document.getElementById('total_unique_visitors').innerHTML =
                                             'Выбрано <b>' +
                                             total_unique_visitors +
-                                            "</b> уникальных посетителей"
+                                            "</b> уникальных посещений"
                                             ;
 }
 React.render(<FilterableVisitsTable

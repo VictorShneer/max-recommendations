@@ -39,7 +39,8 @@ VISITS_RAW_QUERY = '''
                 and (Date >= '{start_date}')
                 then 1 else 0 end) as total_visits_from_newsletter,
 
-            sum(case when Date >= '{start_date}'
+            sum(case when 1
+                {grouped_columns} 
                 then length(GoalsID) else 0 end) as total_goals,
 
             sum(case when extractURLParameter(StartURL, 'mxm') != ''
@@ -98,8 +99,10 @@ def metrika_get_data(integration_id):
 
     file_from_string = StringIO(response_with_visits_all_data.text)
     visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=COLUMNS)
+
     if request_goals:
         visits_all_data_df = visits_all_data_df[visits_all_data_df['Total Goals Complited']!=0]
+
     max_df = visits_all_data_df
 
     max_no_email_1graph = [ [int(max_row['Total Visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Total Visits From Newsletter'] != 0][['Total Visits','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
@@ -117,7 +120,6 @@ def metrika_get_data(integration_id):
     front_end_df = max_df[['Email', 'Total Visits', 'Total Visits From Newsletter','Total Goals Complited', 'Total Goals From Newsletter', 'Conversion (TG/TV)', 'Email power proportion']]
     front_end_df= front_end_df.astype(str)
     json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
-
     json_to_return =json.loads(json_to_return)
     json_to_return['conv_email_sum'] = str(conv_email_sum)
     json_to_return['conv_no_email_sum'] = str(conv_no_email_sum)
