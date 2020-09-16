@@ -8,8 +8,7 @@ from app.analytics.utils import current_user_own_integration, \
                                 create_url_for_query, \
                                 send_request_to_clickhouse, \
                                 get_gr_campaigns, \
-                                create_gr_campaign, \
-                                send_search_contacts_to_gr
+                                create_gr_campaign
 import traceback
 from pprint import pprint
 import pandas as pd
@@ -19,15 +18,24 @@ from io import StringIO
 import base64
 import urllib.parse
 import numpy as np
+import concurrent.futures
 
 @bp.route('/analytics/send_search_contacts/<integration_id>', methods=['POST'])
 @current_user_own_integration
 @login_required
 def send_search_contacts(integration_id):
     integration = Integration.query.filter_by(id = integration_id).first_or_404()
-    send_result = send_search_contacts_to_gr(request.form['contactsList'].split(','), \
-                                        request.form['campaignId'],integration.api_key)
-    return {'send_result':send_result}
+    # send_result = send_search_contacts_to_gr(request.form['contactsList'].split(','), \
+    #                                     request.form['campaignId'],integration.api_key)
+    try:
+        current_user.launch_task('send_search_contacts_to_gr', \
+                                    'Загрузка контактов в GR, прогресс: ', \
+                                    request.form['contactsList'].split(','), \
+                                    request.form['campaignId'],integration.api_key)
+        db.session.commit()
+    except:
+        return {'status':'<400>'}
+    return {'status':'<200>'}
 
 @bp.route('/analytics/create_gr_campaign/<integration_id>', methods=["POST"])
 @current_user_own_integration

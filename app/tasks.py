@@ -8,10 +8,38 @@ from app.models import Task, Integration
 from app.clickhousehub.metrica_logs_api import handle_integration
 from app.clickhousehub.metrica_logs_api import drop_integration
 from app.clickhousehub.clickhouse import get_tables
+import concurrent.futures
 
 
 app = create_app(adminFlag=False)
 app.app_context().push()
+
+def post_contact_to_list(email, campaign_id, api_key):
+    r = requests.post('https://api.getresponse.com/v3/contacts', \
+                        headers = {'X-Auth-Token': 'api-key {}'.format(api_key)}, \
+                        json = {'email':email, 'campaign': {'campaignId':campaign_id}})
+    return (r.status_code, r.text)
+
+def send_search_contacts_to_gr(search_contacts_list, campaignId, api_key):
+    _set_task_progress(0)
+    responses = []
+    # for contact_email in search_contacts_list:
+    # We can use a with statement to ensure threads are cleaned up promptly
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        # Start the load operations and mark each future with its URL
+        future_to_email = {executor.submit(post_contact_to_list, email, campaignId, api_key): email for email in search_contacts_list}
+        for idx,future in enumerate(concurrent.futures.as_completed(future_to_email)):
+            _set_task_progress(int((idx*100)/len(search_contacts_list)))
+            email = future_to_email[future]
+            try:
+                response_status = future.result()
+                responses.append(response_status)
+            except Exception as exc:
+                print('%r generated an exception: %s' % (email, exc))
+            else:
+                print('%r address loaded with status %d' % (email, response_status))
+    _set_task_progress(100)
+    # return {'total':len(responses), 'success':len([response for response in responses if response == 201])}
 
 
 def _set_task_progress(progress, comment=''):

@@ -26,16 +26,6 @@ def send_request_to_clickhouse(url):
     r = requests.get(url = url, headers=auth, verify=certificate_path)
     return r
 
-def send_search_contacts_to_gr(search_contacts_list, campaignId, api_key):
-    responses = []
-    for contact_email in search_contacts_list:
-        r = requests.post('https://api.getresponse.com/v3/contacts', \
-                            headers = {'X-Auth-Token': 'api-key {}'.format(api_key)}, \
-                            json = {'email':contact_email, 'campaign': {'campaignId':campaignId}})
-        print(r.status_code)
-        responses.append(r.status_code)
-    return {'total':len(responses), 'success':len([response for response in responses if response == 201])}
-
 
 def get_gr_campaigns(api_key):
     r = requests.get('https://api.getresponse.com/v3/campaigns?perPage=1000', \

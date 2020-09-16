@@ -7,7 +7,7 @@ $(document).ready(function(){
 
   function send_to_gr_handler(event){
     event.preventDefault()
-    $noformsuccess = $('<p id="newcampaingform" style="color:green;">Успех! <p>')
+    $noformsuccess = $('<p id="newcampaingform" style="color:green;">Начат процесс по загрузке контактов в GetResponse<p>')
     $noformfail = $('<p id="newcampaingform" style="color:red;">Что-то пошло не так..<p>')
     // get search contacts
     var contactsList = [];
