@@ -106,7 +106,7 @@ def create_integration():
             timing.append('-end_date={}'.format(str(end_date)))
             params = ['-source=hits', *timing]
             params_2 = ['-source=visits', *timing]
-            if current_user.get_task_in_progress('init_clickhouse_tablesssss'):
+            if current_user.get_task_in_progress('init_clickhouse_tables'):
                 flash('Нельзя запускать создание больше одной интеграции одновременно!')
                 db.session.rollback()
             else:
