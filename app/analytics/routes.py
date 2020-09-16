@@ -112,14 +112,10 @@ def process_values():
             dict_of_requests = {value: dict[value] for value in dict if dict[value] not in ([''], ['0'],['Не выбрано']) if value != 'csrf_token'}
 
             #changing the values for the query
-            spravochnik = {'1':['>='], '2':['<='],'3':['=']}
-            for i in dict_of_requests:
-                for k in dict_of_requests[i]:
-                    for j in spravochnik:
-                        if k == j and i not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url'):
-                            dict_of_requests[i] = spravochnik[j]
-            # print(dict_of_requests)
-
+            dict_of_requests = {value: '>=' if dict_of_requests[value] == ['1'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
+                                '<=' if dict_of_requests[value] == ['2'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
+                                '==' if dict_of_requests[value] == ['3'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
+                                dict_of_requests[value] for value in dict_of_requests}
             #trying to concat the fucking query
             #TO DO: last value
             where = "WHERE has(v.WatchIDs, h.WatchID) = 1 AND"
@@ -128,7 +124,7 @@ def process_values():
                 if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity', 'MobilePhone', 'MobilePhoneModel', 'Browser'):
                     where = where + ' h.' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') AND'
                 elif i in ('clause_visits'):
-                    where = where + ' h.Date ' + str(dict_of_requests[i]).strip("'['']'")
+                    where = where + ' h.Date ' + str(dict_of_requests[i]).strip("''")
                 elif i in ('Date'):
                     where = where + ' ' + str(dict_of_requests[i]).strip('['']') + ' AND'
                 elif i in ('GoalsID'):
@@ -138,11 +134,11 @@ def process_values():
 
             for index, i in enumerate(dict_of_requests):
                 if i in ('clause_visits_from_to'):
-                    having = having + ' count(v.VisitID) ' + str(dict_of_requests[i]).strip("'['']'")
+                    having = having + ' count(v.VisitID) ' + str(dict_of_requests[i]).strip("''")
                 elif i in ('amount_of_visits'):
                     having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
                 elif i in ('clause_goals'):
-                    having = having + ' sum(length(h.GoalsID)) ' + str(dict_of_requests[i]).strip("'['']'")
+                    having = having + ' sum(length(h.GoalsID)) ' + str(dict_of_requests[i]).strip("''")
                 elif i in ('amount_of_goals'):
                     having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
                 elif i in ('URL'):
