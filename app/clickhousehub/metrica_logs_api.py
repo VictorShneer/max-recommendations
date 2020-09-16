@@ -151,7 +151,7 @@ def handle_integration(token,counter_id, crypto, id, params):
                                   user_request.end_date_str,
                                   user_request.source):
         logging.critical('Data for selected dates is already in database')
-        exit(0)
+        raise Exception('Data already in clickhouse')
 
 
     integrate_with_logs_api(clickhouse.config, user_request)
