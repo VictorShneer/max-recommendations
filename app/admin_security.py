@@ -18,7 +18,7 @@ class MyModelView(ModelView):
 class MyAdminIndexView(AdminIndexView):
     def is_accessible(self):
         current_roles = [role.name for role in current_user.roles]
-        return (current_user.is_authenticated)
+        return (current_user.is_authenticated and 'admin' in current_roles)
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('auth.login'))
