@@ -59,10 +59,10 @@ class User(UserMixin, db.Model):
     tasks = db.relationship('Task', backref='user', lazy='dynamic')
     notifications = db.relationship('Notification', backref='user',
                                     lazy='dynamic')
-    notification_received = db.relationship('Notification',
-                                        foreign_keys='Notification.user_id',
-                                        backref='notification_recipient', lazy='dynamic')
-    last_notification_view_time = db.Column(db.DateTime)
+    # notification_received = db.relationship('Notification',
+    #                                     foreign_keys='Notification.user_id',
+    #                                     backref='notification_recipient', lazy='dynamic')
+    # last_notification_view_time = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<User {}>'.format(self.name)
