@@ -60,20 +60,22 @@ def admin():
 def user_integrations():
     user = User.query.filter_by(id=current_user.id).first()
     integrations = user.integrations.all()
-
+    print(user.new_notifications())
     return render_template('user_integrations.html', integrations=integrations)
 
 @bp.route('/notifications')
 @login_required
 def notifications():
+    current_user.last_notification_view_time = datetime.datetime.utcnow()
+    current_user.add_notification('unread_notification_count', 0)
     since = request.args.get('since', 0.0, type=float)
-    notifications = current_user.notifications.filter(
-        Notification.timestamp > since).order_by(Notification.timestamp.asc())
+    notifications = current_user.notifications.order_by(Notification.timestamp.asc()) # .filter(Notification.timestamp > since)
     return jsonify([{
         'name': n.name,
         'data': n.get_data(),
         'timestamp': n.timestamp
     } for n in notifications])
+
 
 @bp.route('/create_integration', methods=['GET','POST'])
 @login_required

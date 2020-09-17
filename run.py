@@ -1,5 +1,5 @@
 from app import create_app
-from app.models import User, Integration
+from app.models import User, Integration, Notification
 from app import db
 import click
 from app.clickhousehub.clickhouse import get_dbs
@@ -9,6 +9,9 @@ from app.clickhousehub.clickhouse_custom_request import request_iam
 
 app = create_app()
 
+@app.shell_context_processor
+def make_shell_context():
+    return {'db': db, 'User': User, 'Integration': Integration, 'Notification': Notification}
 
 @app.cli.command()
 def check_ch_auth():
