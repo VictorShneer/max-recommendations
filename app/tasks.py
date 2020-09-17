@@ -53,6 +53,10 @@ def send_search_contacts_to_gr(search_contacts_list, campaignId, api_key, user_i
 
 
 def _set_task_progress(progress, comment='', user_id=0):
+    print('3'*33)
+    print(Task.query.all())
+    print(Task.query.filter_by(id=get_current_job().get_id()).all())
+    print('3'*33)
     job = get_current_job()
     if job:
         job.meta['progress'] = progress
