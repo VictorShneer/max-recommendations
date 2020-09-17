@@ -60,7 +60,7 @@ def request_iam():
 
 def is_operation_done(operation_id):
     is_done = False
-    enough = 20
+    enough = 60
     while not is_done and enough>=0:
         current_app.logger.info('wait {}'.format(enough))
         time.sleep(1)

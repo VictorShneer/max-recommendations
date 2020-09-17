@@ -69,7 +69,6 @@ def _set_task_progress(progress, comment='', user_id=0):
 
 def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regular_load=False,):
     _set_task_progress(0)
-    print('task', crypto, id, paramss,regular_load)
     try:
         for count,params in enumerate(paramss):
             _set_task_progress(50 * count // len(paramss))
