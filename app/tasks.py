@@ -53,15 +53,10 @@ def send_search_contacts_to_gr(search_contacts_list, campaignId, api_key, user_i
 
 
 def _set_task_progress(progress, comment='', user_id=0):
-    print('3'*33)
-    print(Task.query.all())
-    print(Task.query.filter_by(id=get_current_job().get_id()).all())
-    print('3'*33)
     job = get_current_job()
     if job:
         job.meta['progress'] = progress
         job.save_meta()
-        print(Task.query.all())
         task = Task.query.get(job.get_id())
         task.user.add_notification('task_progress', {'task_id': job.get_id(),
                                                      'progress': comment if comment else progress})
@@ -74,7 +69,6 @@ def _set_task_progress(progress, comment='', user_id=0):
 
 def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regular_load=False,):
     _set_task_progress(0)
-    print('task', crypto, id, paramss,regular_load)
     try:
         for count,params in enumerate(paramss):
             _set_task_progress(50 * count // len(paramss))
