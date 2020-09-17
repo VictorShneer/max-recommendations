@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+
+<div class='integration_info text-center'>
+  <p id='atb' hidden>{{integration_id}}</p>
+  <p><b>{{integration_name}}</b></p>
+  <p>Доступны данные с <b id="start_date">{{min_date}}</b> по <b>{{max_date}}</b></p>
+  <p id="total_unique_visitors"</p>
+  <p><label for="">Выберите цели: </label>
+  <select multiple id="goals">
+    {% for goal in goals %}
+      <option value="{{ goal[0] }}">{{ goal[1] }}</option>
+    {% endfor %}
+  </select>
+  </p>
+</div>
+
+<div id='mount-button_run_table'></div>
+<div id="mount-visits_table"></div>
+
+
+<!-- первый график - зависимость конверсии от общего количества визитов - с email и без email -->
+<div id="chart_div1" style="width: 1000px; height: 500px;"></div>
+<br>
+
+<!-- диаграмма -->
+<br>
+<div id="piechart_3d" style="width: 1000px; height: 500px;"></div>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+
+{{ super() }}
+<script type="text/javascript" src='{{url_for("static",filename="js/google_charts.js")}}'></script>
+<script type="text/jsx" src='{{url_for("static",filename="js/react_table_components.js")}}'></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js" integrity="sha512-aFvi2oPv3NjnjQv1Y/hmKD7RNMendo4CZ2DwQqMWzoURKxcqAoktj0nNG4LU8m23+Ws9X5uVDD4OXLqpUVXD5Q==" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" integrity="sha512-EvvoSMXERW4Pe9LjDN9XDzHd66p8Z49gcrB7LCUplh0GcEHiV816gXGwIhir6PJiwl0ew8GFM2QaIg2TW02B9A==" crossorigin="anonymous" />
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('#goals').multiselect({
+      includeSelectAllOption: true,
+      selectAllText: 'Выбрать все',
+      buttonWidth: '270px',
+      buttonClass: 'grmax-select-button btn btn-default',
+      selectedClass: 'grmax-multiselect-selected',
+      buttonContainer: '<div class="btn-group grmax-select" />',
+      buttonText: function(options, select) {
+                if (options.length === 0) {
+                    return 'Тут пусто ...';
+                }
+                else {
+                     var labels = [];
+                     options.each(function() {
+                         if ($(this).attr('label') !== undefined) {
+                             labels.push($(this).attr('label'));
+                         }
+                         else {
+                             labels.push($(this).html());
+                         }
+                     });
+                     if (labels.length == 1) {
+                       return labels[0];
+                     } else {
+                       return labels[0] + ' и еще ' + (labels.length - 1);
+                     }
+                }
+            }
+    });
+  });
+</script>
+{% endblock %}

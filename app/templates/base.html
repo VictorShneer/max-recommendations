@@ -1,0 +1,161 @@
+<!-- templates/base.html -->
+{% extends 'bootstrap/base.html' %}
+
+
+{% block head %}
+{{ super() }}
+<link id="load-css-0" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/core/tooltip.css">
+<link id="load-css-1" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/util/util.css">
+<link id="load-css-1" rel="stylesheet" type="text/css" href='{{url_for("static",filename="css/styles.css")}}'>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto:300,400,500,700&amp;subset=latin,latin" media="all">
+<script src="https://use.fontawesome.com/79cfbb194f.js"></script>
+{% endblock %}
+{% block title %}
+        {% if title %}{{ title }} - Max Metrika{% else %}Max Metrika{% endif %}
+{% endblock %}
+
+{% block navbar %}
+  <nav class="navbar navbar-default grmax-navbar">
+      <div class="container center">
+      <ul class="nav navbar-nav navbar-left">
+        <li>
+          <a class="navbar-brand" href="{{ url_for('main.index') }}">
+          <img src="{{ url_for('static', filename='img/logo.svg') }}" height="19px" alt="Logo">
+          </a>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        {% if current_user.is_anonymous %}
+        <li>
+          <a href="{{ url_for('auth.login') }}" class="navbar-item">
+            Войти
+          </a>
+        </li>
+        <li>
+        <a href="{{ url_for('auth.register') }}" class="navbar-item">
+            Зарегистрироваться
+        </a>
+        </li>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <li id="navbar-profile">
+        <a href="" class="navbar-item" id='navbar-profile-link'>
+            Профиль
+        </a>
+        <div class="navbar-submenu navbar-submenu-profile">
+          <ul>
+            <li><a href="{{url_for('main.user_integrations')}}" class="show-integration">Показать интеграции</a></li>
+            <li><a href="{{url_for('main.link_creation')}}" class="create-link">Создать ссылку</a></li>
+            <li><a href="{{url_for('newsletters.newsletters')}}" class="create-letter">Создать письмо</a></li>
+          </ul>
+        </div>
+        </li>
+        {% endif %}
+        {% if current_user.email == 'george@mail.ru' %}
+        <li>
+        <a href="{{ url_for('main.admin') }}" class="navbar-item">
+            Админка
+        </a>
+        </li>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <li>
+        <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+            Выйти
+        </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+</nav>
+        {% endblock %}
+        {% block content %}
+            <div class="container grmax-container">
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-info" role="alert">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                {% if current_user.is_authenticated %}
+                   {% with tasks = current_user.get_tasks_in_progress() %}
+                   {% if tasks %}
+                       {% for task in tasks %}
+                       <div class="alert alert-success" role="alert">
+                           {{ task.description }}
+                           <span id="{{ task.id }}-progress">{{ task.get_progress() }}</span>%
+                       </div>
+                       {% endfor %}
+                   {% endif %}
+                   {% endwith %}
+                {% endif %}
+
+                {# application content needs to be provided in the app_content block #}
+                {% block app_content %}{% endblock %}
+            </div>
+        {% endblock %}
+
+{% block scripts %}
+{{ super() }}
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/loader.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_format_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_default_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_ui_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_corechart_module.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
+<script type="text/javascript" src="{{url_for("static",filename="js/common.js")}}"></script>
+<script>
+
+  {% if current_user.is_authenticated %}
+  $(function() {
+      var since = 0;
+      setInterval(function() {
+          $.ajax('{{ url_for('main.notifications') }}?since=' + since).done(
+              function(notifications) {
+                  for (var i = 0; i < notifications.length; i++) {
+                      if (notifications[i].name == 'unread_notification_count')
+                          set_notification_count(notifications[i].data);
+                      since = notifications[i].timestamp;
+                  }
+              }
+          );
+      }, 1000);
+  });
+  {% endif %}
+
+       function set_task_progress(task_id, progress) {
+           $('#' + task_id + '-progress').text(progress);
+       }
+
+       function set_notification_count(n) {
+           $('#notification_count').text(n);
+           $('#notification_count').css('visibility', n ? 'visible' : 'hidden');
+       }
+    function delete_integration(integration_id){
+
+        $.post('/delete_integration', {
+            integration_id : integration_id,
+        }).done(function(response) {
+            $('#'+integration_id).hide(1500);
+        }).fail(function() {
+            $('#'+integration_id).show(1500);
+            location.reload()
+        });
+    }
+</script>
+<footer class="grmax-footer">
+  <div class="shadow"></div>
+  <div class="mfooter-info">
+    <p class="mfooter-copyright">
+      <a class="mfooter-logo" href="/" title="Инструменты для маркетинга от GetResponse"><img src="https://us-as.gr-cdn.com/images/secure-getresponse/global/footer/mini-logo.svg" alt="Инструменты для маркетинга от GetResponse"></a>
+      <span class="mfooter-text"> Copyright ©  2020 GetResponse. Email Marketing. Solved<sup>®</sup>. </span>
+    </p>
+  </div>
+</footer>
+{% endblock %}

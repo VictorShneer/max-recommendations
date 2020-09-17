@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block app_content %}
+<div class="user-integrations">
+  <div class="button-add">
+    <a class="btn grmax-btn floatright" href="{{url_for('main.create_integration')}}" role="button">Добавить новую интеграцию</a>
+    <div class="clr"></div>
+  </div>
+
+<table class="profile table table-hover grmax-table">
+    <thead>
+        <tr>
+            <td>
+                Название
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+        </tr>
+      </thead>
+    <tbody>
+    {% for integration in integrations %}
+        {% include '_integration.html' %}
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
