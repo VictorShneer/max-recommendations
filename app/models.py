@@ -9,6 +9,7 @@ from flask import current_app
 import json
 import redis
 import rq
+from datetime import datetime
 
 roles_users = db.Table('roles_users', \
     db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),\
@@ -58,15 +59,25 @@ class User(UserMixin, db.Model):
     tasks = db.relationship('Task', backref='user', lazy='dynamic')
     notifications = db.relationship('Notification', backref='user',
                                     lazy='dynamic')
+    notification_received = db.relationship('Notification',
+                                        foreign_keys='Notification.user_id',
+                                        backref='notification_recipient', lazy='dynamic')
+    last_notification_view_time = db.Column(db.DateTime)
+
     def __repr__(self):
         return '<User {}>'.format(self.name)
 
     def add_notification(self, name, data):
-        self.notifications.filter_by(name=name).delete()
+        # self.notifications.filter_by(name=name).delete()
         n = Notification(name=name, payload_json=json.dumps(data), user=self)
         db.session.add(n)
         return n
 
+    def new_notifications(self):
+        last_view_time = self.last_notification_view_time or datetime(1900, 1, 1)
+        return Notification.query.filter_by(notification_recipient=self).\
+                                filter(Notification.timestamp > last_view_time).count()
+#
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
