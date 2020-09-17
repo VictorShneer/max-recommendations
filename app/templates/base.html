@@ -50,17 +50,6 @@
           </ul>
         </div>
         </li>
-        <li>
-            <a href="{{ url_for('main.notifications') }}">
-                {{ ('Уведомления') }}
-                {% set new_notifications = current_user.new_notifications() %}
-                <span id="notification_count" class="badge"
-                      style="visibility: {% if new_notifications %}visible
-                                         {% else %}hidden {% endif %};">
-                      {{ new_notifications }}
-                </span>
-            </a>
-        </li>
         {% endif %}
         {% if current_user.email == 'george@mail.ru' %}
         <li>

@@ -60,7 +60,7 @@ def admin():
 def user_integrations():
     user = User.query.filter_by(id=current_user.id).first()
     integrations = user.integrations.all()
-    print(user.new_notifications())
+    # print(user.new_notifications())
     return render_template('user_integrations.html', integrations=integrations)
 
 @bp.route('/notifications')

@@ -73,10 +73,10 @@ class User(UserMixin, db.Model):
         db.session.add(n)
         return n
 
-    def new_notifications(self):
-        last_view_time = self.last_notification_view_time or datetime(1900, 1, 1)
-        return Notification.query.filter_by(notification_recipient=self).\
-                                filter(Notification.timestamp > last_view_time).count()
+    # def new_notifications(self):
+    #     last_view_time = self.last_notification_view_time or datetime(1900, 1, 1)
+    #     return Notification.query.filter_by(notification_recipient=self).\
+    #                             filter(Notification.timestamp > last_view_time).count()
 #
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
