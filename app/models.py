@@ -59,24 +59,24 @@ class User(UserMixin, db.Model):
     tasks = db.relationship('Task', backref='user', lazy='dynamic')
     notifications = db.relationship('Notification', backref='user',
                                     lazy='dynamic')
-    # notification_received = db.relationship('Notification',
-    #                                     foreign_keys='Notification.user_id',
-    #                                     backref='notification_recipient', lazy='dynamic')
-    # last_notification_view_time = db.Column(db.DateTime)
+    messages_received = db.relationship('Message',
+                                        foreign_keys='Message.recipient_id',
+                                        backref='recipient', lazy='dynamic')
+    last_message_read_time = db.Column(db.DateTime)
 
     def __repr__(self):
         return '<User {}>'.format(self.name)
 
     def add_notification(self, name, data):
-        # self.notifications.filter_by(name=name).delete()
+        self.notifications.filter_by(name=name).delete()
         n = Notification(name=name, payload_json=json.dumps(data), user=self)
         db.session.add(n)
         return n
 
-    # def new_notifications(self):
-    #     last_view_time = self.last_notification_view_time or datetime(1900, 1, 1)
-    #     return Notification.query.filter_by(notification_recipient=self).\
-    #                             filter(Notification.timestamp > last_view_time).count()
+    def new_messages(self):
+        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
+        return Message.query.filter_by(recipient=self).filter(
+            Message.timestamp > last_read_time).count()
 #
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -99,7 +99,6 @@ class User(UserMixin, db.Model):
         return User.query.get(id)
 
     def launch_task(self, name, description, *args, **kwargs):
-
         rq_job = current_app.task_queue.enqueue('app.tasks.' + name, *args)
         print('---job_id!!')
         print(rq_job.get_id())
@@ -123,6 +122,14 @@ class User(UserMixin, db.Model):
 def load_user(id):
     return User.query.get(int(id))
 
+class Message(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def __repr__(self):
+        return '<Message {}>'.format(self.body)
 
 class Integration(UserMixin,db.Model):
     id = db.Column(db.Integer, primary_key=True)

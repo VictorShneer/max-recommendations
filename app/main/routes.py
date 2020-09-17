@@ -1,14 +1,12 @@
 # main.py
 from flask import Blueprint, render_template, redirect, url_for, flash,request, abort, current_app
 from flask_login import login_required, current_user
-from app.models import User
+from app.models import User, Message,Integration,Notification
 import pandas as pd
 from app.main import bp
 from app.main.forms import EditIntegration, LinkGenerator
-from app.models import Integration, User
 from app import db
 from app.metrika.secur import current_user_own_integration
-from app.models import Notification
 from flask import jsonify
 from app.clickhousehub.metrica_logs_api import drop_integration
 from wtforms.fields.html5 import DateField
@@ -63,6 +61,23 @@ def user_integrations():
     # print(user.new_notifications())
     return render_template('user_integrations.html', integrations=integrations)
 
+@bp.route('/messages')
+@login_required
+def messages():
+    current_user.last_message_read_time = datetime.datetime.utcnow()
+    current_user.add_notification('unread_message_count', 0)
+    db.session.commit()
+    page = request.args.get('page', 1, type=int)
+    messages = current_user.messages_received.order_by(
+        Message.timestamp.desc()).paginate(
+            page, current_app.config['POSTS_PER_PAGE'], False)
+    next_url = url_for('main.messages', page=messages.next_num) \
+        if messages.has_next else None
+    prev_url = url_for('main.messages', page=messages.prev_num) \
+        if messages.has_prev else None
+    return render_template('messages.html', messages=messages.items,
+                           next_url=next_url, prev_url=prev_url)
+
 @bp.route('/notifications')
 @login_required
 def notifications():
@@ -112,7 +127,14 @@ def create_integration():
                 flash('Нельзя запускать создание больше одной интеграции одновременно!')
                 db.session.rollback()
             else:
-                current_user.launch_task('init_clickhouse_tables', ('Init integration...'), integration.metrika_key,integration.metrika_counter_id, current_user.crypto,  integration.id, [params,params_2])
+                current_user.launch_task('init_clickhouse_tables', \
+                                        ('Init integration...'), \
+                                        integration.metrika_key, \
+                                        integration.metrika_counter_id, \
+                                        current_user.crypto,  \
+                                        integration.id, \
+                                        [params,params_2], \
+                                        current_user.id)
                 db.session.commit()
         except Exception as err:
             flash("Проблемки..")

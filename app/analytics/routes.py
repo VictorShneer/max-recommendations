@@ -25,13 +25,13 @@ import concurrent.futures
 @login_required
 def send_search_contacts(integration_id):
     integration = Integration.query.filter_by(id = integration_id).first_or_404()
-    # send_result = send_search_contacts_to_gr(request.form['contactsList'].split(','), \
-    #                                     request.form['campaignId'],integration.api_key)
     try:
         current_user.launch_task('send_search_contacts_to_gr', \
                                     'Загрузка контактов в GR, прогресс: ', \
                                     request.form['contactsList'].split(','), \
-                                    request.form['campaignId'],integration.api_key)
+                                    request.form['campaignId'],\
+                                    integration.api_key,\
+                                    current_user.id)
         db.session.commit()
     except:
         return {'status':'<400>'}
