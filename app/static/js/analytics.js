@@ -33,7 +33,7 @@ $(document).ready(function(){
   }
 
   $('#submit').click(function(event){
-
+      _paq.push(['trackEvent', 'Documentary', 'Play', 'Thrive']);
       event.preventDefault()
       // Prevent redirection with AJAX for contact form
       var form = $('#analyticsform');
