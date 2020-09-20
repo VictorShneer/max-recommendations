@@ -83,7 +83,7 @@ def init_user_in_clickhouse(id,crypto):
         if not iam_token:
             raise Exception('Failed to request iam')
         create_ch_db(crypto)
-        give_user_grant('user1', crypto)
+        give_user_grant('user1', crypto) ## # TODO: drop hardcode use config user name
     except Exception as err:
         user.crypto = None
         db.session.commit()

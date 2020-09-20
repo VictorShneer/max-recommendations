@@ -16,8 +16,6 @@ from rq import Queue
 import rq
 from redis import Redis
 # from flask_wtf.csrf import CSRFProtect
-
-
 db = SQLAlchemy()
 bootstrap = Bootstrap()
 login = LoginManager()
@@ -31,12 +29,10 @@ def create_app(adminFlag=True,config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-
     db.init_app(app)
     migrate.init_app(app,db)
     bootstrap.init_app(app)
     login.init_app(app)
-    # csrf.init_app(app)
 
     #ADMIN PANEL
     if (adminFlag):
@@ -53,7 +49,6 @@ def create_app(adminFlag=True,config_class=Config):
     app.redis = Redis.from_url(app.config['REDIS_URL'])
     app.task_queue = rq.Queue('max-tasks', connection=app.redis, default_timeout=1200)
 
-    # app.task_queue = rq.Queue('max-tasks', connection=app.redis)
     # blueprint for auth routes in our app
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
