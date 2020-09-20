@@ -72,6 +72,10 @@ def create_app(adminFlag=True,config_class=Config):
     from app.analytics import bp as analytics_bp
     app.register_blueprint(analytics_bp)
 
+    #bp for analytics
+    from app.tracking import bp as tracking_bp
+    app.register_blueprint(tracking_bp)
+
     if not app.debug and not app.testing:
         if not os.path.exists('logs'):
             os.mkdir('logs')

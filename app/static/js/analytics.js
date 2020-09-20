@@ -42,6 +42,7 @@ $(document).ready(function(){
       var type = 'post';
       var formData = getContactFormData(form_id);
 
+      _paq.push(['trackEvent', 'Analytics', 'Submit']);
       // submit form via AJAX
       send_form(form, form_id, url, type, modular_ajax, formData);
 
