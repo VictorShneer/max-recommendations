@@ -25,27 +25,3 @@ def send_request_to_clickhouse(url):
     auth = {'X-ClickHouse-User': current_app.config['CLICKHOUSE_LOGIN'],'X-ClickHouse-Key': current_app.config['CLICKHOUSE_PASSWORD']}
     r = requests.get(url = url, headers=auth, verify=certificate_path)
     return r
-
-
-def get_gr_campaigns(api_key):
-    r = requests.get('https://api.getresponse.com/v3/campaigns?perPage=1000', \
-                headers={'X-Auth-Token': 'api-key {}'.format(api_key)})
-    if r.status_code != 200 :
-        print(r.text)
-        raise Exception(('Нет контакта с GetResponse'))
-    return [(campaign['campaignId'],campaign['name']) for campaign in r.json()]
-
-
-def create_gr_campaign(campaing_name,api_key):
-    r = requests.post('https://api.getresponse.com/v3/campaigns', \
-                headers={'X-Auth-Token': 'api-key {}'.format(api_key)}, \
-                json = {'name':campaing_name, \
-                        "optinTypes": {
-                            "email": "single", \
-                            "api": "single", \
-                            "import": "single", \
-                            "webform": "single" \
-                        }
-                    }
-                )
-    return r
