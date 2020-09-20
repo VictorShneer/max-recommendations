@@ -18,7 +18,7 @@ BODY_CREATE_DB = {
 }
 
 PATH_GRANT =       '''users/{userName}:grantPermission'''
-PATH_CREATE_DB =   '''databases'''
+PATH_CREATE_DB =   '''databases/'''
 
 CH_API_ROOT =      '''https://mdb.api.cloud.yandex.net/managed-clickhouse/v1/clusters/{clusterId}/'''
 YC_OPERATION_URL = '''https://operation.api.cloud.yandex.net/operations/{operation_id}'''
@@ -108,6 +108,34 @@ def create_ch_db(db_name):
         current_app.logger.info(r.headers)
         current_app.logger.info(r.text)
         raise Exception('Status code not 200')
+
+def delete_ch_db(db_name):
+    current_app.logger.info('Deleting db START')
+    r = requests.delete(CH_API_ROOT.format(clusterId=CH_CLUSTER_ID) + \
+                        PATH_CREATE_DB + db_name,\
+                        headers=CH_HEADERS)
+    if r.status_code == 200:
+        current_app.logger.info('Task to db create set SUCCESS')
+        op_id = r.json()['id']
+        if not is_operation_done(op_id):
+            raise Exception('Operation not done for a long time')
+    else:
+        current_app.logger.info(r.headers)
+        current_app.logger.info(r.text)
+        raise Exception('Status code not 200')
+
+def show_dbs_api():
+    current_app.logger.info('SHOW dbs START')
+    r = requests.get(CH_API_ROOT.format(clusterId=CH_CLUSTER_ID) + \
+                        PATH_CREATE_DB,\
+                        headers=CH_HEADERS)
+    if r.status_code == 200:
+        return [db['name'] for db in r.json()["databases"]]
+    else:
+        current_app.logger.info(r.headers)
+        current_app.logger.info(r.text)
+        raise Exception('Status code not 200 _show_dbs_api')
+
 
 def made_url_for_query(query, db_name):
     host = current_app.config['CLICKHOUSE_HOST']
