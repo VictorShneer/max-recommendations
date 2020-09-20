@@ -8,7 +8,6 @@ import requests
 class EditIntegration(FlaskForm):
     integration_name = StringField("Название интеграции", validators=[DataRequired()])
     api_key = StringField('API ключ GetResponse', validators=[DataRequired()])
-    user_domain = StringField('Домен GetResponse')
     metrika_key = StringField('Ключ Яндекс Метрики', validators=[DataRequired()])
     metrika_counter_id = StringField('ID счетчика Яндекс Метрики', validators=[DataRequired()])
     start_date = DateField('От', validators=[DataRequired()])

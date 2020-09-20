@@ -103,7 +103,6 @@ def create_integration():
         integration = Integration(
         integration_name = form.integration_name.data,
         api_key = form.api_key.data,
-        user_domain = form.user_domain.data,
         metrika_key = form.metrika_key.data,
         metrika_counter_id = form.metrika_counter_id.data,
         auto_load = form.auto_load.data,
@@ -167,14 +166,12 @@ def edit_integration(integration_id):
     if form.validate_on_submit():
         integration.integration_name = form.integration_name.data
         integration.api_key = form.api_key.data
-        integration.user_domain = form.user_domain.data
         integration.auto_load = form.auto_load.data
         db.session.commit()
         flash('Изменения сохранены')
     elif request.method == 'GET':
         form.integration_name.data = integration.integration_name
         form.api_key.data = integration.api_key
-        form.user_domain.data = integration.user_domain
         form.metrika_key.data = integration.metrika_key
         form.metrika_counter_id.data = integration.metrika_counter_id
         form.auto_load.data = integration.auto_load
