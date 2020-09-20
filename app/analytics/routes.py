@@ -6,9 +6,8 @@ from app.analytics import bp
 import requests
 from app.analytics.utils import current_user_own_integration, \
                                 create_url_for_query, \
-                                send_request_to_clickhouse, \
-                                get_gr_campaigns, \
-                                create_gr_campaign
+                                send_request_to_clickhouse
+from app.grhub.grmonster import GrMonster
 import traceback
 from pprint import pprint
 import pandas as pd
@@ -42,13 +41,8 @@ def send_search_contacts(integration_id):
 @login_required
 def create_gr_campaign_route(integration_id):
     integration = Integration.query.filter_by(id = integration_id).first_or_404()
-    response = create_gr_campaign(\
-                        request.form['gr_campaign_name'], \
-                        integration.api_key)
-    if response.status_code != 201:
-        print(response.status_code)
-        print(response.text)
-        abort(404)
+    grmonster = GrMonster(integration.api_key)
+    grmonster.create_gr_campaign(request.form['gr_campaign_name'])
     return '<200>'
 
 
@@ -87,7 +81,8 @@ def generate_values(integration_id):
         goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
 
         # get gr campaigns
-        gr_campaigns = get_gr_campaigns(integration.api_key)
+        grmonster = GrMonster(integration.api_key)
+        gr_campaigns = grmonster.get_gr_campaigns()
         # Adding choices to the forms
         form.OperatingSystem.choices = [(g,g) for g in a[0]]
         form.RegionCity.choices = [(g,g) for g in a[1]]
