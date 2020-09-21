@@ -5,10 +5,11 @@ import ast
 import numpy as np
 import requests
 import json
+import base64
+import pandas as pd
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
-import pandas as pd
 from app.models import User, Integration
 from app import db
 from app.metrika import bp
@@ -16,6 +17,7 @@ from app.clickhousehub.clickhouse_custom_request import made_url_for_query,reque
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
 from app.metrika.conversion_table_builder import generate_grouped_columns_sql
+from app.grhub.grmonster import GrMonster
 
 COLUMNS = ['Email', \
             'Total Visits', \
@@ -40,7 +42,7 @@ VISITS_RAW_QUERY = '''
                 then 1 else 0 end) as total_visits_from_newsletter,
 
             sum(case when 1
-                {grouped_columns} 
+                {grouped_columns}
                 then length(GoalsID) else 0 end) as total_goals,
 
             sum(case when extractURLParameter(StartURL, 'mxm') != ''
@@ -134,7 +136,11 @@ def metrika(integration_id):
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):
         abort(404)
-
+    grmonster = GrMonster(api_key=integration.api_key, \
+                            integration_id=integration.id, \
+                            user_id=current_user.id, \
+                            callback_url=request.url_root + current_app.config['CALLBACK_URL'])
+    grmonster.set_callback_if_not_busy()
     try:
         certificate_path = 'app/YandexInternalRootCA.crt'
         auth = {
@@ -178,8 +184,16 @@ def metrika(integration_id):
             integration_id=integration_id,\
             goals=goals)
 
-@bp.route('/metrika/callback_add_custom_field', methods = ['GET'])
-def callback_add_custom_field():
+@bp.route('/metrika/callback_add_custom_field/<identificator>', methods = ['POST'])
+def callback_add_custom_field(identificator):
+    identificator_bytes = identificator.encode('utf-8')
+    identificator_string_bytes = base64.b64decode(identificator_bytes)
+    identificator_decoded = identificator_string_bytes.decode('utf-8')
+
+    user_id, integration_id = itemgetter(0, 1)(identificator_decoded.split('-'))
+    print(user_id,integration_id)
+    print(Integration.query.filter_by(id = integration_id).first().user)
+    # if User.query.filter_by(id = user_id).first() == Integration.query.filter_by(id = integration_id).first().
     action = request.args.get('action')
     contact_email = request.args.get('contact_email')
     contact_id = request.args.get('CONTACT_ID')

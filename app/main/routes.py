@@ -95,6 +95,7 @@ def notifications():
 @bp.route('/create_integration', methods=['GET','POST'])
 @login_required
 def create_integration():
+    # print(request.url_root)
     if current_user.crypto is None:
         flash('Настройка вашего аккаунта еще не закончена')
         return redirect(url_for('main.user_integrations'))
