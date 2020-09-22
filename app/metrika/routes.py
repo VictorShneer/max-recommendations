@@ -6,7 +6,6 @@ import numpy as np
 import requests
 import json
 import base64
-import datetime
 import pandas as pd
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
@@ -204,7 +203,7 @@ def callback_add_custom_field(identificator):
     print(action)
     print(action == 'subscribe')
     print(user == integration.user)
-    send_message(user.id, f'Пришел callback {str(datetime.datetime.now())}')
+    send_message(user.id, f'Пришел callback {str(datetime.now())}')
     if user == integration.user and action == 'subscribe':
         gr_monster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
         contact_email = request.args.get('contact_email')
