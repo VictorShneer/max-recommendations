@@ -10,6 +10,7 @@ import json
 import redis
 import rq
 from datetime import datetime
+from app.utils import encode_this_string
 
 roles_users = db.Table('roles_users', \
     db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),\
@@ -141,6 +142,7 @@ class Integration(UserMixin,db.Model):
     metrika_counter_id = db.Column(db.Integer)
     auto_load = db.Column(db.Boolean)
     start_date = db.Column(db.Date)
+    callback_url = db.Column(db.String(100))
 
     def __repr__(self):
         return '<Integration {}>'.format(self.integration_name)
@@ -149,6 +151,9 @@ class Integration(UserMixin,db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def set_callback_url(self, root):
+        encoded_identifier = encode_this_string('-'.join([str(self.user_id),str(self.id)]))
+        callback_url = root + current_app.config['CALLBACK_URL'] + encoded_identifier
 
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)

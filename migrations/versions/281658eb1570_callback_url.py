@@ -1,8 +1,8 @@
-"""empty message
+"""callback_url
 
-Revision ID: 5e64c5456fa4
+Revision ID: 281658eb1570
 Revises: 
-Create Date: 2020-09-21 11:21:01.091489
+Create Date: 2020-09-22 02:29:52.568164
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '5e64c5456fa4'
+revision = '281658eb1570'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -48,6 +48,7 @@ def upgrade():
     sa.Column('metrika_counter_id', sa.Integer(), nullable=True),
     sa.Column('auto_load', sa.Boolean(), nullable=True),
     sa.Column('start_date', sa.Date(), nullable=True),
+    sa.Column('callback_url', sa.String(length=100), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
