@@ -1,7 +1,7 @@
 """callback urls
 
-Revision ID: ad9b9670301f
-Revises: 
+Revision ID: e420c86ad9fa
+Revises:
 Create Date: 2020-09-22 14:15:40.615582
 
 """
