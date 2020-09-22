@@ -11,6 +11,8 @@ from flask import jsonify
 from app.clickhousehub.metrica_logs_api import drop_integration
 from wtforms.fields.html5 import DateField
 import datetime
+from app.grhub.grmonster import GrMonster
+
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
 def delete_integration():
@@ -95,7 +97,6 @@ def notifications():
 @bp.route('/create_integration', methods=['GET','POST'])
 @login_required
 def create_integration():
-    # print(request.url_root)
     if current_user.crypto is None:
         flash('Настройка вашего аккаунта еще не закончена')
         return redirect(url_for('main.user_integrations'))
@@ -109,6 +110,7 @@ def create_integration():
         auto_load = form.auto_load.data,
         user_id = current_user.id
         )
+        integration.set_callback_url(request.url_root)
         db.session.add(integration)
         db.session.flush()
 
@@ -135,6 +137,11 @@ def create_integration():
                                         integration.id, \
                                         [params,params_2], \
                                         current_user.id)
+                # current_user.launch_task('init_gr_account',\
+                #                         'Инициализация контактов...', \
+                #                         integration.api_key,\
+                #                         current_user.id, \
+                #                         integration.callback_url)
                 db.session.commit()
         except Exception as err:
             flash("Проблемки..")
@@ -176,7 +183,6 @@ def edit_integration(integration_id):
         form.metrika_key.data = integration.metrika_key
         form.metrika_counter_id.data = integration.metrika_counter_id
         form.auto_load.data = integration.auto_load
-
     return render_template("create_integration.html",\
                             form=form,\
                             title=title)
