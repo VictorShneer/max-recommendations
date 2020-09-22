@@ -5,31 +5,94 @@
 
 
 <div class="container">
-      <h3>Свойства:</h3>
   <div class="row">
-    <div class="col-sm-5">
+    <div class="col-sm-4 col-md-3">
+      <h3 class="text-center">Свойства:</h3>
       {% if title %} <h2>{{title}}</h2> {% endif %}
-            {{ wtf.quick_form(form, id="analyticsform") }}
+      <form class="form" action="" method="post" role="form" id="analyticsform">
+        {{ form.csrf_token() }}
+        <div class="form-group analyticsform-div">
+          {{ form.DeviceCategory.label() }}
+          {{ form.DeviceCategory() }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.OperatingSystem.label() }}
+          {{ form.OperatingSystem() }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.RegionCity.label() }}
+          {{ form.RegionCity() }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.MobilePhone.label() }}
+          {{ form.MobilePhone() }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.MobilePhoneModel.label() }}
+          {{ form.MobilePhoneModel() }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.Browser.label() }}
+          {{ form.Browser() }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.Date.label() }}
+          {{ form.clause_visits() }}
+          <br><br>
+          {{ form.Date(class='form-control') }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.amount_of_visits.label() }}
+          {{ form.clause_visits_from_to() }}
+          <br><br>
+          {{ form.amount_of_visits(class='form-control') }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.GoalsID.label() }}
+          {{ form.GoalsID() }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.amount_of_goals.label() }}
+          {{ form.clause_goals() }}
+          <br><br>
+          {{ form.amount_of_goals(class='form-control') }}
+        </div>
+        <div class="form-group analyticsform-div">
+          {{ form.URL.label() }}
+          {{ form.clause_url(class='form-control') }}
+          <br>
+          {{ form.URL() }}
+        </div>
+        <div class="form-group">
+          {{ form.submit(class='grmax-btn') }}
+        </div>
+      </form>
+            <a class="grmax-justlink" href="{{url_for('main.user_integrations')}}"><i class="fa fa-long-arrow-left" aria-hidden="true"></i> Назад</a>
             <br>
-            <a class="btn btn-info" href="{{url_for('main.user_integrations')}}">Назад</a>
     </div>
-    <div class="col-sm-4">
-        <h3>Список адресов:</h3>
-      <div id="target">
-        <div id="form-response"></div>
+    <div class="col-sm-8 col-md-9">
+      <div class="row">
+          <div class="col-sm-6">
+            <h3>Список адресов:</h3>
+            <div class="analyticsform-div analytics-emailslist-container">
+              <div id="target" class="analytics-emailslist">
+                <div id="form-response"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <p style="margin-top: 70px;">Выберите список из GetResponse, куда импортировать контакты:</p>
+            <select id="gr_campaigns" class="form-control select-gr-campaigns">
+              {% for gr_campaign in gr_campaigns %}
+                <option value="{{ gr_campaign[0] }}">{{ gr_campaign[1] }}</option>
+              {% endfor %}
+            </select>
+            <a id="create_campaign" class="grmax-justlink" href=''>Создать новый список</a>
+            <div id='newcampaingform'></div>
+            <a class="btn btn-default grmax-btn" id="sendGR" name="sendGR" type="sendGR">Отправить в GR</a>
+          </div>
       </div>
-        <br>
-        <a class="btn btn-default" id="sendGR" name="sendGR" type="sendGR">Отправить в GR</a>
-        <br>
-        <select id="gr_campaigns">
-          {% for gr_campaign in gr_campaigns %}
-            <option value="{{ gr_campaign[0] }}">{{ gr_campaign[1] }}</option>
-          {% endfor %}
-        </select>
-        <a id="create_campaign" href=''>Создать новый список</a>
-        <div id='newcampaingform'></div>
     </div>
-
   </div>
 </div>
 
@@ -56,7 +119,7 @@
     var select_options = {
       includeSelectAllOption: true,
       selectAllText: 'Выбрать все',
-      buttonWidth: '270px',
+      buttonWidth: '100%',
       buttonClass: 'grmax-select-button btn btn-default',
       selectedClass: 'grmax-multiselect-selected',
       buttonContainer: '<div class="btn-group grmax-select" />',
