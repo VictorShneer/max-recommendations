@@ -81,7 +81,7 @@ def generate_values(integration_id):
         goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
 
         # get gr campaigns
-        grmonster = GrMonster(integration.api_key, , callback_url=integration.callback_url)
+        grmonster = GrMonster(integration.api_key, callback_url=integration.callback_url)
         gr_campaigns = grmonster.get_gr_campaigns()
         # Adding choices to the forms
         form.OperatingSystem.choices = [(g,g) for g in a[0]]
