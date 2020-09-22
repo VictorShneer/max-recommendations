@@ -1,8 +1,8 @@
-"""callback_url
+"""callback urls
 
-Revision ID: 281658eb1570
+Revision ID: ad9b9670301f
 Revises: 
-Create Date: 2020-09-22 02:29:52.568164
+Create Date: 2020-09-22 14:15:40.615582
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '281658eb1570'
+revision = 'ad9b9670301f'
 down_revision = None
 branch_labels = None
 depends_on = None
