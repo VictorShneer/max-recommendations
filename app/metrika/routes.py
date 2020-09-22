@@ -18,6 +18,10 @@ from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
 from app.metrika.conversion_table_builder import generate_grouped_columns_sql
 from app.grhub.grmonster import GrMonster
+from app.utils import decode_this_string
+from operator import itemgetter
+
+
 COLUMNS = ['Email', \
             'Total Visits', \
             'Total Visits From Newsletter', \
@@ -194,16 +198,18 @@ def callback_add_custom_field(identificator):
     identificator_decoded=decode_this_string(identificator)
     user_id, integration_id = itemgetter(0, 1)(identificator_decoded.split('-'))
     print(user_id,integration_id)
-    integration = Integration.query.filter_by(id = integration_id).first()
-    user = User.query.filter_by(id = user_id).first()
+    integration = Integration.query.filter_by(id = int(integration_id)).first()
+    user = User.query.filter_by(id = int(user_id)).first()
     print(integration.user)
     print(user)
     print(user == integration.user)
-    gr_monster = GrMonster()
+    gr_monster = GrMonster(integration_id=integration.id, callback_url=integration.callback_url)
     action = request.args.get('action')
     contact_email = request.args.get('contact_email')
     contact_id = request.args.get('CONTACT_ID')
+    print(action,contact_email,contact_id)
     # custom_field_id =
     if (action == 'subscribe'): #проверяем, что коллбек именно на подписку
-        add_custom_field(contact_email, contact_id, custom_field_id)
+        # add_custom_field(contact_email, contact_id, custom_field_id)
+        pass
     return redirect(url_for('main.index'))
