@@ -147,10 +147,12 @@ class FilterableVisitsTable extends React.Component {
           this.setState({visits: data, isLoading: false });
           // for graph
           drawChart(
-            data.max_no_email_1graph,
-            data.max_email_1graph,
             data.conv_no_email_sum,
-            data.conv_email_sum
+            data.conv_email_sum,
+            data.goals_email_sum,
+            data.goals_no_email_sum,
+            data.visits_email_sum,
+            data.visits_no_email_sum
           );
         })
         .catch(error => this.setState({ error, isLoading: false }));
@@ -199,7 +201,7 @@ function setTotalUniqueVisitors(total_unique_visitors){
 
 function setTotalEmailVisitors(total_email_visitors){
   document.getElementById('total_email_visitors').innerHTML=
-                                            'Из низ <b>' +
+                                            'Из них <b>' +
                                             total_email_visitors +
                                             '</b> хотя бы раз перешли из email'
 

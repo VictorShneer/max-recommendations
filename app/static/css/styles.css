@@ -460,3 +460,11 @@ a#create_campaign {
   margin: 20px 0 10px 0;
   display: block;
 }
+
+.metrika-pie {
+  border: 2px solid rgb(226, 226, 226);
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: rgba(100, 151, 203, 0.21) 0px 0px 7px 0px;
+  min-height: 360px;
+}
