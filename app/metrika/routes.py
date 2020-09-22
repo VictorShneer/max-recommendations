@@ -6,6 +6,7 @@ import numpy as np
 import requests
 import json
 import base64
+import datetime
 import pandas as pd
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
@@ -20,7 +21,7 @@ from app.metrika.conversion_table_builder import generate_grouped_columns_sql
 from app.grhub.grmonster import GrMonster
 from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
-
+from app.tasks import send_message # TODO send_message should be in main
 
 COLUMNS = ['Email', \
             'Total Visits', \
@@ -200,6 +201,10 @@ def callback_add_custom_field(identificator):
     integration = Integration.query.filter_by(id = int(integration_id)).first()
     user = User.query.filter_by(id = int(user_id)).first()
     action = request.args.get('action')
+    print(action)
+    print(action == 'subscribe')
+    print(user == integration.user)
+    send_message(user.id, f'Пришел callback {str(datetime.datetime.now())}')
     if user == integration.user and action == 'subscribe':
         gr_monster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
         contact_email = request.args.get('contact_email')
