@@ -10,7 +10,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
-from app.models import User, Integration
+from app.models import User, Integration, Message
 from app import db
 from app.metrika import bp
 from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
@@ -22,7 +22,7 @@ from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
 
 
-# # TODO: 
+# # TODO:
 def send_message(recipient, data):
     user = User.query.filter_by(id=recipient).first_or_404()
     msg = Message(recipient=user,body=data)
@@ -208,17 +208,12 @@ def callback_add_custom_field(identificator):
     integration = Integration.query.filter_by(id = int(integration_id)).first()
     user = User.query.filter_by(id = int(user_id)).first()
     action = request.args.get('action')
-    print(action)
-    print(action == 'subscribe')
-    print(user == integration.user)
     send_message(user.id, f'Пришел callback {str(datetime.now())}')
     if user == integration.user and action == 'subscribe':
         gr_monster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
         contact_email = request.args.get('contact_email')
         contact_id = request.args.get('CONTACT_ID')
         gr_monster.set_hash_email_custom_field_id()
-        print(gr_monster.hash_email_custom_field_id)
-
         gr_monster.upsert_hash_field_for_contact(contact_id,encode_this_string(contact_email))
 
     return redirect(url_for('main.index'))
