@@ -5,10 +5,11 @@ import ast
 import numpy as np
 import requests
 import json
+import base64
+import pandas as pd
 from datetime import datetime, timedelta
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
-import pandas as pd
 from app.models import User, Integration
 from app import db
 from app.metrika import bp
@@ -40,7 +41,7 @@ VISITS_RAW_QUERY = '''
                 then 1 else 0 end) as total_visits_from_newsletter,
 
             sum(case when 1
-                {grouped_columns} 
+                {grouped_columns}
                 then length(GoalsID) else 0 end) as total_goals,
 
             sum(case when extractURLParameter(StartURL, 'mxm') != ''
@@ -126,6 +127,9 @@ def metrika_get_data(integration_id):
     json_to_return['max_no_email_1graph'] = json.dumps(max_no_email_1graph)
     json_to_return['max_email_1graph'] = json.dumps(max_email_1graph)
     json_to_return['total_unique_visitors'] = str(front_end_df.shape[0])
+    temp_all_visots = front_end_df.shape[0]
+    total_email_visitors = temp_all_visots - front_end_df[front_end_df['Email'].str.contains("no-email")].shape[0]
+    json_to_return['total_email_visitors'] = str(total_email_visitors)
     return json_to_return
 
 @bp.route('/metrika/<integration_id>', methods = ['GET'])
@@ -134,7 +138,6 @@ def metrika(integration_id):
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):
         abort(404)
-
     try:
         certificate_path = 'app/YandexInternalRootCA.crt'
         auth = {
@@ -178,8 +181,16 @@ def metrika(integration_id):
             integration_id=integration_id,\
             goals=goals)
 
-@bp.route('/metrika/callback_add_custom_field', methods = ['GET'])
-def callback_add_custom_field():
+@bp.route('/metrika/callback_add_custom_field/<identificator>', methods = ['POST'])
+def callback_add_custom_field(identificator):
+    identificator_decoded=decode_this_string(identificator)
+    user_id, integration_id = itemgetter(0, 1)(identificator_decoded.split('-'))
+    print(user_id,integration_id)
+    integration = Integration.query.filter_by(id = integration_id).first()
+    user = User.query.filter_by(id = user_id).first()
+    print(integration.user)
+    print(user)
+    print(user == integration.user)
     action = request.args.get('action')
     contact_email = request.args.get('contact_email')
     contact_id = request.args.get('CONTACT_ID')

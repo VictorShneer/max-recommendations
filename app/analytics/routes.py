@@ -41,7 +41,7 @@ def send_search_contacts(integration_id):
 @login_required
 def create_gr_campaign_route(integration_id):
     integration = Integration.query.filter_by(id = integration_id).first_or_404()
-    grmonster = GrMonster(integration.api_key)
+    grmonster = GrMonster(api_key = integration.api_key, callback_url=integration.callback_url)
     grmonster.create_gr_campaign(request.form['gr_campaign_name'])
     return '<200>'
 
@@ -81,7 +81,7 @@ def generate_values(integration_id):
         goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
 
         # get gr campaigns
-        grmonster = GrMonster(integration.api_key)
+        grmonster = GrMonster(integration.api_key, callback_url=integration.callback_url)
         gr_campaigns = grmonster.get_gr_campaigns()
         # Adding choices to the forms
         form.OperatingSystem.choices = [(g,g) for g in a[0]]

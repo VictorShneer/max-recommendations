@@ -44,5 +44,6 @@ class Config(object):
     SERVICE_ID = 'aje82uuu3kjjl101v6oj'
 
 
-
+    # CALLBACKS
+    CALLBACK_URL = '/metrika/callback_add_custom_field/'
     ADMINS = ['implixgr360@gmail.com']

@@ -9,7 +9,7 @@ from app.clickhousehub.metrica_logs_api import handle_integration
 from app.clickhousehub.metrica_logs_api import drop_integration
 from app.clickhousehub.clickhouse import get_tables
 import concurrent.futures
-
+from app.grhub.grmonster import GrMonster
 
 
 app = create_app(adminFlag=False)
@@ -22,7 +22,6 @@ def post_contact_to_list(email, campaign_id, api_key):
     return (r.status_code, r.text)
 
 def send_message(recipient, data):
-
     user = User.query.filter_by(id=recipient).first_or_404()
     msg = Message(recipient=user,body=data)
     db.session.add(msg)
@@ -87,6 +86,19 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regu
             _set_task_progress(100, 'Ежедневная автоматическая загрузка - Ошибка', user_id)
         app.logger.info('### init_clickhouse_tables EXCEPTION regular_load={}'.format(regular_load))
         app.logger.error('### Unhandled exception {exc_info}\n{err}'.format(exc_info=sys.exc_info(), err=err))
+
+def init_gr_account(api_key, user_id, callback_url):
+    _set_task_progress(0)
+    grmonster = GrMonster(api_key=api_key, \
+                            callback_url=callback_url)
+    try:
+        list_of_upsert_custom_responses = grmonster.instantiate_contacts_with_hashed_email()
+        set_callback_response = grmonster.set_callback_if_not_busy()
+    except (Exception,ConnectionRefusedError) as err:
+        _set_task_progress(100, f'Инициализация контатов - Ошибка - \n{err}' ,user_id)
+    else:
+        _set_task_progress(100, f'Инициализация контатов - Успех' ,user_id)
+
 
 
 def example(seconds):
