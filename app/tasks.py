@@ -59,11 +59,15 @@ def _set_task_progress(progress, comment='', user_id=0):
         task = Task.query.get(job.get_id())
         task.user.add_notification('task_progress', {'task_id': job.get_id(),
                                                      'progress': comment if comment else progress})
-        if  progress >= 100 and user_id:
+        if  progress >= 100:
             send_message(user_id, comment)
             user = User.query.filter_by(id=user_id).first()
             user.add_notification('unread_message_count', user.new_messages())
             task.complete = True
+        if user_id:
+            send_message(user_id, comment)
+            user = User.query.filter_by(id=user_id).first()
+            user.add_notification('unread_message_count', user.new_messages())
         db.session.commit()
 
 def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regular_load=False,):
@@ -91,13 +95,21 @@ def init_gr_account(api_key, user_id, callback_url):
     _set_task_progress(0)
     grmonster = GrMonster(api_key=api_key, \
                             callback_url=callback_url)
+    # try:
+    #     list_of_upsert_custom_responses = grmonster.instantiate_contacts_with_hashed_email()
+    # except KeyError as err:
+    #     _set_task_progress(50, f'Инициализация контатков ГР - Ошибка - \n{err}' ,user_id)
+    # else:
+    #     _set_task_progress(50, f'Инициализация контатков ГР - Успех' ,user_id)
+
     try:
-        list_of_upsert_custom_responses = grmonster.instantiate_contacts_with_hashed_email()
         set_callback_response = grmonster.set_callback_if_not_busy()
-    except (Exception,ConnectionRefusedError) as err:
-        _set_task_progress(100, f'Инициализация контатов - Ошибка - \n{err}' ,user_id)
+    except KeyError as err:
+        _set_task_progress(99, f'Создание уведомления - Ошибка - \n{err}' ,user_id)
+        _set_task_progress(100, f'Инициализация gr аккаунта - Есть ошибки - \n{err}' ,user_id)
     else:
-        _set_task_progress(100, f'Инициализация контатов - Успех' ,user_id)
+        _set_task_progress(99, f'Создание уведомления - Успех' ,user_id)
+        _set_task_progress(100, f'Инициализация gr аккаунта - Успех' ,user_id)
 
 
 

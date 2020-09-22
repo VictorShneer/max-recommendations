@@ -153,7 +153,7 @@ class Integration(UserMixin,db.Model):
 
     def set_callback_url(self, root):
         encoded_identifier = encode_this_string('-'.join([str(self.user_id),str(self.id)]))
-        callback_url = root + current_app.config['CALLBACK_URL'] + encoded_identifier
+        self.callback_url = root + current_app.config['CALLBACK_URL'] + encoded_identifier
 
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)

@@ -110,10 +110,11 @@ def create_integration():
         auto_load = form.auto_load.data,
         user_id = current_user.id
         )
-        integration.set_callback_url(request.url_root)
-        db.session.add(integration)
-        db.session.flush()
 
+        db.session.add(integration)
+
+        db.session.flush()
+        integration.set_callback_url(request.url_root)
         try:
             ### TODO
             # UUID CUSTOM UNIQUE ID FOR ClickHousE integration
@@ -137,11 +138,11 @@ def create_integration():
                                         integration.id, \
                                         [params,params_2], \
                                         current_user.id)
-                # current_user.launch_task('init_gr_account',\
-                #                         'Инициализация контактов...', \
-                #                         integration.api_key,\
-                #                         current_user.id, \
-                #                         integration.callback_url)
+                current_user.launch_task('init_gr_account',\
+                                        'Инициализация контактов...', \
+                                        integration.api_key,\
+                                        current_user.id, \
+                                        integration.callback_url)
                 db.session.commit()
         except Exception as err:
             flash("Проблемки..")

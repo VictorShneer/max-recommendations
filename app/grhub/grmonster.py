@@ -31,13 +31,16 @@ class GrMonster(GrUtils):
         try:
             callback = self.get_callbacks()
             pprint(f'{callback.json()} already set PANIC')
+            raise KeyError(f'{callback.json()} already set PANIC')
         except ConnectionRefusedError as err:
-            callback_identifier_encoded = encode_this_string(callback_identifier)
             set_callback_response = self.set_callback(self.callback_url,['subscribe'])
             return set_callback_response
 
     def upsert_every_email_with_hashed_email(self, id_email_dic_list):
         responses = []
+        print('Nubmer of contacts to init')
+        print(len(id_email_dic_list))
+        print('Usually it takes 0.25 sec per contact')
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             future_to_contact = {\
                     executor.submit(\

@@ -13,15 +13,6 @@ app = create_app()
 def make_shell_context():
     return {'db': db, 'User': User, 'Integration': Integration, 'Notification': Notification}
 
-# from app.grhub.grmonster import GrMonster
-# @app.cli.command()
-# def coding_callbacks():
-#     grmonster=GrMonster(api_key='u0bwk7n5i3u9w2g2hndz8yn346x361g0', \
-#                         user_id=1, \
-#                         integration_id=1, \
-#                         callback_url='https://maxmetrika-staging.herokuapp.com/')
-#     pprint(grmonster.set_callback_if_not_busy())
-
 @app.cli.command()
 def check_ch_auth():
     request_iam()
