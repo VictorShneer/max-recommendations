@@ -189,7 +189,7 @@ def metrika(integration_id):
             integration_id=integration_id,\
             goals=goals)
 
-@bp.route('/metrika/callback_add_custom_field/<identificator>', methods = ['POST'])
+@bp.route('/metrika/callback_add_custom_field/<identificator>', methods = ['GET','POST'])
 def callback_add_custom_field(identificator):
     identificator_decoded=decode_this_string(identificator)
     user_id, integration_id = itemgetter(0, 1)(identificator_decoded.split('-'))
@@ -203,7 +203,7 @@ def callback_add_custom_field(identificator):
     action = request.args.get('action')
     contact_email = request.args.get('contact_email')
     contact_id = request.args.get('CONTACT_ID')
-    custom_field_id =
+    # custom_field_id =
     if (action == 'subscribe'): #проверяем, что коллбек именно на подписку
         add_custom_field(contact_email, contact_id, custom_field_id)
     return redirect(url_for('main.index'))
