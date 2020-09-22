@@ -127,6 +127,9 @@ def metrika_get_data(integration_id):
     json_to_return['max_no_email_1graph'] = json.dumps(max_no_email_1graph)
     json_to_return['max_email_1graph'] = json.dumps(max_email_1graph)
     json_to_return['total_unique_visitors'] = str(front_end_df.shape[0])
+    temp_all_visots = front_end_df.shape[0]
+    total_email_visitors = temp_all_visots - front_end_df[front_end_df['Email'].str.contains("no-email")].shape[0]
+    json_to_return['total_email_visitors'] = str(total_email_visitors)
     return json_to_return
 
 @bp.route('/metrika/<integration_id>', methods = ['GET'])

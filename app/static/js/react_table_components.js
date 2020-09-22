@@ -141,7 +141,8 @@ class FilterableVisitsTable extends React.Component {
           // for date input field
           this.setState({start_date: date});
           // for unique visitors counterID
-          setTotalUniqueVisitors(data.total_unique_visitors)
+          setTotalUniqueVisitors(data.total_unique_visitors);
+          setTotalEmailVisitors(data.total_email_visitors);
           // for table
           this.setState({visits: data, isLoading: false });
           // for graph
@@ -192,8 +193,16 @@ function setTotalUniqueVisitors(total_unique_visitors){
   document.getElementById('total_unique_visitors').innerHTML =
                                             'Выбрано <b>' +
                                             total_unique_visitors +
-                                            "</b> уникальных посещений"
+                                            "</b> уникальных посетителей"
                                             ;
+}
+
+function setTotalEmailVisitors(total_email_visitors){
+  document.getElementById('total_email_visitors').innerHTML=
+                                            'Из низ <b>' +
+                                            total_email_visitors +
+                                            '</b> хотя бы раз перешли из email'
+
 }
 React.render(<FilterableVisitsTable
                 atb={document.getElementById('atb').textContent}
