@@ -95,12 +95,12 @@ def init_gr_account(api_key, user_id, callback_url):
     _set_task_progress(0)
     grmonster = GrMonster(api_key=api_key, \
                             callback_url=callback_url)
-    # try:
-    #     list_of_upsert_custom_responses = grmonster.instantiate_contacts_with_hashed_email()
-    # except KeyError as err:
-    #     _set_task_progress(50, f'Инициализация контатков ГР - Ошибка - \n{err}' ,user_id)
-    # else:
-    #     _set_task_progress(50, f'Инициализация контатков ГР - Успех' ,user_id)
+    try:
+        list_of_upsert_custom_responses = grmonster.instantiate_contacts_with_hashed_email()
+    except KeyError as err:
+        _set_task_progress(50, f'Инициализация контактов ГР - Ошибка - \n{err}' ,user_id)
+    else:
+        _set_task_progress(50, f'Инициализация контактов ГР - Успех' ,user_id)
 
     try:
         set_callback_response = grmonster.set_callback_if_not_busy()
