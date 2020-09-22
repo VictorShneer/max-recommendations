@@ -17,7 +17,7 @@ from app.clickhousehub.clickhouse_custom_request import made_url_for_query,reque
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
 from app.metrika.conversion_table_builder import generate_grouped_columns_sql
-
+from app.grhub.grmonster import GrMonster
 COLUMNS = ['Email', \
             'Total Visits', \
             'Total Visits From Newsletter', \
@@ -199,10 +199,11 @@ def callback_add_custom_field(identificator):
     print(integration.user)
     print(user)
     print(user == integration.user)
+    gr_monster = GrMonster()
     action = request.args.get('action')
     contact_email = request.args.get('contact_email')
     contact_id = request.args.get('CONTACT_ID')
-    custom_field_id= 'Vu40V0'  #TODO id кастомного поля hash_metrika Макса
+    custom_field_id =
     if (action == 'subscribe'): #проверяем, что коллбек именно на подписку
         add_custom_field(contact_email, contact_id, custom_field_id)
     return redirect(url_for('main.index'))
