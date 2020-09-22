@@ -58,7 +58,7 @@ class GrUtils(GrConnector):
             actions_json[action] = True
         return self.request_gr('post','accounts/callbacks', json = {'url':url,'actions':actions_json})
 
-    def upsert_custom_field(self, contact_id, custom_field_value):
+    def upsert_hash_field_for_contact(self, contact_id, custom_field_value):
         r = self.request_gr('post', f'contacts/{contact_id}/custom-fields', \
                         json = {'customFieldValues':[{\
                                             'customFieldId':self.hash_email_custom_field_id,\

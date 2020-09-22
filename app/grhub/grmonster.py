@@ -10,6 +10,11 @@ class GrMonster(GrUtils):
         super().__init__(api_key)
         self.callback_url = callback_url
 
+    def set_hash_email_custom_field_id():
+        for custom in self.get_customs().json():
+            if custom['name']==self.hashed_email_custom_field_name:
+                self.hash_email_custom_field_id = custom['customFieldId']
+
     def instantiate_contacts_with_hashed_email(self):
         if self.if_custom_field_exists(self.hashed_email_custom_field_name):
             raise KeyError(f'Custom field name {self.hashed_email_custom_field_name} already in use!')
@@ -44,7 +49,7 @@ class GrMonster(GrUtils):
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             future_to_contact = {\
                     executor.submit(\
-                        self.upsert_custom_field, \
+                        self.upsert_hash_field_for_contact, \
                         contact['contactId'], \
                         encode_this_string(contact['email'])\
                         ): \
