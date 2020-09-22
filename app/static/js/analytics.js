@@ -103,6 +103,7 @@ $(document).ready(function(){
               $('#form-response').html("");
           },
           success: function ( data ){
+              console.log(data)
               target.innerHTML = ''
               if (data) {
                 const unparsed_data = JSON.parse(data);
@@ -111,7 +112,7 @@ $(document).ready(function(){
                 <div class="container">
                     <div class="row">
                         <div class="col">
-                            ${item.Hash}
+                            ${item.hash}
                         </div>
                     </div>
                 </div>
