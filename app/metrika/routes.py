@@ -208,8 +208,9 @@ def callback_add_custom_field(identificator):
         gr_monster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
         contact_email = request.args.get('contact_email')
         contact_id = request.args.get('CONTACT_ID')
-        print(action,contact_email,contact_id)
         gr_monster.set_hash_email_custom_field_id()
-        gr_moster.upsert_hash_field_for_contact(contact_id,encode_this_string(contact_email))
+        print(gr_monster.hash_email_custom_field_id)
+
+        gr_monster.upsert_hash_field_for_contact(contact_id,encode_this_string(contact_email))
 
     return redirect(url_for('main.index'))
