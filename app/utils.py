@@ -7,5 +7,5 @@ def encode_this_string(string):
 
 def decode_this_string(sting):
     byte_string = sting.encode('utf-8')
-    byte_decoded = base64.b64decode(identificator_bytes)
+    byte_decoded = base64.b64decode(byte_string)
     return byte_decoded.decode('utf-8')
