@@ -20,7 +20,15 @@ from app.metrika.conversion_table_builder import generate_grouped_columns_sql
 from app.grhub.grmonster import GrMonster
 from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
-from app.tasks import send_message # TODO send_message should be in main
+
+
+# # TODO: 
+def send_message(recipient, data):
+    user = User.query.filter_by(id=recipient).first_or_404()
+    msg = Message(recipient=user,body=data)
+    db.session.add(msg)
+    db.session.commit()
+    print('Your message has been sent.',user ,msg) # TODO send_message should be in main
 
 COLUMNS = ['Email', \
             'Total Visits', \
