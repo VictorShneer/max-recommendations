@@ -18,6 +18,7 @@ import base64
 import urllib.parse
 import numpy as np
 import concurrent.futures
+import binascii
 
 @bp.route('/analytics/send_search_contacts/<integration_id>', methods=['POST'])
 @current_user_own_integration
@@ -147,9 +148,11 @@ def process_values():
                 elif i in ('URL'):
                     for j in dict_of_requests['URL']:
                         if str(dict_of_requests['clause_url']).strip("'['']'") == '1':
-                            having = having + " arrayStringConcat(groupArray(h.URL)) like '%" + j + "%' OR "
+                            string = f"%{j}%"
+                            having = having + " arrayStringConcat(groupArray(h.URL)) like CAST(unhex('" + string.encode("utf-8").hex() + "'), 'String') OR "
                         elif str(dict_of_requests['clause_url']).strip("'['']'") == '2':
-                            having = having + " has(groupArray(cutQueryString(h.URL)), '" + j + "') OR "
+                            string = f"{j}"
+                            having = having + " has(groupArray(cutQueryString(h.URL)), CAST(unhex('" + string.encode("utf-8").hex() + "'), 'String')) OR "
 
             if having == 'HAVING':
                 having = having[:-6]
@@ -163,8 +166,6 @@ def process_values():
             {where}
             GROUP BY emails, ClientID
             {having};"""
-
-            whole = whole. replace("#", "%")
             #getting the answer from the db
             create_url = create_url_for_query(whole,current_user.crypto)
             print(create_url)
@@ -172,7 +173,8 @@ def process_values():
 
             #doing magic with the data
             file_from_string = StringIO(get_data)
-            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = ["ClientID", "Hash"])
+            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = ["ClientID", "hash"])
+            columns_df = columns_df.hash
             columns_df = columns_df.dropna()
             columns_df = columns_df.drop_duplicates()
             pprint(columns_df)

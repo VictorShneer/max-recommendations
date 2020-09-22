@@ -103,6 +103,7 @@ $(document).ready(function(){
               $('#form-response').html("");
           },
           success: function ( data ){
+              console.log(data)
               target.innerHTML = ''
               if (data) {
                 const unparsed_data = JSON.parse(data);
@@ -111,7 +112,7 @@ $(document).ready(function(){
                 <div class="container">
                     <div class="row">
                         <div class="col">
-                            ${item.Hash}
+                            ${item.hash}
                         </div>
                     </div>
                 </div>
@@ -146,8 +147,8 @@ $(document).ready(function(){
       $form = $("<form id='create_campaign_form'></form>");
       $noformsuccess = $('<p id="newcampaingform" style="color:green;">Успех! Перезагрузите страницу, чтобы выбрать новый список.<p>')
       $noformfail = $('<p id="newcampaingform" style="color:red;">Не удалось создать список. Попробуйте другое имя<p>')
-      inputs = '<input type="text" placeholder="Название">\
-                <input type="submit" value="Создать">';
+      inputs = '<input class="form-control analytics-create-campaign" type="text" placeholder="Название">\
+                <input class="grmax-btn-white" type="submit" value="Создать">';
       $form.append(inputs);
       $('#newcampaingform').replaceWith($form);
       $("#create_campaign_form").submit(function( event ) {

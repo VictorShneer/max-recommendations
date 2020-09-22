@@ -1,13 +1,14 @@
 
-function drawChart(graph_1_no_email,graph_1,conv_no_email_sum, conv_email_sum) {
+function drawChart(conv_no_email_sum, conv_email_sum, goals_email_sum, goals_no_email_sum, visits_email_sum, visits_no_email_sum) {
   //первый график  - зависимость конверсии от общего количества визитов (с email, без email)
   const emailDots = [];
   const noEmailDots = [];
-  const graph_1_no_email_array = eval(graph_1_no_email);
-  const graph_1_array = eval(graph_1);
+//  const graph_1_no_email_array = eval(graph_1_no_email);
+//  const graph_1_array = eval(graph_1);
   let arrayToLoad = [['Count', 'Без email', 'с email']];
 
-  graph_1_array.forEach((pairOfDots) => {
+  console.log('goals_email_sum = '+goals_email_sum)
+/*  graph_1_array.forEach((pairOfDots) => {
     noEmailDots.push(
       [parseFloat(pairOfDots[0]), parseFloat(pairOfDots[1]), null]
     );
@@ -17,9 +18,9 @@ function drawChart(graph_1_no_email,graph_1,conv_no_email_sum, conv_email_sum) {
       [parseFloat(pairOfDots[0]), null, parseFloat(pairOfDots[1])]
     );
   });
-  arrayToLoad = arrayToLoad.concat(emailDots,noEmailDots);
+  arrayToLoad = arrayToLoad.concat(emailDots,noEmailDots);*/
 
-  var data = google.visualization.arrayToDataTable(
+  /*var data = google.visualization.arrayToDataTable(
       arrayToLoad
   );
   var options = {
@@ -32,7 +33,7 @@ function drawChart(graph_1_no_email,graph_1,conv_no_email_sum, conv_email_sum) {
 
   var chart = new google.visualization.ScatterChart(document.getElementById('chart_div1'));
 
-  chart.draw(data, options);
+  chart.draw(data, options);*/
 
   /* второй график - зависимость конверсии от доли визитов с email в общем количестве визитов
   var data2 = google.visualization.arrayToDataTable([
@@ -89,5 +90,35 @@ var options3 = {
 
   var chart_diag = new google.visualization.PieChart(document.getElementById('piechart_3d'));
   chart_diag.draw(data_diag, options_diag);
+
+  //вторая диаграмма - участие в количестве выполненных целей
+
+  var data_diag2 = google.visualization.arrayToDataTable([
+    ['Источник', 'Выполненные цели'],
+    ['С email',     parseInt(goals_email_sum)],
+    ['Без email',      parseInt(goals_no_email_sum)]
+  ]);
+
+  var options_diag2 = {
+    title: 'Доля выполненных целей в визитах из email',
+    is3D: true,
+  };
+
+  var chart_diag2 = new google.visualization.PieChart(document.getElementById('piechart_3d_goals'));
+  chart_diag2.draw(data_diag2, options_diag2);
+
+  var data_diag3 = google.visualization.arrayToDataTable([
+    ['Источник', 'Выполненные цели'],
+    ['С email',     parseInt(visits_email_sum)],
+    ['Без email',      parseInt(visits_no_email_sum)]
+  ]);
+
+  var options_diag3 = {
+    title: 'Доля визитов из email',
+    is3D: true,
+  };
+
+  var chart_diag3 = new google.visualization.PieChart(document.getElementById('piechart_3d_visits'));
+  chart_diag3.draw(data_diag3, options_diag3);
 
 }

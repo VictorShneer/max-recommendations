@@ -1,8 +1,8 @@
-"""callback urls
+"""empty message
 
-Revision ID: e420c86ad9fa
-Revises:
-Create Date: 2020-09-22 14:15:40.615582
+Revision ID: 2617f0fdf384
+Revises: 
+Create Date: 2020-09-22 20:28:53.453978
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e420c86ad9fa'
+revision = '2617f0fdf384'
 down_revision = None
 branch_labels = None
 depends_on = None
