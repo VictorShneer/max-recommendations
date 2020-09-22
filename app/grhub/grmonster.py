@@ -10,7 +10,7 @@ class GrMonster(GrUtils):
         super().__init__(api_key)
         self.callback_url = callback_url
 
-    def set_hash_email_custom_field_id():
+    def set_hash_email_custom_field_id(self):
         for custom in self.get_customs().json():
             if custom['name']==self.hashed_email_custom_field_name:
                 self.hash_email_custom_field_id = custom['customFieldId']
