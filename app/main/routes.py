@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from app.models import User, Message,Integration,Notification
 import pandas as pd
 from app.main import bp
-from app.main.forms import EditIntegration, LinkGenerator
+from app.main.forms import EditIntegration, LinkGenerator, GrInitializer
 from app import db
 from app.metrika.secur import current_user_own_integration
 from flask import jsonify
@@ -16,15 +16,16 @@ from app.grhub.grmonster import GrMonster
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
 def delete_integration():
-
-    # heroku db delete
     integration_id = request.form['integration_id']
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if User.query.filter_by(id = integration.user_id).first() != current_user:
         flash("Ошибка")
         abort(403)
+    # disable gr callback
+    grmonster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
+    grmonster.disable_callback()
+    # heroku db delete
     integration.delete_myself()
-
     # clickhouse db delete
     drop_integration(current_user.crypto, integration_id)
 
@@ -156,7 +157,33 @@ def create_integration():
 
     return render_template('create_integration.html', form=form)
 
+@bp.route('/gr_init', methods = ['GET','POST'])
+@login_required
+def gr_init():
+    form = GrInitializer()
+    if form.validate_on_submit():
+        integration = Integration(
+        integration_name = form.integration_name.data,
+        api_key = form.api_key.data,
+        user_id = current_user.id
+        )
+        db.session.add(integration)
+        db.session.flush()
+        integration.set_callback_url(request.url_root)
+        try:
+            current_user.launch_task('init_gr_account',\
+                                    'Инициализация контактов...', \
+                                    integration.api_key,\
+                                    integration.user_id, \
+                                    integration.callback_url)
+            db.session.commit()
+        except Exception as err:
+            flash("Проблемки..")
+            current_app.logger.info(err)
+            db.session.rollback()
+            abort(404)
 
+    return render_template('create_integration.html', form=form)
 
 @bp.route('/edit_integration/<integration_id>', methods = ['GET','POST'])
 @login_required
