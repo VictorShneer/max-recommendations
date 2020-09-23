@@ -24,9 +24,11 @@ class GrUtils(GrConnector):
                     )
         return r
 
+    def disable_callback(self):
+        return self.request_gr('delete', 'accounts/callbacks')
+
     def get_callbacks(self):
         return self.request_gr('get', 'accounts/callbacks')
-        return r
 
     def get_gr_campaigns(self):
         r = self.request_gr('get', 'campaigns?perPage=1000')
