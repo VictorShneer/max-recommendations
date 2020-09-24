@@ -1,4 +1,23 @@
+function drawTimeSeriesChart(timeSeriesData){
+  // console.log(timeSeriesData)
+  // console.log(timeSeriesData.columns);
 
+  arrayToDraw = [timeSeriesData.columns].concat(timeSeriesData.data)
+  console.log(arrayToDraw)
+  var data = google.visualization.arrayToDataTable(
+          arrayToDraw
+        );
+
+  var options = {
+    title: 'Email эффект',
+    curveType: 'function',
+    legend: { position: 'bottom' }
+  };
+
+  var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+  chart.draw(data, options);
+}
 function drawChart(conv_no_email_sum, conv_email_sum, goals_email_sum, goals_no_email_sum, visits_email_sum, visits_no_email_sum) {
   //первый график  - зависимость конверсии от общего количества визитов (с email, без email)
   const emailDots = [];

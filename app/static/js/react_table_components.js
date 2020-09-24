@@ -154,6 +154,8 @@ class FilterableVisitsTable extends React.Component {
             data.visits_email_sum,
             data.visits_no_email_sum
           );
+          // for time series
+          drawTimeSeriesChart(data.time_series_data);
         })
         .catch(error => this.setState({ error, isLoading: false }));
   }
