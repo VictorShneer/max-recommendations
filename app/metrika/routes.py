@@ -16,7 +16,7 @@ from app.metrika import bp
 from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from app.metrika.secur import current_user_own_integration
 from app.metrika.send_hash_to_gr import add_custom_field
-from app.metrika.conversion_table_builder import generate_grouped_columns_sql
+from app.metrika.conversion_table_builder import generate_grouped_columns_sql,generate_joined_json_for_time_series
 from app.grhub.grmonster import GrMonster
 from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
@@ -115,8 +115,10 @@ def metrika_get_data(integration_id):
     json_to_return['visits_email_sum'] = str(visits_email_sum)
     json_to_return['visits_no_email_sum'] = str(visits_no_email_sum)
 
-    time_series_goals_json = time_series_goals_df[['Date','goals_with_email','goals_just_after_email']].to_json(orient='split')
-    time_series_goals_json = json.loads(time_series_goals_json)
+    grmonster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
+    broadcast_messages_since_date_subject_df = grmonster.get_broadcast_messages_since_date_subject_df(request_start_date)
+    time_series_goals_json =  generate_joined_json_for_time_series(time_series_goals_df, broadcast_messages_since_date_subject_df)
+
     json_to_return['time_series_data'] = time_series_goals_json
     return json_to_return
 

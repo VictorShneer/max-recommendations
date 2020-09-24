@@ -8,9 +8,14 @@ function drawTimeSeriesChart(timeSeriesData){
   });
   var data = new google.visualization.DataTable();
   data.addColumn('date', 'Date'); // Implicit domain label col.
+  data.addColumn('number', 'total_goals');
   data.addColumn('number', 'goals_with_email');
   data.addColumn('number', 'goals_just_after_email');
+  data.addColumn({'type': 'string', 'role': 'style' , 'opt_label':'send_on'});
+  data.addColumn({'type': 'string', 'role': 'tooltip'});
+
   data.addRows(timeSeriesData.data);
+  console.log(timeSeriesData.data)
   // Create a dashboard.
   var dashboard = new google.visualization.Dashboard(
       document.getElementById('dashboard_div'));
@@ -18,7 +23,9 @@ function drawTimeSeriesChart(timeSeriesData){
   var options = {
     title: 'Email эффект',
     legend: { position: 'top' },
-  };
+    pointSize: 0.1,
+    tooltip: { trigger: 'selection' },
+  }
 
 
   var controlOptions = {
@@ -32,6 +39,7 @@ function drawTimeSeriesChart(timeSeriesData){
     'options': options
   });
 
+
   var goalsTypeCategory = new google.visualization.ControlWrapper({
     'controlType': 'ChartRangeFilter',
     'containerId': 'filter_div',
@@ -41,7 +49,7 @@ function drawTimeSeriesChart(timeSeriesData){
   goalsTypeCategory.setOption('ui.chartOptions',{
                         width: 1200,
                         height: 100})
-  console.log(goalsTypeCategory.getOptions())
+
   dashboard.bind(goalsTypeCategory,chart);
 
   // Draw the dashboard.
