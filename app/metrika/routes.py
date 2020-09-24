@@ -20,54 +20,7 @@ from app.metrika.conversion_table_builder import generate_grouped_columns_sql
 from app.grhub.grmonster import GrMonster
 from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
-
-
-# # TODO:
-def send_message(recipient, data):
-    user = User.query.filter_by(id=recipient).first_or_404()
-    msg = Message(recipient=user,body=data)
-    db.session.add(msg)
-    db.session.commit()
-    print('Your message has been sent.',user ,msg) # TODO send_message should be in main
-
-COLUMNS = ['Email', \
-            'Total Visits', \
-            'Total Visits From Newsletter', \
-            'Total Goals Complited', \
-            'Total Goals From Newsletter', \
-            'Conversion (TG/TV)', \
-            'Email power proportion']
-
-VISITS_RAW_QUERY = '''
-    select * from(
-        SELECT
-            CASE  when extractURLParameter(StartURL, 'mxm') != ''
-                  then base64Decode(extractURLParameter(StartURL, 'mxm'))
-                  else concat('no-email',toString(ClientID)) end as email,
-
-            sum(case when Date >= '{start_date}'
-                then 1 else 0 end) as total_visits,
-
-            sum(case when extractURLParameter(StartURL, 'mxm') != ''
-                and (Date >= '{start_date}')
-                then 1 else 0 end) as total_visits_from_newsletter,
-
-            sum(case when 1
-                {grouped_columns}
-                then length(GoalsID) else 0 end) as total_goals,
-
-            sum(case when extractURLParameter(StartURL, 'mxm') != ''
-                {grouped_columns}
-                then length(GoalsID) else 0 end) as total_goals_from_newsletter,
-
-            multiply(intDivOrZero(total_goals, total_visits),100) as conversion,
-            multiply(intDivOrZero(total_goals_from_newsletter, total_goals),100) as emailpower
-        FROM {clickhouse_table_name}
-        group by email
-    )
-    where total_visits != 0
-'''
-
+from app.metrika.metrica_consts import COLUMNS, TIME_SERIES_QUERY, VISITS_RAW_QUERY,TIME_SERIES_DF_COLUMNS
 
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
@@ -80,6 +33,7 @@ def metrika_get_data(integration_id):
     request_start_date = request.args.get('start_date')
     request_goals = request.args.get('goals')
     # TODO: validate start_date, goals
+    # # TODO: looks like you don't need to request columns anymore
     current_app.logger.info("### selected-goals {}".format(request_goals))
     clickhouse_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'visits', integration_id)
     grouped_columns_sql = generate_grouped_columns_sql({'start_date':[request_start_date], 'goals':request_goals.split(',')})
@@ -91,27 +45,36 @@ def metrika_get_data(integration_id):
             grouped_columns = grouped_columns_sql
             ), current_user.crypto \
         )
-
+    url_for_time_series = made_url_for_query(\
+        TIME_SERIES_QUERY.format(\
+            clickhouse_table_name=clickhouse_table_name,\
+            grouped_columns = grouped_columns_sql,\
+            start_date=request_start_date,\
+            ),  current_user.crypto \
+        )
     try:
-        current_app.logger.info('### request_clickhouse start urls: {}\n{}'.format(url_for_columns,url_for_visits_all_data))
+        current_app.logger.info(f'### request_clickhouse start urls:\n{url_for_time_series}')
         # get column names 1
         response_with_columns_names = request_clickhouse(url_for_columns, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
         # get table data and prepare it
         response_with_visits_all_data =request_clickhouse (url_for_visits_all_data, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
+        response_with_time_series_data = request_clickhouse(url_for_time_series, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
         if any([\
-                response_with_columns_names.status_code != 200,\
-                response_with_visits_all_data.status_code !=200\
+                not response_with_columns_names.ok,\
+                not response_with_visits_all_data.ok,\
+                not response_with_time_series_data.ok \
                 ]):
             flash('Некорректная в дата!')
-            print(response_with_visits_all_data.text)
-            print()
-            print(response_with_columns_names.text)
+            print(response_with_time_series_data.text)
+            raise ConnectionRefusedError('Clickhouse staus code ')
     except:
         flash('{} Ошибки в запросе или в настройках итеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
 
     file_from_string = StringIO(response_with_visits_all_data.text)
+    file_from_time_series_response = StringIO(response_with_time_series_data.text)
     visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=COLUMNS)
+    time_series_goals_df = pd.read_csv(file_from_time_series_response,sep='\t',lineterminator='\n', names=TIME_SERIES_DF_COLUMNS)
 
     if request_goals:
         visits_all_data_df = visits_all_data_df[visits_all_data_df['Total Goals Complited']!=0]
@@ -136,6 +99,7 @@ def metrika_get_data(integration_id):
 
     front_end_df = max_df[['Email', 'Total Visits', 'Total Visits From Newsletter','Total Goals Complited', 'Total Goals From Newsletter', 'Conversion (TG/TV)', 'Email power proportion']]
     front_end_df= front_end_df.astype(str)
+
     json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
     json_to_return =json.loads(json_to_return)
     json_to_return['conv_email_sum'] = str(conv_email_sum)
@@ -150,6 +114,12 @@ def metrika_get_data(integration_id):
     json_to_return['goals_no_email_sum'] = str(goals_no_email_sum)
     json_to_return['visits_email_sum'] = str(visits_email_sum)
     json_to_return['visits_no_email_sum'] = str(visits_no_email_sum)
+
+    time_series_goals_df['Date'] = time_series_goals_df['Date'].astype(str)
+    # time_series_goals_json = time_series_goals_df.to_json(default_handler=str, orient='table', index=False)
+    time_series_goals_json = time_series_goals_df.to_json(orient='split')
+    time_series_goals_json = json.loads(time_series_goals_json)
+    json_to_return['time_series_data'] = time_series_goals_json
     return json_to_return
 
 @bp.route('/metrika/<integration_id>', methods = ['GET'])
@@ -208,7 +178,7 @@ def callback_add_custom_field(identificator):
     integration = Integration.query.filter_by(id = int(integration_id)).first()
     user = User.query.filter_by(id = int(user_id)).first()
     action = request.args.get('action')
-    send_message(user.id, f'Пришел callback {str(datetime.now())}')
+    user.send_message(f'Пришел callback {str(datetime.now())}')
     if user == integration.user and action == 'subscribe':
         gr_monster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
         contact_email = request.args.get('contact_email')
