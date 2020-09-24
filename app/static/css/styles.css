@@ -82,7 +82,7 @@ body {
   color: #11161d;
   letter-spacing: .02em;
   font-size: 14px;
-  width: 250px;
+  width: 340px;
   display: none;
 }
 
@@ -141,6 +141,10 @@ body {
 
 .grmax-navbar ul.navbar-right li div.navbar-submenu-profile ul li a.create-letter:before {
   content: "\f003";
+}
+
+.grmax-navbar ul.navbar-right li div.navbar-submenu-profile ul li a.gr-init:before {
+  content: "\f0ec";
 }
 
 .grmax-container {
