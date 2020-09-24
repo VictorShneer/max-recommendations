@@ -47,6 +47,9 @@ class GrUtils(GrConnector):
             amount_of_next_pages_in_get_contacts -= 1
         return id_email_dic_list
 
+    def get_messages(self):
+        return self.request_gr('get', 'newsletters?perPage=1000')
+
     def set_callback(self, url, actions):
         actions_json = {\
             "open": False,\
