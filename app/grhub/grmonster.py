@@ -2,18 +2,28 @@ import concurrent.futures
 from pprint import pprint
 from app.grhub.grutils import GrUtils
 from app.utils import encode_this_string
+import pandas as pd
+
 
 class GrMonster(GrUtils):
     hashed_email_custom_field_name = 'hash_email'
-
+    big_enough_newsletter = 0
     def __init__(self, api_key, callback_url):
         super().__init__(api_key)
         self.callback_url = callback_url
 
-    def set_hash_email_custom_field_id(self):
-        for custom in self.get_customs().json():
-            if custom['name']==self.hashed_email_custom_field_name:
-                self.hash_email_custom_field_id = custom['customFieldId']
+    def get_broadcast_messages_since_date_subject_df(self, since_date):
+        messages_raw_response = self.get_messages()
+        big_enough_since_array_dic = [\
+                        {'send_on':newsletter['sendOn'].split('T')[0],\
+                        'subject':newsletter['subject']} \
+                        for newsletter in messages_raw_response.json() \
+                        if newsletter['sendOn'] > since_date and \
+                        newsletter['type'] == 'broadcast' and \
+                        int(newsletter['sendMetrics']['sent'])>self.big_enough_newsletter\
+                        ]
+        messages_df = pd.DataFrame(big_enough_since_array_dic)
+        return messages_df
 
     def instantiate_contacts_with_hashed_email(self):
         if self.if_custom_field_exists(self.hashed_email_custom_field_name):
@@ -40,6 +50,11 @@ class GrMonster(GrUtils):
         except ConnectionRefusedError as err:
             set_callback_response = self.set_callback(self.callback_url,['subscribe'])
             return set_callback_response
+
+    def set_hash_email_custom_field_id(self):
+        for custom in self.get_customs().json():
+            if custom['name']==self.hashed_email_custom_field_name:
+                self.hash_email_custom_field_id = custom['customFieldId']
 
     def upsert_every_email_with_hashed_email(self, id_email_dic_list):
         responses = []
