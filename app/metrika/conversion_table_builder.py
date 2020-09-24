@@ -1,5 +1,6 @@
 import json
 import numpy as np
+from pprint import pprint
 
 PROPERTY_TO_SQL_DIC = {'start_date':'''Date >= '{res}' ''',\
                         'goals':'''has(GoalsID, {res}) != 0 '''}
@@ -38,13 +39,28 @@ def generate_grouped_columns_sql(restrictions):
 
 
 def generate_joined_json_for_time_series(time_series_df, messages_df):
-    messages_df['point'] = 'point { size: 8; shape-type: star; fill-color: #a52714;}'
+    messages_df_aggr = messages_df.groupby('send_on').agg({'subject':lambda s: ' '.join(s)})
+    messages_df_aggr.reset_index(level=0, inplace=True)
+    print(messages_df_aggr)
+    print('\n')
+    messages_df_aggr['point'] = 'point { size: 8; shape-type: star; fill-color: #a52714;}'
     time_series_df_raw = time_series_df[['Date','total_goals','goals_with_email','goals_just_after_email']]
-    time_series_messages_df = time_series_df_raw.join(other=messages_df[['point', 'subject']], how='left', lsuffix='Date', rsuffix='send_on')
+    # print(messages_df)
+
+    # time_series_df_raw['Date'] = time_series_df_raw['Date'].astype(str)
+    time_series_messages_df = time_series_df_raw.merge(messages_df_aggr, how='left', left_on='Date', right_on='send_on')
+    # print('\n')
+    # print(time_series_df_raw)
+    # print('\n')
+    time_series_messages_df.drop(['send_on'], axis=1, inplace=True)
+    # # TODO: columns mess
+    time_series_messages_df = time_series_messages_df[['Date','total_goals','goals_with_email','goals_just_after_email','point','subject']]
+    print(time_series_messages_df)
     # time_series_messages_df['subject'] = \
     #                 time_series_messages_df['subject']\
     #                     .apply(lambda subject: 'Тема письма: ' + str(subject))
     time_series_messages_df['goals_just_after_email']= np.random.randint(5,30,size=time_series_messages_df.shape[0])
+
     time_series_json = time_series_messages_df.to_json(orient='split')
 
     return json.loads(time_series_json)
