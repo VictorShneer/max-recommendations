@@ -115,9 +115,7 @@ def metrika_get_data(integration_id):
     json_to_return['visits_email_sum'] = str(visits_email_sum)
     json_to_return['visits_no_email_sum'] = str(visits_no_email_sum)
 
-    time_series_goals_df['Date'] = time_series_goals_df['Date'].astype(str)
-    # time_series_goals_json = time_series_goals_df.to_json(default_handler=str, orient='table', index=False)
-    time_series_goals_json = time_series_goals_df.to_json(orient='split')
+    time_series_goals_json = time_series_goals_df[['Date','goals_with_email','goals_just_after_email']].to_json(orient='split')
     time_series_goals_json = json.loads(time_series_goals_json)
     json_to_return['time_series_data'] = time_series_goals_json
     return json_to_return

@@ -1,23 +1,53 @@
-function drawTimeSeriesChart(timeSeriesData){
-  // console.log(timeSeriesData)
-  // console.log(timeSeriesData.columns);
+// Load the Visualization API and the controls package.
+google.charts.load('current', {'packages':['corechart', 'controls']});
 
-  arrayToDraw = [timeSeriesData.columns].concat(timeSeriesData.data)
-  console.log(arrayToDraw)
-  var data = google.visualization.arrayToDataTable(
-          arrayToDraw
-        );
+function drawTimeSeriesChart(timeSeriesData){
+  // data prepare Sting dates to new Date obj
+  timeSeriesData.data.forEach((item, i) => {
+    item[0] = new Date(item[0]);
+  });
+  var data = new google.visualization.DataTable();
+  data.addColumn('date', 'Date'); // Implicit domain label col.
+  data.addColumn('number', 'goals_with_email');
+  data.addColumn('number', 'goals_just_after_email');
+  data.addRows(timeSeriesData.data);
+  // Create a dashboard.
+  var dashboard = new google.visualization.Dashboard(
+      document.getElementById('dashboard_div'));
 
   var options = {
     title: 'Email эффект',
-    curveType: 'function',
-    legend: { position: 'bottom' }
+    legend: { position: 'top' },
   };
 
-  var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
 
-  chart.draw(data, options);
+  var controlOptions = {
+    filterColumnLabel: 'Date',
+  }
+
+
+  var chart = new google.visualization.ChartWrapper({
+    'chartType': 'LineChart',
+    'containerId': 'curve_chart',
+    'options': options
+  });
+
+  var goalsTypeCategory = new google.visualization.ControlWrapper({
+    'controlType': 'ChartRangeFilter',
+    'containerId': 'filter_div',
+    'options': controlOptions
+  });
+
+  goalsTypeCategory.setOption('ui.chartOptions',{
+                        width: 1200,
+                        height: 100})
+  console.log(goalsTypeCategory.getOptions())
+  dashboard.bind(goalsTypeCategory,chart);
+
+  // Draw the dashboard.
+  dashboard.draw(data);
 }
+
 function drawChart(conv_no_email_sum, conv_email_sum, goals_email_sum, goals_no_email_sum, visits_email_sum, visits_no_email_sum) {
   //первый график  - зависимость конверсии от общего количества визитов (с email, без email)
   const emailDots = [];

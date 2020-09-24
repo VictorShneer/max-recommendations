@@ -4,6 +4,21 @@
 
 {% block head %}
 {{ super() }}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js">
+</script>
+<script type="text/javascript" src='{{url_for("static",filename="js/google_charts.js")}}'>
+</script>
+
+<!-- # TODO поговори с Настей зачем этот тут-->
+<!-- <script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_format_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_default_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_ui_module.js"></script>
+<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_corechart_module.js"></script> -->
+<!-- # TODO поговори с Настей зачем этот тут-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
+
 <link id="load-css-0" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/core/tooltip.css">
 <link id="load-css-1" rel="stylesheet" type="text/css" href="https://www.gstatic.com/charts/48.1/css/util/util.css">
 <link id="load-css-1" rel="stylesheet" type="text/css" href='{{url_for("static",filename="css/styles.css")}}'>
@@ -127,16 +142,6 @@
 
 {% block scripts %}
 {{ super() }}
-
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/loader.js"></script>
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_format_module.js"></script>
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_default_module.js"></script>
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_ui_module.js"></script>
-<script type="text/javascript" charset="UTF-8" src="https://www.gstatic.com/charts/48.1/js/jsapi_compiled_corechart_module.js"></script>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
 <script type="text/javascript" src="{{url_for("static",filename="js/common.js")}}"></script>
 <script>
       {% if current_user.is_authenticated %}
