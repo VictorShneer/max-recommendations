@@ -78,7 +78,13 @@ class User(UserMixin, db.Model):
         last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
         return Message.query.filter_by(recipient=self).filter(
             Message.timestamp > last_read_time).count()
-#
+
+    def send_message(self, data):
+        msg = Message(recipient=self,body=data)
+        db.session.add(msg)
+        db.session.commit()
+        print('Your message has been sent.',self ,msg)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

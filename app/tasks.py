@@ -11,7 +11,6 @@ from app.clickhousehub.clickhouse import get_tables
 import concurrent.futures
 from app.grhub.grmonster import GrMonster
 
-
 app = create_app(adminFlag=False)
 app.app_context().push()
 
@@ -20,13 +19,6 @@ def post_contact_to_list(email, campaign_id, api_key):
                         headers = {'X-Auth-Token': 'api-key {}'.format(api_key)}, \
                         json = {'email':email, 'campaign': {'campaignId':campaign_id}})
     return (r.status_code, r.text)
-
-def send_message(recipient, data):
-    user = User.query.filter_by(id=recipient).first_or_404()
-    msg = Message(recipient=user,body=data)
-    db.session.add(msg)
-    db.session.commit()
-    print('Your message has been sent.',user ,msg)
 
 
 def send_search_contacts_to_gr(search_contacts_list, campaignId, api_key, user_id):
@@ -60,13 +52,10 @@ def _set_task_progress(progress, comment='', user_id=0):
         task.user.add_notification('task_progress', {'task_id': job.get_id(),
                                                      'progress': comment if comment else progress})
         if  progress >= 100:
-            send_message(user_id, comment)
-            user = User.query.filter_by(id=user_id).first()
-            user.add_notification('unread_message_count', user.new_messages())
             task.complete = True
         if user_id:
-            send_message(user_id, comment)
             user = User.query.filter_by(id=user_id).first()
+            user.send_message(user_id, comment)
             user.add_notification('unread_message_count', user.new_messages())
         db.session.commit()
 

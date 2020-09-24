@@ -1,5 +1,6 @@
 import base64
 
+
 def encode_this_string(string):
     byte_string = string.encode("utf-8")
     byte_encoded = base64.b64encode(byte_string)
