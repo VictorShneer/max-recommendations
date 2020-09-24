@@ -14,6 +14,8 @@ from app.grhub.grmonster import GrMonster
 app = create_app(adminFlag=False)
 app.app_context().push()
 
+
+# TO DO relocate to GrMonster
 def post_contact_to_list(email, campaign_id, api_key):
     r = requests.post('https://api.getresponse.com/v3/contacts', \
                         headers = {'X-Auth-Token': 'api-key {}'.format(api_key)}, \
