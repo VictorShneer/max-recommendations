@@ -23,6 +23,7 @@ function drawTimeSeriesChart(timeSeriesData){
   var options = {
     title: 'Email эффект',
     legend: { position: 'top' },
+    curveType: 'function',
     pointSize: 0.1,
     tooltip: { trigger: 'selection' },
   }
