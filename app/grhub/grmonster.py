@@ -46,7 +46,7 @@ class GrMonster(GrUtils):
         try:
             callback = self.get_callbacks()
             pprint(f'{callback.json()} already set PANIC')
-            raise KeyError(f'{callback.json()} already set PANIC')
+            raise KeyError(f'Callback for this account is busy! PANIC')
         except ConnectionRefusedError as err:
             set_callback_response = self.set_callback(self.callback_url,['subscribe'])
             return set_callback_response
