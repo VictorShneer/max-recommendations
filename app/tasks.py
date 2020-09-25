@@ -57,7 +57,7 @@ def _set_task_progress(progress, comment='', user_id=0):
             task.complete = True
         if user_id:
             user = User.query.filter_by(id=user_id).first()
-            user.send_message(user_id, comment)
+            user.send_message(comment)
             user.add_notification('unread_message_count', user.new_messages())
         db.session.commit()
 
