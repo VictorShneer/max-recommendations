@@ -17,7 +17,7 @@ TIME_SERIES_QUERY = \
             from (
                 select Date,
                     groupArrayState(case when extractURLParameter(StartURL, 'mxm') != '' then ClientID else Null end )  as shit
-                from ihatemyself.visits_raw_1
+                from {clickhouse_table_name}
                 where Date >= '{start_date}'
                 group by Date
             ) as crazy
