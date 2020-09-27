@@ -31,7 +31,7 @@ def metrika_get_data(integration_id):
         abort(404)
 
     request_start_date = request.args.get('start_date')
-    request_goals = request.args.get('goals')
+    request_goals = request.args.get('goals') # TODO: validate goals
     if not check_if_date_legal(request_start_date):
         print('Illigal start date')
         abort(404)
