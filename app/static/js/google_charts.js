@@ -71,6 +71,7 @@ function drawTimeSeriesChart(timeSeriesData){
   dashboard.bind(goalsTypeCategory,chart);
   // Draw the dashboard.
   dashboard.draw(data);
+
 }
 
 function drawChart(conv_no_email_sum, conv_email_sum, goals_email_sum, goals_no_email_sum, visits_email_sum, visits_no_email_sum) {

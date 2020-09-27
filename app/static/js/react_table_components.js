@@ -36,7 +36,7 @@ class VisitRow extends React.Component {
 class HeaderVisitsTable extends React.Component{
   render(){
     return(
-      <th>{this.props.header_name}</th>
+      <th scope="col">{this.props.header_name}</th>
     )
   }
 }
@@ -61,13 +61,14 @@ class VisitsTable extends React.Component {
     }
 
     return (
-      <table className="table table-bordered table-striped mb-0">
-        <thead className="thead-dark">
+
+      <table style={{display: "block", height:"320", overflow:"auto"}} className="table table-bordered table-striped mb-0">
+        <thead  className="thead-dark">
           <tr>
             {headerNames}
           </tr>
         </thead>
-        <tbody>{rows}</tbody>
+        <tbody >{rows}</tbody>
       </table>
     );
   }
@@ -159,7 +160,10 @@ class FilterableVisitsTable extends React.Component {
         })
         .catch(error => this.setState({ error, isLoading: false }));
   }
-
+  componentDidUpdate() {
+    // code works after data loaded
+    $('#graphs').show();
+  }
   render() {
 
     const { visits, isLoading, error } = this.state;
@@ -172,6 +176,7 @@ class FilterableVisitsTable extends React.Component {
     if (isLoading) {
       return <p>Loading ...</p>;
     }
+
     return (
 
       <div>
@@ -179,20 +184,21 @@ class FilterableVisitsTable extends React.Component {
             onSubmit={(date)=>this.fetch_metrika_view(date)}
             default_start_date={this.state.start_date}
         />
-        <div id="dashboard_div">
+        <div hidden id="graphs">
           <div id="curve_chart" style={{width: '1200px', height: '600px'}}></div>
           <div id="filter_div"></div>
+
+          <br />
+
+          <div id="piechart_3d"  className="metrika-pie"></div>
+
+          <br />
+          <div id="piechart_3d_goals" className="metrika-pie"></div>
+
+          <br />
+          <div id="piechart_3d_visits" className="metrika-pie"></div>
+          <VisitsTable visits={this.state.visits} />
         </div>
-        <br />
-        <div id="piechart_3d" className="metrika-pie"></div>
-
-        <br />
-        <div id="piechart_3d_goals" className="metrika-pie"></div>
-
-        <br />
-        <div id="piechart_3d_visits" className="metrika-pie"></div>
-
-        <VisitsTable visits={this.state.visits} />
        </div>
     );
   }
