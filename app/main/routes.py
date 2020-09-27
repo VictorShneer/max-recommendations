@@ -117,9 +117,6 @@ def create_integration():
         db.session.flush()
         integration.set_callback_url(request.url_root)
         try:
-            ### TODO
-            # UUID CUSTOM UNIQUE ID FOR ClickHousE integration
-            # -start_date 2016-10-10 -end_date 2016-10-18
             timing = ['-start_date={}'.format(form.start_date.data)]
             end_date = datetime.date.today()
             days = datetime.timedelta(2)

@@ -21,7 +21,7 @@ from app.grhub.grmonster import GrMonster
 from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
 from app.metrika.metrica_consts import COLUMNS, TIME_SERIES_QUERY, VISITS_RAW_QUERY,TIME_SERIES_DF_COLUMNS
-
+from app.main.utils import check_if_date_legal
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
 def metrika_get_data(integration_id):
@@ -32,6 +32,9 @@ def metrika_get_data(integration_id):
 
     request_start_date = request.args.get('start_date')
     request_goals = request.args.get('goals')
+    if not check_if_date_legal(request_start_date):
+        print('Illigal start date')
+        abort(404)
     # TODO: validate start_date, goals
     # # TODO: looks like you don't need to request columns anymore
     current_app.logger.info("### selected-goals {}".format(request_goals))

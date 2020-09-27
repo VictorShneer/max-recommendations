@@ -134,7 +134,7 @@ class FilterableVisitsTable extends React.Component {
           if (response.ok) {
             return response.json();
           } else {
-            throw new Error('Нет данных за указанный период');
+            throw new Error('Нет данных за указанный период.');
           }
         })
         .then(data => {
