@@ -47,7 +47,7 @@ class VisitsTable extends React.Component {
     const rows = [];
     const headerNames = [];
     if(this.props.visits){
-      this.props.visits.data.slice(0, 5).forEach((visit) => {
+      this.props.visits.data.forEach((visit) => {
         rows.push(
           <VisitRow visit={visit} />
         );
@@ -172,7 +172,6 @@ class FilterableVisitsTable extends React.Component {
     if (isLoading) {
       return <p>Loading ...</p>;
     }
-
     return (
 
       <div>
@@ -180,8 +179,21 @@ class FilterableVisitsTable extends React.Component {
             onSubmit={(date)=>this.fetch_metrika_view(date)}
             default_start_date={this.state.start_date}
         />
+        <div id="dashboard_div">
+          <div id="curve_chart" style={{width: '1200px', height: '600px'}}></div>
+          <div id="filter_div"></div>
+        </div>
+        <br />
+        <div id="piechart_3d" className="metrika-pie"></div>
+
+        <br />
+        <div id="piechart_3d_goals" className="metrika-pie"></div>
+
+        <br />
+        <div id="piechart_3d_visits" className="metrika-pie"></div>
+
         <VisitsTable visits={this.state.visits} />
-      </div>
+       </div>
     );
   }
 }
