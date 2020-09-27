@@ -15,7 +15,6 @@ function drawTimeSeriesChart(timeSeriesData){
   data.addColumn({'type': 'string', 'role': 'tooltip'});
 
   data.addRows(timeSeriesData.data);
-  console.log(timeSeriesData.data)
   // Create a dashboard.
   var dashboard = new google.visualization.Dashboard(
       document.getElementById('dashboard_div'));

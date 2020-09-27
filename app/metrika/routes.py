@@ -35,12 +35,8 @@ def metrika_get_data(integration_id):
     if not check_if_date_legal(request_start_date):
         print('Illigal start date')
         abort(404)
-    # TODO: validate start_date, goals
-    # # TODO: looks like you don't need to request columns anymore
-    current_app.logger.info("### selected-goals {}".format(request_goals))
     clickhouse_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'visits', integration_id)
     grouped_columns_sql = generate_grouped_columns_sql({'start_date':[request_start_date], 'goals':request_goals.split(',')})
-    url_for_columns = made_url_for_query('DESC {}'.format(clickhouse_table_name), current_user.crypto)
     url_for_visits_all_data = made_url_for_query(\
         VISITS_RAW_QUERY.format(\
             clickhouse_table_name=clickhouse_table_name,\
@@ -57,18 +53,14 @@ def metrika_get_data(integration_id):
         )
     try:
         current_app.logger.info(f'### request_clickhouse start urls:\n{url_for_time_series}')
-        # get column names 1
-        response_with_columns_names = request_clickhouse(url_for_columns, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
         # get table data and prepare it
         response_with_visits_all_data =request_clickhouse (url_for_visits_all_data, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
         response_with_time_series_data = request_clickhouse(url_for_time_series, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
         if any([\
-                not response_with_columns_names.ok,\
                 not response_with_visits_all_data.ok,\
                 not response_with_time_series_data.ok \
                 ]):
             flash('Некорректная в дата!')
-            print(response_with_time_series_data.text)
             raise ConnectionRefusedError('Clickhouse staus code ')
     except:
         flash('{} Ошибки в запросе или в настройках итеграции!'.format(integration.integration_name))
