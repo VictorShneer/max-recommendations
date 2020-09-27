@@ -46,7 +46,6 @@ def generate_joined_json_for_time_series(time_series_df, messages_df):
     time_series_messages_df = time_series_df_raw.merge(messages_df_aggr, how='left', left_on='Date', right_on='send_on')
     time_series_messages_df.drop(['send_on'], axis=1, inplace=True)
     # # TODO: columns mess
-    time_series_messages_df = time_series_messages_df[['Date','total_goals','goals_with_email','goals_just_after_email','point','subject']]
-    time_series_messages_df['goals_just_after_email']= np.random.randint(5,30,size=time_series_messages_df.shape[0])
+    time_series_messages_df = time_series_messages_df[['Date','goals_with_email','goals_just_after_email','point','subject']]
     time_series_json = time_series_messages_df.to_json(orient='split')
     return json.loads(time_series_json)

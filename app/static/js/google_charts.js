@@ -8,7 +8,6 @@ function drawTimeSeriesChart(timeSeriesData){
   });
   var data = new google.visualization.DataTable();
   data.addColumn('date', 'Date'); // Implicit domain label col.
-  data.addColumn('number', 'total_goals');
   data.addColumn('number', 'goals_with_email');
   data.addColumn('number', 'goals_just_after_email');
   data.addColumn({'type': 'string', 'role': 'style' , 'opt_label':'send_on'});
@@ -19,14 +18,33 @@ function drawTimeSeriesChart(timeSeriesData){
   var dashboard = new google.visualization.Dashboard(
       document.getElementById('dashboard_div'));
 
+      /*  define the series object
+       *  follows the standard 'series' option parameters, except it has two additonal parameters:
+       *    hidden: true if the column is currently hidden
+       *    altColor: changes the color of the legend entry (used to grey out hidden entries)
+       */
+      var series = {
+          goals_with_email: {
+              hidden: false,
+              visibleInLegend: true,
+              color: 'red'
+          },
+          goals_just_after_email: {
+              hidden: false,
+              visibleInLegend: true,
+              color: 'green',
+          },
+      };
+
+
   var options = {
+    series : series,
     title: 'Email эффект',
     legend: { position: 'top' },
     curveType: 'function',
     pointSize: 0.1,
     tooltip: { trigger: 'selection' },
   }
-
 
   var controlOptions = {
     filterColumnLabel: 'Date',
@@ -39,7 +57,7 @@ function drawTimeSeriesChart(timeSeriesData){
     'options': options
   });
 
-
+  var view = new google.visualization.DataView(data);
   var goalsTypeCategory = new google.visualization.ControlWrapper({
     'controlType': 'ChartRangeFilter',
     'containerId': 'filter_div',
@@ -51,7 +69,6 @@ function drawTimeSeriesChart(timeSeriesData){
                         height: 100})
 
   dashboard.bind(goalsTypeCategory,chart);
-
   // Draw the dashboard.
   dashboard.draw(data);
 }
