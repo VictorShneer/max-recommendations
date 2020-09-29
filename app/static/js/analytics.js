@@ -104,7 +104,8 @@ $(document).ready(function(){
           },
           success: function ( data ){
               console.log(data)
-              target.innerHTML = '<table>'
+              //target.innerHTML = ''
+              var target_to_add = '<table>'
               if (data) {
                 const unparsed_data = JSON.parse(data);
                 unparsed_data.data.forEach(item => {
@@ -130,10 +131,10 @@ $(document).ready(function(){
                 </td>
                 </tr>
                 `;
-                target.innerHTML += output
-                target.innerHTML += '</table>'
-
+                target_to_add += output
                 });
+                target_to_add += '</table>'
+                target.innerHTML = target_to_add 
                 }
             else {
                 console.log('NO DATAAAA');
