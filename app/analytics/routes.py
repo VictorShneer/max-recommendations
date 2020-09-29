@@ -59,8 +59,18 @@ def generate_values(integration_id):
         list_of_column_names = ['OperatingSystem','RegionCity','cutQueryString(URL)','MobilePhone','MobilePhoneModel', 'Browser']
         list_of_answers = []
         for i in range(len(list_of_column_names)):
-            create_url = create_url_for_query('SELECT {smth} FROM {crypto}.hits_raw_{integration_id} GROUP BY {smth2};'.\
-                            format(crypto = current_user.crypto, integration_id = integration.id,smth = list_of_column_names[i],smth2 = list_of_column_names[i]), current_user.crypto)
+            where = "WHERE has(v.WatchIDs, h.WatchID) = 1 and notEmpty(base64Decode(extractURLParameter(v.StartURL, 'mxm'))) = 1"
+            query =f"""
+            SELECT {list_of_column_names[i]} as sm
+            FROM {current_user.crypto}.hits_raw_{integration.id} h
+            JOIN {current_user.crypto}.visits_raw_{integration_id} v on v.ClientID = h.ClientID
+            {where}
+            GROUP BY sm"""
+            pprint(query)
+            create_url = create_url_for_query(query,current_user.crypto)
+            ###LEGACY CODE
+            # create_url = create_url_for_query('SELECT {smth} FROM {crypto}.hits_raw_{integration_id} GROUP BY {smth2};'.\
+                            # format(crypto = current_user.crypto, integration_id = integration.id,smth = list_of_column_names[i],smth2 = list_of_column_names[i]), current_user.crypto)
             get_data = send_request_to_clickhouse(create_url).text
             list_of_answers.append(get_data)
             i += 1
@@ -162,7 +172,7 @@ def process_values():
             whole = f"""
             SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails
             FROM {current_user.crypto}.hits_raw_{integration_id} h
-            JOIN georgelocal.visits_raw_1 v on v.ClientID = h.ClientID
+            JOIN {current_user.crypto}.visits_raw_{integration_id} v on v.ClientID = h.ClientID
             {where}
             GROUP BY emails, ClientID
             {having};"""
