@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-
+<div class="grmax-back">
+  <a class="grmax-justlink" href="{{url_for('main.user_integrations')}}"><i class="fa fa-long-arrow-left" aria-hidden="true"></i> Назад</a>
+</div>
 <div class='integration_info text-center'>
   <p id='atb' hidden>{{integration_id}}</p>
   <p><b>{{integration_name}}</b></p>

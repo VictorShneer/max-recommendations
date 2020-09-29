@@ -76,39 +76,25 @@ def metrika_get_data(integration_id):
 
     max_df = visits_all_data_df
 
-#    max_no_email_1graph = [ [int(max_row['Total Visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Total Visits From Newsletter'] != 0][['Total Visits','Conversion (TG/TV)']].iterrows() ] # 1 график - без email
-#    max_email_1graph = [ [int(max_row['Total Visits']),int(max_row['Conversion (TG/TV)'])] for _, max_row in max_df[max_df['Total Visits From Newsletter'] == 0][['Total Visits','Conversion (TG/TV)']].iterrows() ] # 1 график - с email
-
-#    if (len(max_no_email_1graph) == 0):
-#        max_no_email_1graph = [[0,0]]
-#    if (len(max_email_1graph) == 0):
-#        max_email_1graph = [[0,0]]
-
-
-    conv_email_sum = max_df[max_df['Total Visits From Newsletter'] != 0]['Conversion (TG/TV)'].sum()
-    conv_no_email_sum = max_df[max_df['Total Visits From Newsletter'] == 0]['Conversion (TG/TV)'].sum()
-    goals_email_sum = max_df[max_df['Total Visits From Newsletter'] != 0]['Total Goals From Newsletter'].sum()
-    goals_no_email_sum = max_df['Total Goals Complited'].sum() - goals_email_sum
-    visits_email_sum = max_df[max_df['Total Visits From Newsletter'] != 0]['Total Visits From Newsletter'].sum()
-    visits_no_email_sum = max_df['Total Visits'].sum() - visits_email_sum
+    goals_all = max_df['Total Goals Complited'].sum()  #все выполненные цели
+    regex = '^no-email*'
+    goals_hasnt_email =  max_df[max_df['Email'].str.contains(regex)]['Total Goals Complited'].sum() #все выполненные цели среди тех, чей email неизвестен
+    goals_has_email = goals_all - goals_hasnt_email     #количество целей у тех, чей email известен
+    goals_from_email = max_df['Total Goals From Newsletter'].sum()  #количество целей непосредственно с email
 
     front_end_df = max_df[['Email', 'Total Visits', 'Total Visits From Newsletter','Total Goals Complited', 'Total Goals From Newsletter', 'Conversion (TG/TV)', 'Email power proportion']]
     front_end_df= front_end_df.astype(str)
 
     json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
     json_to_return =json.loads(json_to_return)
-    json_to_return['conv_email_sum'] = str(conv_email_sum)
-    json_to_return['conv_no_email_sum'] = str(conv_no_email_sum)
-#    json_to_return['max_no_email_1graph'] = json.dumps(max_no_email_1graph)
-#    json_to_return['max_email_1graph'] = json.dumps(max_email_1graph)
     json_to_return['total_unique_visitors'] = str(front_end_df.shape[0])
     temp_all_visots = front_end_df.shape[0]
     total_email_visitors = temp_all_visots - front_end_df[front_end_df['Email'].str.contains("no-email")].shape[0]
     json_to_return['total_email_visitors'] = str(total_email_visitors)
-    json_to_return['goals_email_sum'] = str(goals_email_sum)
-    json_to_return['goals_no_email_sum'] = str(goals_no_email_sum)
-    json_to_return['visits_email_sum'] = str(visits_email_sum)
-    json_to_return['visits_no_email_sum'] = str(visits_no_email_sum)
+    json_to_return['goals_hasnt_email'] = str(goals_hasnt_email)
+    json_to_return['goals_has_email'] = str(goals_has_email)
+    json_to_return['goals_from_email'] = str(goals_from_email)
+
 
     grmonster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
     broadcast_messages_since_date_subject_df = grmonster.get_broadcast_messages_since_date_subject_df(request_start_date)

@@ -449,7 +449,7 @@ form#analyticsform {
 
 .analytics-emailslist-container {
   margin-top: 30px;
-  max-width: 360px;
+  max-width: 100%;
 }
 
 .analytics-emailslist {

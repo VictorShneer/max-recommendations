@@ -170,11 +170,11 @@ def process_values():
                 having = having[:-3]
 
             whole = f"""
-            SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails
+            SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails, OperatingSystem, RegionCity, MobilePhone, MobilePhoneModel, Browser
             FROM {current_user.crypto}.hits_raw_{integration_id} h
             JOIN {current_user.crypto}.visits_raw_{integration_id} v on v.ClientID = h.ClientID
             {where}
-            GROUP BY emails, ClientID
+            GROUP BY emails, ClientID, OperatingSystem, RegionCity, MobilePhone, MobilePhoneModel, Browser
             {having};"""
             #getting the answer from the db
             create_url = create_url_for_query(whole,current_user.crypto)
@@ -183,10 +183,12 @@ def process_values():
 
             #doing magic with the data
             file_from_string = StringIO(get_data)
-            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = ["ClientID", "hash"])
-            columns_df = columns_df.hash
-            columns_df = columns_df.dropna()
-            columns_df = columns_df.drop_duplicates()
+            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = ["ClientID", "hash", "OperatingSystem","RegionCity", "MobilePhone", "MobilePhoneModel", "Browser"])
+            # columns_df = columns_df.hash
+            columns_df = columns_df.dropna(subset=['hash'])
+            columns_df = columns_df.drop_duplicates(subset=['hash'])
+            count = columns_df.count()
+            print(count)
             pprint(columns_df)
             front_end_df= columns_df.astype(str)
             json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
