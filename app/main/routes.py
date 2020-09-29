@@ -23,7 +23,11 @@ def delete_integration():
         abort(403)
     # disable gr callback
     grmonster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
-    grmonster.disable_callback()
+    try:
+        grmonster.disable_callback()
+    except ConnectionRefusedError:
+        current_app.logger.info('Callback already disabled')
+        pass
     # heroku db delete
     integration.delete_myself()
     # clickhouse db delete
