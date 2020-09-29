@@ -239,3 +239,8 @@ def link_creation():
 @bp.route('/metrika-examples')
 def metexample():
     return render_template('metrika_example.html')
+
+#for documentation
+@bp.route('/documentation')
+def documentation():
+    return render_template('documentation.html')

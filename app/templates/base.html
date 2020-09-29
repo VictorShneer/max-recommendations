@@ -94,10 +94,17 @@
             </a>
         </li>
         {% endif %}
-        {% if current_user.email == 'george@mail.ru' %}
+        {% if current_user.email == 'george1@mail.ru' %}
         <li>
         <a href="{{ url_for('main.admin') }}" class="navbar-item">
             Админка
+        </a>
+        </li>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <li>
+        <a href="{{ url_for('main.documentation') }}" class="navbar-item">
+            Документация
         </a>
         </li>
         {% endif %}
