@@ -21,6 +21,7 @@ class Config(object):
 
     KEY = 'u0bwk7n5i3u9w2g2hndz8yn346x361g0'
 
+
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = int(os.environ.get('MAIL_PORT') or 25)
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
@@ -29,6 +30,7 @@ class Config(object):
 
     #REDIS
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
+    GR_CHUNK_SIZE = 5000
 
     # CLICKHOUSE
     CLICKHOUSE_LOGIN = 'user1'

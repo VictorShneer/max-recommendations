@@ -82,16 +82,37 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regu
         app.logger.info('### init_clickhouse_tables EXCEPTION regular_load={}'.format(regular_load))
         app.logger.error('### Unhandled exception {exc_info}\n{err}'.format(exc_info=sys.exc_info(), err=err))
 
+def fill_encode_email_custom_field_for_subscribers_chunk(id_email_dic_list,grmonster):
+    _set_task_progress(33, 'Продолжается инициализация GR аккаунта...')
+    grmonster.upsert_every_email_with_hashed_email(id_email_dic_list)
+    _set_task_progress(100)
+
 def init_gr_account(api_key, user_id, callback_url):
     _set_task_progress(0)
     grmonster = GrMonster(api_key=api_key, \
                             callback_url=callback_url)
     try:
-        list_of_upsert_custom_responses = grmonster.instantiate_contacts_with_hashed_email()
+        grmonster.prepare_GR_account()
     except KeyError as err:
         _set_task_progress(50, f'Инициализация контактов ГР - Ошибка - \n{err}' ,user_id)
     else:
-        _set_task_progress(50, f'Инициализация контактов ГР - Успех' ,user_id)
+        contacts_id_email_dic_list = grmonster.get_id_email_dic_list()
+        length = len(contacts_id_email_dic_list)
+        chunks = 1+length // app.config['GR_CHUNK_SIZE']
+        estimation = len(contacts_id_email_dic_list) // 5 // 60
+        app.logger.info(f'Contacts to instantiate : {length}' + \
+                                f'\n{chunks} chunks by 5000 contacts' + \
+                                f'\n estimation time is {estimation} minutes')
+        user = User.query.filter_by(id=user_id).first()
+        while contacts_id_email_dic_list:
+            print('hey')
+            user.launch_task('fill_encode_email_custom_field_for_subscribers_chunk',\
+                            'handle Gr contacts chunk...',\
+                            contacts_id_email_dic_list[:app.config['GR_CHUNK_SIZE']],\
+                            grmonster
+                            )
+            print('hey')
+            contacts_id_email_dic_list = contacts_id_email_dic_list[app.config['GR_CHUNK_SIZE']:]
 
     try:
         set_callback_response = grmonster.set_callback_if_not_busy()

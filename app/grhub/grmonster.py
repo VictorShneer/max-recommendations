@@ -25,6 +25,7 @@ class GrMonster(GrUtils):
         messages_df = pd.DataFrame(big_enough_since_array_dic)
         return messages_df
 
+    #legacy
     def instantiate_contacts_with_hashed_email(self):
         if self.if_custom_field_exists(self.hashed_email_custom_field_name):
             raise KeyError(f'Custom field name {self.hashed_email_custom_field_name} already in use!')
@@ -35,6 +36,13 @@ class GrMonster(GrUtils):
         custom_fields = self.get_customs()
         return custom_field_name in [custom_field['name'] for custom_field in custom_fields.json()]
 
+    def prepare_GR_account(self):
+        if self.if_custom_field_exists(self.hashed_email_custom_field_name):
+            raise KeyError(f'Custom field name {self.hashed_email_custom_field_name} already in use!')
+        else:
+            self.hash_email_custom_field_id = self.create_custom_field(name=self.hashed_email_custom_field_name).json()['customFieldId']
+            return self.hash_email_custom_field_id
+    #legacy
     def install_hash_email_for_every_contact(self):
         id_email_dic_list = self.get_id_email_dic_list()
         self.hash_email_custom_field_id = self.create_custom_field(name=self.hashed_email_custom_field_name).json()['customFieldId']
