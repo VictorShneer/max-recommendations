@@ -170,7 +170,8 @@ class FilterableVisitsTable extends React.Component {
 
     if (error) {
       console.log(error.message)
-      alert('За указанный период нет данных');
+      alert('Ошибка! Пожалуйста, попробуйте снова..');
+      location.reload();
     }
 
     if (isLoading) {
