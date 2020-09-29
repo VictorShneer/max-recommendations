@@ -30,7 +30,7 @@ class Config(object):
 
     #REDIS
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
-    GR_CHUNK_SIZE = 5000
+    GR_CHUNK_SIZE = 1000
 
     # CLICKHOUSE
     CLICKHOUSE_LOGIN = 'user1'

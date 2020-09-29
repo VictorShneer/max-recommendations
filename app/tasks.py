@@ -105,13 +105,11 @@ def init_gr_account(api_key, user_id, callback_url):
                                 f'\n estimation time is {estimation} minutes')
         user = User.query.filter_by(id=user_id).first()
         while contacts_id_email_dic_list:
-            print('hey')
             user.launch_task('fill_encode_email_custom_field_for_subscribers_chunk',\
-                            'handle Gr contacts chunk...',\
+                            'Группа контактов на инициации...',\
                             contacts_id_email_dic_list[:app.config['GR_CHUNK_SIZE']],\
                             grmonster
                             )
-            print('hey')
             contacts_id_email_dic_list = contacts_id_email_dic_list[app.config['GR_CHUNK_SIZE']:]
 
     try:

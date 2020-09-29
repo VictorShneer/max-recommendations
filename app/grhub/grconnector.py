@@ -13,6 +13,8 @@ class GrConnector(object):
                        headers=self.headers, \
                        json = json)
             if r.ok:
+                if int(r.headers['X-RateLimit-Remaining']) <= 5:
+                    print(f'GR: I need a rest for {r.headers["X-RateLimit-Reset"]} seconds')
                 return r
             else:
                 raise ConnectionRefusedError((f'Ошибка при попытке контакта с GetResponse\n{r.text}'))
