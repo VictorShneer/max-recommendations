@@ -125,6 +125,7 @@ def process_values():
             integration_id = request.form["integration_id"]
             dict_of_requests = {value: dict[value] for value in dict if dict[value] not in ([''], ['0'],['Не выбрано']) if value != 'csrf_token'}
 
+            pprint(dict_of_requests)
             #changing the values for the query
             dict_of_requests = {value: '>=' if dict_of_requests[value] == ['1'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
                                 '<=' if dict_of_requests[value] == ['2'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
@@ -146,8 +147,10 @@ def process_values():
                         where = where + ' has(h.GoalsID,' + str(j) + ') !=0 or'
             where = where[:-3]
 
+            pprint(dict_of_requests)
             for index, i in enumerate(dict_of_requests):
-                if i in ('clause_visits_from_to'):
+                if i == 'clause_visits_from_to':
+                    print(i)
                     having = having + ' count(v.VisitID) ' + str(dict_of_requests[i]).strip("''")
                 elif i in ('amount_of_visits'):
                     having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
