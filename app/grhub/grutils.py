@@ -39,9 +39,9 @@ class GrUtils(GrConnector):
 
     def get_id_email_dic_list(self):
         raw_contacts_response = self.request_gr('get', 'contacts?page=1&fields=email&perPage=1000')
-        amount_of_next_pages_in_get_contacts = raw_contacts_response.headers['TotalPages']
+        amount_of_next_pages_in_get_contacts = int(raw_contacts_response.headers['TotalPages'])
         id_email_dic_list = raw_contacts_response.json()
-        while int(amount_of_next_pages_in_get_contacts) > 1:
+        while amount_of_next_pages_in_get_contacts > 1:
             raw_contacts_response = self.request_gr('get', f'contacts?page={amount_of_next_pages_in_get_contacts}&fields=email&perPage=1000')
             id_email_dic_list.extend(raw_contacts_response.json())
             amount_of_next_pages_in_get_contacts -= 1
