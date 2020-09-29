@@ -104,20 +104,35 @@ $(document).ready(function(){
           },
           success: function ( data ){
               console.log(data)
-              target.innerHTML = ''
+              target.innerHTML = '<table>'
               if (data) {
                 const unparsed_data = JSON.parse(data);
                 unparsed_data.data.forEach(item => {
                 output = `
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            ${item.hash}
-                        </div>
-                    </div>
-                </div>
+                <tr>
+                <td>
+                  ${item.hash}
+                </td>
+                <td>
+                  ${item.OperatingSystem}
+                </td>
+                <td>
+                  ${item.RegionCity}
+                </td>
+                <td>
+                  ${item.MobilePhone}
+                </td>
+                <td>
+                  ${item.MobilePhoneModel}
+                </td>
+                <td>
+                  ${item.Browser}
+                </td>
+                </tr>
                 `;
                 target.innerHTML += output
+                target.innerHTML += '</table>'
+
                 });
                 }
             else {
