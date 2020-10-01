@@ -40,7 +40,7 @@ def create_app(adminFlag=True,config_class=Config):
         from sqlalchemy import inspect
         admin.init_app(app,index_view = MyAdminIndexView())
         admin.add_view(MyModelView(User, db.session, column_list=inspect(User).columns.keys()))
-        admin.add_view(MyModelView(Integration, db.session))
+        admin.add_view(MyModelView(Integration, db.session, column_list=inspect(Integration).columns.keys()))
         admin.add_view(MyModelView(Role, db.session))
         admin.add_view(MyModelView(Task, db.session))
         admin.add_view(MyModelView(Notification, db.session))
