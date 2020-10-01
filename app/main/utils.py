@@ -24,7 +24,7 @@ def integration_is_ready(function):
                 return redirect(url_for('main.user_integrations'))
         except AttributeError:
             print('Task losted')
-        finally:
+        else:
             return function(integration_id)
     # Renaming the function name:
     wrapper.__name__ = function.__name__
