@@ -61,7 +61,7 @@ def _set_task_progress(progress, comment='', user_id=0):
             user.add_notification('unread_message_count', user.new_messages())
         db.session.commit()
 
-def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regular_load=False,):
+def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regular_load=False):
     _set_task_progress(0)
     try:
         for count,params in enumerate(paramss):
@@ -82,11 +82,23 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regu
         app.logger.info('### init_clickhouse_tables EXCEPTION regular_load={}'.format(regular_load))
         app.logger.error('### Unhandled exception {exc_info}\n{err}'.format(exc_info=sys.exc_info(), err=err))
 
+    try:
+        integration = Integration.query.filter_by(id = id).first()
+        grmonster = GrMonster(api_key=integration.api_key, \
+                                callback_url=integration.callback_url)
+        set_callback_response = grmonster.set_callback_if_not_busy()
+    except KeyError as err:
+        _set_task_progress(100, f'Создание уведомления - Ошибка - \n{err}' ,user_id)
+    else:
+        _set_task_progress(100, f'Создание уведомления - Успех' ,user_id)
+
+#legacy
 def fill_encode_email_custom_field_for_subscribers_chunk(id_email_dic_list,grmonster):
     _set_task_progress(33, 'Продолжается инициализация GR аккаунта...')
     grmonster.upsert_every_email_with_hashed_email(id_email_dic_list)
     _set_task_progress(100)
 
+#legacy
 def init_gr_account(api_key, user_id, callback_url):
     _set_task_progress(0)
     grmonster = GrMonster(api_key=api_key, \
