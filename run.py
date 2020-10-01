@@ -28,7 +28,7 @@ def regular_load_to_clickhouse():
         app.logger.info("### Integrations: {}".format(str(user_integrations)))
         for integration in user_integrations:
             app.logger.info('### user: {} integration {}'.format(user, integration))
-            mode = '-mode=regular'
+            mode = '-mode=regular_early'
             params = ['-source=hits', mode]
             params_2 = ['-source=visits', mode]
             user.launch_task('init_clickhouse_tables', \
