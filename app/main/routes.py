@@ -12,6 +12,7 @@ from app.clickhousehub.metrica_logs_api import drop_integration
 from wtforms.fields.html5 import DateField
 import datetime
 from app.grhub.grmonster import GrMonster
+from app.main.utils import integration_is_ready
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
@@ -133,18 +134,13 @@ def create_integration():
                 db.session.rollback()
             else:
                 current_user.launch_task('init_clickhouse_tables', \
-                                        ('Init integration...'), \
+                                        (f'Init integration id:{integration.id}'), \
                                         integration.metrika_key, \
                                         integration.metrika_counter_id, \
                                         current_user.crypto,  \
                                         integration.id, \
                                         [params,params_2], \
                                         current_user.id)
-                current_user.launch_task('init_gr_account',\
-                                        'Инициализация контактов...', \
-                                        integration.api_key,\
-                                        current_user.id, \
-                                        integration.callback_url)
                 db.session.commit()
         except Exception as err:
             flash("Проблемки..")
@@ -188,6 +184,7 @@ def gr_init():
 
 @bp.route('/edit_integration/<integration_id>', methods = ['GET','POST'])
 @login_required
+@integration_is_ready
 def edit_integration(integration_id):
 
     form = EditIntegration()

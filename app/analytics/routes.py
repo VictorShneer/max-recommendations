@@ -19,6 +19,7 @@ import urllib.parse
 import numpy as np
 import concurrent.futures
 import binascii
+from app.main.utils import integration_is_ready
 
 @bp.route('/analytics/send_search_contacts/<integration_id>', methods=['POST'])
 @current_user_own_integration
@@ -50,6 +51,7 @@ def create_gr_campaign_route(integration_id):
 @bp.route('/analytics/<integration_id>', methods = ['GET', 'POST'])
 @login_required
 @current_user_own_integration
+@integration_is_ready
 def generate_values(integration_id):
     form = AnalyticsBar()
     integration = Integration.query.filter_by(id=integration_id).first_or_404()

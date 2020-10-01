@@ -21,8 +21,10 @@ from app.grhub.grmonster import GrMonster
 from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
 from app.metrika.metrica_consts import COLUMNS, TIME_SERIES_QUERY, VISITS_RAW_QUERY,TIME_SERIES_DF_COLUMNS
-from app.main.utils import check_if_date_legal
+from app.main.utils import check_if_date_legal, integration_is_ready
+
 @bp.route('/metrika/<integration_id>/get_data')
+@integration_is_ready
 @login_required
 def metrika_get_data(integration_id):
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
@@ -105,6 +107,7 @@ def metrika_get_data(integration_id):
 
 @bp.route('/metrika/<integration_id>', methods = ['GET'])
 @login_required
+@integration_is_ready
 def metrika(integration_id):
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):
