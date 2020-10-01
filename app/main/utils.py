@@ -22,11 +22,10 @@ def integration_is_ready(function):
             if not task.complete:
                 flash('Подождите завершения создания интеграции')
                 return redirect(url_for('main.user_integrations'))
-            else:
-                return function(integration_id)
         except AttributeError:
             print('Task losted')
-
+        finally:
+            return function(integration_id)
     # Renaming the function name:
     wrapper.__name__ = function.__name__
     return wrapper
