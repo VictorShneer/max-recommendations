@@ -63,7 +63,7 @@ def assign_crypto_to_user_id(admin_user_id, user_id, crypto):
         _set_task_progress(100,'ERROR \n' + str(err) + '\nsmth went wrong dog :(( try again later..', admin_user_id)
         return -1
 
-    _set_task_progress(100)
+    _set_task_progress(100, f'Победа - {user.email} присвоен {user.crypto}', admin_user_id)
     app.logger.info('### Done!')
 
 
