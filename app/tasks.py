@@ -11,12 +11,62 @@ from app.clickhousehub.metrica_logs_api import drop_integration
 from app.clickhousehub.clickhouse import get_tables
 import concurrent.futures
 from app.grhub.grmonster import GrMonster
+from app.clickhousehub.clickhouse import get_dbs
+from app.clickhousehub.clickhouse_custom_request import create_ch_db
+from app.clickhousehub.clickhouse_custom_request import give_user_grant
+from app.clickhousehub.clickhouse_custom_request import request_iam
+
 
 app = create_app(adminFlag=False)
 app.app_context().push()
 
 
-# TO DO relocate to GrMonster
+def assign_crypto_to_user_id(admin_user_id, user_id, crypto):
+    print(type(user_id))
+    print()
+    _set_task_progress(0)
+    # check if db already exists
+    if crypto in get_dbs():
+        _set_task_progress(100,'ERROR db with this name already exists, dog', admin_user_id)
+    # get user from db by id or except
+    try:
+        user = User.query.filter_by(id=user_id).one()
+    except Exception as e:
+        _set_task_progress(100,'ERROR No user was foung for {}'.format(user_id), admin_user_id)
+        return -1
+    # check if user already got crypto
+    if user.crypto != None:
+        _set_task_progress(100,'ERROR This user already set up, dog', admin_user_id)
+        return -1
+    # assign crypto if it unique
+    try:
+        user.crypto = crypto
+        db.session.commit()
+    except Exception as e:
+        _set_task_progress(100,'ERROR {} - this crypto already exists'.format(crypto), admin_user_id)
+        return -1
+    # now let's create clickhouse db
+    # and
+    # give user grant access to crypto db
+    try:
+        _set_task_progress(50, 'Пока все ОК! Запрашиваю токен и создаю базы данных')
+        # dont forget to update iam token
+        iam_token = request_iam()
+        if not iam_token:
+            raise Exception('ERROR Failed to request iam')
+        create_ch_db(crypto)
+        give_user_grant('user1', crypto) ## # TODO: drop hardcode use config user name
+    except Exception as err:
+        user.crypto = None
+        db.session.commit()
+        _set_task_progress(100,'ERROR \n' + str(err) + '\nsmth went wrong dog :(( try again later..', admin_user_id)
+        return -1
+
+    _set_task_progress(100)
+    app.logger.info('### Done!')
+
+
+# TODO relocate to GrMonster
 def post_contact_to_list(email, campaign_id, api_key):
     r = requests.post('https://api.getresponse.com/v3/contacts', \
                         headers = {'X-Auth-Token': 'api-key {}'.format(api_key)}, \
@@ -53,7 +103,8 @@ def _set_task_progress(progress, comment='', user_id=0):
         job.save_meta()
         task = Task.query.get(job.get_id())
         task.user.add_notification('task_progress', {'task_id': job.get_id(),
-                                                     'progress': comment if comment else progress})
+                                                     'progress': comment if comment else \
+                                                            str(progress) + '%'})
         if  progress >= 100:
             task.complete = True
         if user_id:
