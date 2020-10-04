@@ -41,14 +41,13 @@ function drawTimeSeriesChart(timeSeriesData){
     series : series,
     title: 'Email эффект',
     legend: { position: 'top' },
-    curveType: 'function',
     pointSize: 0.1,
     tooltip: { trigger: 'selection' },
+    chartArea:{left:'7%',top:40,width:'80%',height:'80%'},
+    width: 1200, 
+    height: 500
   }
 
-  var controlOptions = {
-    filterColumnLabel: 'Date',
-  }
 
 
   var chart = new google.visualization.ChartWrapper({
@@ -57,17 +56,13 @@ function drawTimeSeriesChart(timeSeriesData){
     'options': options
   });
 
-  var view = new google.visualization.DataView(data);
   var goalsTypeCategory = new google.visualization.ControlWrapper({
     'controlType': 'ChartRangeFilter',
     'containerId': 'filter_div',
-    'options': controlOptions
+
   });
 
-  goalsTypeCategory.setOption('ui.chartOptions',{
-                        width: 1200,
-                        height: 100})
-
+  goalsTypeCategory.setOptions({'width': '1200','height': '50','filterColumnLabel': 'Date'})
   dashboard.bind(goalsTypeCategory,chart);
   // Draw the dashboard.
   dashboard.draw(data);

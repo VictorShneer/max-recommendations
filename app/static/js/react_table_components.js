@@ -182,9 +182,10 @@ class FilterableVisitsTable extends React.Component {
             default_start_date={this.state.start_date}
         />
         <div hidden id="graphs">
-          <div id="curve_chart" style={{width: '1200px', height: '600px'}}></div>
-          <div id="filter_div"></div>
-
+          <div id="dashboard_div">
+            <div id="curve_chart" ></div>
+            <div hidden id="filter_div"></div>
+          </div>
           <br />
 
           <div id="piechart_3d"  className="metrika-pie"></div>
