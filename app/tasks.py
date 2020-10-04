@@ -28,6 +28,7 @@ def assign_crypto_to_user_id(admin_user_id, user_id, crypto):
     # check if db already exists
     if crypto in get_dbs():
         _set_task_progress(100,'ERROR db with this name already exists, dog', admin_user_id)
+        return -1
     # get user from db by id or except
     try:
         user = User.query.filter_by(id=user_id).one()
