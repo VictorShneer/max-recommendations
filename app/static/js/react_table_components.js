@@ -36,7 +36,7 @@ class VisitRow extends React.Component {
 class HeaderVisitsTable extends React.Component{
   render(){
     return(
-      <th scope="col">{this.props.header_name}</th>
+      <th scope="col" className="thead-dark" style={{background: 'white', position: 'sticky', top: '0'}}>{this.props.header_name}</th>
     )
   }
 }
@@ -61,9 +61,8 @@ class VisitsTable extends React.Component {
     }
 
     return (
-
       <table style={{display: "block", height:"320", overflow:"auto"}} className="table table-bordered table-striped mb-0">
-        <thead  className="thead-dark">
+        <thead>
           <tr>
             {headerNames}
           </tr>
