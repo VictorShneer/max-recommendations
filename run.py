@@ -1,5 +1,5 @@
 from app import create_app
-from app.models import User, Integration, Notification
+from app.models import User, Integration, Notification, Role
 from app import db
 import click
 from pprint import pprint
@@ -7,11 +7,45 @@ from app.clickhousehub.clickhouse import get_dbs
 from app.clickhousehub.clickhouse_custom_request import create_ch_db
 from app.clickhousehub.clickhouse_custom_request import give_user_grant
 from app.clickhousehub.clickhouse_custom_request import request_iam
+from app.utils import represents_int
 app = create_app()
+
 
 @app.shell_context_processor
 def make_shell_context():
     return {'db': db, 'User': User, 'Integration': Integration, 'Notification': Notification}
+
+
+@app.cli.command()
+@click.option('--id', help='User id')
+def give_admin_role_to_id(id):
+    #check if admin role exists
+    if not represents_int(id):
+        app.logger.info('hey dog! id shoulde be the INT')
+        return -1
+    user = User.query.filter_by(id=id).first()
+    if not user:
+        app.logger.info(f'WTF there is not a user with id: {id}')
+        return -1
+    admin_role = Role.query.filter_by(name='admin').first()
+    app.logger.info(admin_role)
+    if not admin_role:
+        app.logger.info('Создаю админскую роль')
+        # create admin role
+        new_admin_role = Role(name='admin', description='Admin', users=[user])
+        db.session.add(new_admin_role)
+        db.session.commit()
+        app.logger.info('Готово! Роль создана и присвоена')
+    else:
+        if admin_role not in user.roles:
+            user.roles.append(admin_role)
+            app.logger.info(user.roles)
+            db.session.commit()
+
+        app.logger.info('Готово! Роль присвоена')
+
+
+
 
 @app.cli.command()
 def check_ch_auth():
