@@ -10,3 +10,10 @@ def decode_this_string(sting):
     byte_string = sting.encode('utf-8')
     byte_decoded = base64.b64decode(byte_string)
     return byte_decoded.decode('utf-8')
+
+def represents_int(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
