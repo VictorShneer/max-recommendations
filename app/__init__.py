@@ -11,7 +11,6 @@ from config import Config
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_admin import Admin
-from app.admin_security import MyModelView, MyAdminIndexView
 from rq import Queue
 import rq
 from redis import Redis
@@ -22,7 +21,7 @@ login = LoginManager()
 migrate = Migrate()
 login.login_view = 'auth.login'
 login.login_message = "Please login to view that page."
-admin=Admin()
+
 # csrf = CSRFProtect()
 
 def create_app(adminFlag=True,config_class=Config):
@@ -36,8 +35,10 @@ def create_app(adminFlag=True,config_class=Config):
 
     #ADMIN PANEL
     if (adminFlag):
+        from app.admin.admin_security import MyModelView, MyAdminIndexView
         from app.models import User, Integration, Role, Task, Notification, Message
         from sqlalchemy import inspect
+        admin=Admin()
         admin.init_app(app,index_view = MyAdminIndexView())
         admin.add_view(MyModelView(User, db.session, column_list=inspect(User).columns.keys()))
         admin.add_view(MyModelView(Integration, db.session, column_list=inspect(Integration).columns.keys()))
