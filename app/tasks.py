@@ -135,15 +135,16 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regu
         app.logger.info('### init_clickhouse_tables EXCEPTION regular_load={}'.format(regular_load))
         app.logger.error('### Unhandled exception {exc_info}\n{err}'.format(exc_info=sys.exc_info(), err=err))
 
-    try:
-        integration = Integration.query.filter_by(id = id).first()
-        grmonster = GrMonster(api_key=integration.api_key, \
-                                callback_url=integration.callback_url)
-        set_callback_response = grmonster.set_callback_if_not_busy()
-    except KeyError as err:
-        _set_task_progress(100, f'Создание уведомления - Ошибка - \n{err}' ,user_id)
-    else:
-        _set_task_progress(100, f'Создание уведомления - Успех' ,user_id)
+    if not regular_load:
+        try:
+            integration = Integration.query.filter_by(id = id).first()
+            grmonster = GrMonster(api_key=integration.api_key, \
+                                    callback_url=integration.callback_url)
+            set_callback_response = grmonster.set_callback_if_not_busy()
+        except KeyError as err:
+            _set_task_progress(100, f'Создание уведомления - Ошибка - \n{err}' ,user_id)
+        else:
+            _set_task_progress(100, f'Создание уведомления - Успех' ,user_id)
 
 #legacy
 def fill_encode_email_custom_field_for_subscribers_chunk(id_email_dic_list,grmonster):
