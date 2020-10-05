@@ -30,29 +30,46 @@ VISITS_RAW_QUERY = \
 '''
     select * from(
         SELECT
-            CASE  when extractURLParameter(StartURL, 'mxm') != ''
-                  then base64Decode(extractURLParameter(StartURL, 'mxm'))
+            -- if email exists store it, else store no-email6la6la6la
+            CASE  when isNotNull(id_email_table.shit)
+                  then id_email_table.shit
                   else concat('no-email',toString(ClientID)) end as email,
-
-            sum(case when Date >= '{start_date}'
-                then 1 else 0 end) as total_visits,
-
+            -- simply count all visits for this email
+            sum(1) as total_visits,
+            -- if mxm in StartURL then this visit was directly from email
             sum(case when extractURLParameter(StartURL, 'mxm') != ''
-                and (Date >= '{start_date}')
                 then 1 else 0 end) as total_visits_from_newsletter,
-
+            -- ??? what should we count here ??? 
+            -- how many exact goals was reached by this person
+            -- or what ???
             sum(case when 1
                 {grouped_columns}
-                then length(GoalsID) else 0 end) as total_goals,
-
+                then 1 else 0 end) as total_goals,
+            -- ??? the same question
             sum(case when extractURLParameter(StartURL, 'mxm') != ''
                 {grouped_columns}
-                then length(GoalsID) else 0 end) as total_goals_from_newsletter,
+                then 1 else 0 end) as total_goals_from_newsletter,
 
-            multiply(intDivOrZero(total_goals, total_visits),100) as conversion,
-            multiply(intDivOrZero(total_goals_from_newsletter, total_goals),100) as emailpower
-        FROM {clickhouse_table_name}
+            case when total_visits == 0 
+                    then 0 
+                    else round(multiply(divide(total_goals,total_visits),100)) end as conversion,
+
+            
+            case when total_goals == 0
+                 then 0
+                 else round(multiply(divide(total_goals_from_newsletter, total_goals),100)) end as emailpower
+        FROM {clickhouse_table_name} as base
+            -- 
+            left join (select ClientID, 
+                any(    case when extractURLParameter(StartURL, 'mxm') != '' 
+                                    then base64Decode(extractURLParameter(StartURL, 'mxm'))
+                                    else Null end) as shit
+            FROM {clickhouse_table_name} 
+            group by ClientID) as id_email_table on 
+                id_email_table.ClientID = base.ClientID
+            where Date >= '{start_date}'
         group by email
+        order by email
     )
     where total_visits != 0
 '''

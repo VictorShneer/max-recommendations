@@ -38,7 +38,7 @@ def metrika_get_data(integration_id):
         print('Illigal start date')
         abort(404)
     clickhouse_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'visits', integration_id)
-    grouped_columns_sql = generate_grouped_columns_sql({'start_date':[request_start_date], 'goals':request_goals.split(',')})
+    grouped_columns_sql = generate_grouped_columns_sql({'goals':request_goals.split(',')})
     url_for_visits_all_data = made_url_for_query(\
         VISITS_RAW_QUERY.format(\
             clickhouse_table_name=clickhouse_table_name,\
@@ -54,6 +54,7 @@ def metrika_get_data(integration_id):
             ),  current_user.crypto \
         )
     try:
+        current_app.logger.info(f'### request_clickhouse start urls:\n{url_for_visits_all_data}')
         current_app.logger.info(f'### request_clickhouse start urls:\n{url_for_time_series}')
         # get table data and prepare it
         response_with_visits_all_data =request_clickhouse (url_for_visits_all_data, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
@@ -70,13 +71,11 @@ def metrika_get_data(integration_id):
 
     file_from_string = StringIO(response_with_visits_all_data.text)
     file_from_time_series_response = StringIO(response_with_time_series_data.text)
-    visits_all_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=COLUMNS)
+    max_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=COLUMNS)
     time_series_goals_df = pd.read_csv(file_from_time_series_response,sep='\t',lineterminator='\n', names=TIME_SERIES_DF_COLUMNS)
 
     if request_goals:
-        visits_all_data_df = visits_all_data_df[visits_all_data_df['Total Goals Complited']!=0]
-
-    max_df = visits_all_data_df
+        max_df = max_df[max_df['Total Goals Complited']!=0]
 
     goals_all = max_df['Total Goals Complited'].sum()  #все выполненные цели
     regex = '^no-email*'
@@ -84,7 +83,7 @@ def metrika_get_data(integration_id):
     goals_has_email = goals_all - goals_hasnt_email     #количество целей у тех, чей email известен
     goals_from_email = max_df['Total Goals From Newsletter'].sum()  #количество целей непосредственно с email
 
-    front_end_df = max_df[['Email', 'Total Visits', 'Total Visits From Newsletter','Total Goals Complited', 'Total Goals From Newsletter', 'Conversion (TG/TV)', 'Email power proportion']]
+    front_end_df = max_df[COLUMNS]
     front_end_df= front_end_df.astype(str)
 
     json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
@@ -101,7 +100,6 @@ def metrika_get_data(integration_id):
     grmonster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
     broadcast_messages_since_date_subject_df = grmonster.get_broadcast_messages_since_date_subject_df(request_start_date)
     time_series_goals_json =  generate_joined_json_for_time_series(time_series_goals_df, broadcast_messages_since_date_subject_df)
-
     json_to_return['time_series_data'] = time_series_goals_json
     return json_to_return
 
