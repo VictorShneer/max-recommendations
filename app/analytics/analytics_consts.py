@@ -1,0 +1,1 @@
+COLUMNS = ['hash','OperatingSystem','RegionCity','MobilePhone', 'MobilePhoneModel','Browser']

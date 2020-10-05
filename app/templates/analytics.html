@@ -74,13 +74,9 @@
           <div class="col-sm-12">
             <h3>Список адресов:</h3>
             <div class="analyticsform-div analytics-emailslist-container">
-              <div id="target" class="analytics-emailslist">
-                <div id="form-response">
-                  <table id="tableWithContents"></table>
-                </div>
-              </div>
+                <div id='react-table-mount'></div>
             </div>
-          </div>
+        
           <div class="col-sm-6">
             <p style="margin-top: 70px;">Выберите список из GetResponse, куда импортировать контакты:</p>
             <select id="gr_campaigns" class="form-control select-gr-campaigns">
@@ -92,6 +88,9 @@
             <div id='newcampaingform'></div>
             <a class="btn btn-default grmax-btn" id="sendGR" name="sendGR" type="sendGR">Отправить в GR</a>
           </div>
+      
+          
+
       </div>
     </div>
   </div>
@@ -113,6 +112,7 @@
 {% block scripts %}
 {{ super() }}
 <script type="text/jsx" src='{{url_for("static",filename="js/analytics.js")}}'></script>
+<script type="text/jsx" src='{{url_for("static",filename="js/analytics_table.js")}}'></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js" integrity="sha512-aFvi2oPv3NjnjQv1Y/hmKD7RNMendo4CZ2DwQqMWzoURKxcqAoktj0nNG4LU8m23+Ws9X5uVDD4OXLqpUVXD5Q==" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" integrity="sha512-EvvoSMXERW4Pe9LjDN9XDzHd66p8Z49gcrB7LCUplh0GcEHiV816gXGwIhir6PJiwl0ew8GFM2QaIg2TW02B9A==" crossorigin="anonymous" />
 <script type="text/javascript">

@@ -13,7 +13,6 @@ class VisitRow extends React.Component {
   render() {
     const visits_data = [];
     const columnsOrder = this.props.columnsOrder;
-
     for(let columnName of columnsOrder) {
       visits_data.push(
         <VisitData visit_data={this.props.visit[columnName]} />
@@ -40,16 +39,17 @@ class VisitsTable extends React.Component {
   render() {
     const rows = [];
     const headerNames = [];
+    console.log('Inside component');
+    console.log(this.props.visits);
     if(this.props.visits){
       this.props.visits.data.forEach((visit) => {
         rows.push(
           <VisitRow visit={visit} columnsOrder={this.props.visits.columns_order}/>
         );
       });
-
-      this.props.visits.schema.fields.forEach((header_name) => {
+      this.props.visits.columns_order.forEach((header_name) => {
         headerNames.push(
-          <HeaderVisitsTable header_name={header_name.name} />
+          <HeaderVisitsTable header_name={header_name} />
         );
       });
     }
@@ -194,31 +194,3 @@ class FilterableVisitsTable extends React.Component {
     );
   }
 }
-
-function getSelectedGoals(){
-  var select = document.getElementById('goals');
-  var selected_goals = [...select.selectedOptions]
-                     .map(option => option.value);
-  return selected_goals;
-}
-
-function setTotalUniqueVisitors(total_unique_visitors){
-  document.getElementById('total_unique_visitors').innerHTML =
-                                            'Выбрано <b>' +
-                                            total_unique_visitors +
-                                            "</b> уникальных посетителей"
-                                            ;
-}
-
-function setTotalEmailVisitors(total_email_visitors){
-  document.getElementById('total_email_visitors').innerHTML=
-                                            'Из них <b>' +
-                                            total_email_visitors +
-                                            '</b> хотя бы раз перешли из email'
-
-}
-React.render(<FilterableVisitsTable
-                atb={document.getElementById('atb').textContent}
-                default_start_date={document.getElementById('start_date').textContent}
-                />,
-  document.getElementById('mount-visits_table'));

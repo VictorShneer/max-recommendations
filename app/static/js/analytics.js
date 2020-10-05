@@ -103,42 +103,7 @@ $(document).ready(function(){
               $('#form-response').html("");
           },
           success: function ( data ){
-              console.log(data)
-              //target.innerHTML = ''
-              var target_to_add = '<table>'
-              if (data) {
-                const unparsed_data = JSON.parse(data);
-                unparsed_data.data.forEach(item => {
-                output = `
-                <tr>
-                <td>
-                  ${item.hash}
-                </td>
-                <td>
-                  ${item.OperatingSystem}
-                </td>
-                <td>
-                  ${item.RegionCity}
-                </td>
-                <td>
-                  ${item.MobilePhone}
-                </td>
-                <td>
-                  ${item.MobilePhoneModel}
-                </td>
-                <td>
-                  ${item.Browser}
-                </td>
-                </tr>
-                `;
-                target_to_add += output
-                });
-                target_to_add += '</table>'
-                target.innerHTML = target_to_add 
-                }
-            else {
-                console.log('NO DATAAAA');
-              }
+              drawAnalyticsTable(data);
           },
           error: function(xhr) {console.log("error. see details below.");
               console.log(xhr.status + ": " + xhr.responseText);

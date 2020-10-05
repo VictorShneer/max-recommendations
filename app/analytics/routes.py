@@ -20,6 +20,8 @@ import numpy as np
 import concurrent.futures
 import binascii
 from app.main.utils import integration_is_ready
+from app.analytics.analytics_consts import COLUMNS
+import json
 
 @bp.route('/analytics/send_search_contacts/<integration_id>', methods=['POST'])
 @current_user_own_integration
@@ -197,6 +199,8 @@ def process_values():
             pprint(columns_df)
             front_end_df= columns_df.astype(str)
             json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
+            json_to_return =json.loads(json_to_return)
+            json_to_return['columns_order'] = COLUMNS
 
             return json_to_return
         except Exception as err:
