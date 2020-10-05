@@ -8,7 +8,7 @@ from app.models import User
 class AssignCryptoForm(FlaskForm):
 
     user_id = IntegerField('Id Пользователя', validators=[DataRequired()])
-    crypto = StringField('Имя', validators=[DataRequired()])
+    crypto = StringField('Crypto', validators=[DataRequired()])
     submit = SubmitField('Go!')
 
     def validate_user_id(self, user_id):
