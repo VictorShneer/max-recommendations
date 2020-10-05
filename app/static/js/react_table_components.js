@@ -12,13 +12,7 @@ class VisitRow extends React.Component {
 
   render() {
     const visits_data = [];
-    const columnsOrder = ['Email',
-                          'Total Visits',
-                          'Total Visits From Newsletter',
-                          'Total Goals Complited',
-                          'Total Goals From Newsletter',
-                          'Conversion (TG/TV)',
-                          'Email power proportion'];
+    const columnsOrder = this.props.columnsOrder;
 
     for(let columnName of columnsOrder) {
       visits_data.push(
@@ -49,7 +43,7 @@ class VisitsTable extends React.Component {
     if(this.props.visits){
       this.props.visits.data.forEach((visit) => {
         rows.push(
-          <VisitRow visit={visit} />
+          <VisitRow visit={visit} columnsOrder={this.props.visits.columns_order}/>
         );
       });
 

@@ -95,7 +95,7 @@ def metrika_get_data(integration_id):
     json_to_return['goals_hasnt_email'] = str(goals_hasnt_email)
     json_to_return['goals_has_email'] = str(goals_has_email)
     json_to_return['goals_from_email'] = str(goals_from_email)
-
+    json_to_return['columns_order'] = COLUMNS
 
     grmonster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
     broadcast_messages_since_date_subject_df = grmonster.get_broadcast_messages_since_date_subject_df(request_start_date)
