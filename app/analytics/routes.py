@@ -57,39 +57,15 @@ def create_gr_campaign_route(integration_id):
 def generate_values(integration_id):
     form = AnalyticsBar()
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
-    # print(form)
     # TODO make several try catches instad of one
-    try:
-        # # Getting the data needed for the drop down menu
-        # list_of_column_names = ['OperatingSystem','RegionCity','cutQueryString(URL)','MobilePhone','MobilePhoneModel', 'Browser']
-        # list_of_answers = []
-        # for i in range(len(list_of_column_names)):
-        #     where = "WHERE has(v.WatchIDs, h.WatchID) and notEmpty(base64Decode(extractURLParameter(v.StartURL, 'mxm')))"
-        #     query =f"""
-        #     SELECT DISTINCT {list_of_column_names[i]} as sm
-        #     FROM {current_user.crypto}.hits_raw_{integration.id} h
-        #     JOIN {current_user.crypto}.visits_raw_{integration_id} v on v.ClientID = h.ClientID
-        #     {where}
-        #     """
-        #     create_url = create_url_for_query(query,current_user.crypto)
-        #     ###LEGACY CODE
-        #     # create_url = create_url_for_query('SELECT {smth} FROM {crypto}.hits_raw_{integration_id} GROUP BY {smth2};'.\
-        #                     # format(crypto = current_user.crypto, integration_id = integration.id,smth = list_of_column_names[i],smth2 = list_of_column_names[i]), current_user.crypto)
-        #     get_data = send_request_to_clickhouse(create_url).text
-        #     list_of_answers.append(get_data)
-        # # Generating readable data for the drop down menu
-        # df = pd.DataFrame(list_of_answers, columns=['Values'])
-        # a = df.Values.str.split("\n")
-        # for idx,val in a.items():
-        #     a[idx] = [v for v in val if v != '']
-        #     a[idx].append('Не выбрано')
-        
+    try:    
+        # build CH table names    
         visits_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'visits', integration_id)
         hits_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'hits', integration_id)
 
+        # query all stuff - dropdown chices, dates and email visitors
         query = INITIAL_QUERY.format(hits_table_name=hits_table_name,\
                                         visits_table_name=visits_table_name)
-        print(query)    
         create_url = create_url_for_query(query, current_user.crypto)
         initial_response = send_request_to_clickhouse(create_url).text
         file_from_string = StringIO(initial_response)
@@ -109,12 +85,18 @@ def generate_values(integration_id):
         grmonster = GrMonster(integration.api_key, callback_url=integration.callback_url)
         gr_campaigns = grmonster.get_gr_campaigns()
         
+        # get unique values for every choice
         uniqueOpSys = inital_data_df['OperatingSystem'].unique()
         uniqueRegCyt = inital_data_df['RegionCity'].unique()
         uniqueURL = inital_data_df['cutQueryString(URL)'].unique()
         uniquePh = inital_data_df['MobilePhone'].unique()
         uniquePhM = inital_data_df['MobilePhoneModel'].unique()
         uniqueBro = inital_data_df['Browser'].unique()
+
+        # get initial summary data
+        start_date = inital_data_df['Date'].min()
+        end_date = inital_data_df['Date'].max()
+        total_unique_emails = len(inital_data_df['mxm'].unique())
 
         # Adding choices to the forms
         form.OperatingSystem.choices = list(zip(uniqueOpSys,uniqueOpSys))
@@ -124,15 +106,18 @@ def generate_values(integration_id):
         form.MobilePhone.choices = list(zip(uniquePh,uniquePh))
         form.MobilePhoneModel.choices = list(zip(uniquePhM,uniquePhM))
         form.Browser.choices = list(zip(uniqueBro,uniqueBro))
-        #
-        # if form.validate_on_submit():
-        #     return redirect(url_for('analytics.after_analytics'))
+
     except Exception as e:
         traceback.print_exc()
         flash('{} Ошибки в настройках интеграции!'.format(integration.integration_name))
         return redirect(url_for('main.user_integrations'))
-        # return render_template('analytics.html')
-    return render_template('analytics.html', list=a, form=form, gr_campaigns = gr_campaigns)
+    return render_template('analytics.html',\
+                            form=form,\
+                            gr_campaigns = gr_campaigns,\
+                            start_date=start_date,\
+                            end_date=end_date,\
+                            total_unique_emails=total_unique_emails,
+                            integration_name=integration.integration_name)
 
 
 

@@ -5,6 +5,12 @@
 
 <a class="grmax-justlink" href="{{url_for('main.user_integrations')}}"><i class="fa fa-long-arrow-left" aria-hidden="true"></i> Назад</a>
 <div class="container">
+  <div class='analytics_info'>
+    <br/>
+    <p><b>{{integration_name}}</b></p>
+    <p>Доступны данные с <b>{{start_date}}</b> по <b>{{end_date}}</b></p>
+    <p><b>{{total_unique_emails}}</b> уникальных посетителей из email</p>
+</div>
   <div class="row">
     <div class="col-sm-4 col-md-3">
       <h3 class="text-center">Свойства:</h3>
@@ -72,7 +78,7 @@
     <div class="col-sm-8 col-md-9">
       <div class="row">
           <div class="col-sm-12">
-            <h3>Список адресов:</h3>
+            <h3 id="search_count"> Список адресов: </h3> 
             <div class="analyticsform-div analytics-emailslist-container">
                 <div id='react-table-mount'></div>
             </div>
