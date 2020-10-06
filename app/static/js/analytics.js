@@ -11,8 +11,8 @@ $(document).ready(function(){
     $noformfail = $('<p id="newcampaingform" style="color:red;">Что-то пошло не так..<p>')
     // get search contacts
     var contactsList = [];
-    $('#target').children('div').each(function() {
-        contactsList.push($( this ).context.innerText);
+    $('#react-table-mount table tbody tr td:nth-child(1)').each(function() {
+        contactsList.push($( this ).text());
     });
     if(contactsList[0]==""){
       $('#newcampaingform').replaceWith('<p id="newcampaingform" style="color:red">Невозможно экспортировать 0 контактов</p>')
@@ -54,7 +54,7 @@ $(document).ready(function(){
       // creates a FormData object and adds chips text
       var formData = new FormData(document.getElementById(form));
       formData.append('integration_id', document.URL.split('/').pop());
-      for (var [key, value] of formData.entries()) { console.log('formData', key, value);}
+      // for (var [key, value] of formData.entries()) { console.log('formData', key, value);}
       return formData
   }
 
@@ -103,13 +103,14 @@ $(document).ready(function(){
               $('#form-response').html("");
           },
           success: function ( data ){
+              document.getElementById('search_count').innerHTML += ` ${data.data.length} контактов`;
               drawAnalyticsTable(data);
           },
           error: function(xhr) {console.log("error. see details below.");
               console.log(xhr.status + ": " + xhr.responseText);
           },
       }).done(function() {
-        console.log('Hello world!');
+        console.log('Done! Search table ready.');
       });
   };
 

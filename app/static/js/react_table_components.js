@@ -39,8 +39,6 @@ class VisitsTable extends React.Component {
   render() {
     const rows = [];
     const headerNames = [];
-    console.log('Inside component');
-    console.log(this.props.visits);
     if(this.props.visits){
       this.props.visits.data.forEach((visit) => {
         rows.push(
