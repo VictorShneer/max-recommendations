@@ -20,7 +20,7 @@ import numpy as np
 import concurrent.futures
 import binascii
 from app.main.utils import integration_is_ready
-from app.analytics.analytics_consts import COLUMNS
+from app.analytics.analytics_consts import COLUMNS, INITIAL_QUERY,INITIAL_QUERY_COLUMNS
 import json
 
 @bp.route('/analytics/send_search_contacts/<integration_id>', methods=['POST'])
@@ -58,32 +58,42 @@ def generate_values(integration_id):
     form = AnalyticsBar()
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     # print(form)
+    # TODO make several try catches instad of one
     try:
-        # Getting the data needed for the drop down menu
-        list_of_column_names = ['OperatingSystem','RegionCity','cutQueryString(URL)','MobilePhone','MobilePhoneModel', 'Browser']
-        list_of_answers = []
-        for i in range(len(list_of_column_names)):
-            where = "WHERE has(v.WatchIDs, h.WatchID) = 1 and notEmpty(base64Decode(extractURLParameter(v.StartURL, 'mxm'))) = 1"
-            query =f"""
-            SELECT {list_of_column_names[i]} as sm
-            FROM {current_user.crypto}.hits_raw_{integration.id} h
-            JOIN {current_user.crypto}.visits_raw_{integration_id} v on v.ClientID = h.ClientID
-            {where}
-            GROUP BY sm"""
-            pprint(query)
-            create_url = create_url_for_query(query,current_user.crypto)
-            ###LEGACY CODE
-            # create_url = create_url_for_query('SELECT {smth} FROM {crypto}.hits_raw_{integration_id} GROUP BY {smth2};'.\
-                            # format(crypto = current_user.crypto, integration_id = integration.id,smth = list_of_column_names[i],smth2 = list_of_column_names[i]), current_user.crypto)
-            get_data = send_request_to_clickhouse(create_url).text
-            list_of_answers.append(get_data)
-            i += 1
-        # Generating readable data for the drop down menu
-        df = pd.DataFrame(list_of_answers, columns=['Values'])
-        a = df.Values.str.split("\n")
-        for idx,val in a.items():
-            a[idx] = [v for v in val if v != '']
-            # a[idx].append('Не выбрано')
+        # # Getting the data needed for the drop down menu
+        # list_of_column_names = ['OperatingSystem','RegionCity','cutQueryString(URL)','MobilePhone','MobilePhoneModel', 'Browser']
+        # list_of_answers = []
+        # for i in range(len(list_of_column_names)):
+        #     where = "WHERE has(v.WatchIDs, h.WatchID) and notEmpty(base64Decode(extractURLParameter(v.StartURL, 'mxm')))"
+        #     query =f"""
+        #     SELECT DISTINCT {list_of_column_names[i]} as sm
+        #     FROM {current_user.crypto}.hits_raw_{integration.id} h
+        #     JOIN {current_user.crypto}.visits_raw_{integration_id} v on v.ClientID = h.ClientID
+        #     {where}
+        #     """
+        #     create_url = create_url_for_query(query,current_user.crypto)
+        #     ###LEGACY CODE
+        #     # create_url = create_url_for_query('SELECT {smth} FROM {crypto}.hits_raw_{integration_id} GROUP BY {smth2};'.\
+        #                     # format(crypto = current_user.crypto, integration_id = integration.id,smth = list_of_column_names[i],smth2 = list_of_column_names[i]), current_user.crypto)
+        #     get_data = send_request_to_clickhouse(create_url).text
+        #     list_of_answers.append(get_data)
+        # # Generating readable data for the drop down menu
+        # df = pd.DataFrame(list_of_answers, columns=['Values'])
+        # a = df.Values.str.split("\n")
+        # for idx,val in a.items():
+        #     a[idx] = [v for v in val if v != '']
+        #     a[idx].append('Не выбрано')
+        
+        visits_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'visits', integration_id)
+        hits_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'hits', integration_id)
+
+        query = INITIAL_QUERY.format(hits_table_name=hits_table_name,\
+                                        visits_table_name=visits_table_name)
+        print(query)    
+        create_url = create_url_for_query(query, current_user.crypto)
+        initial_response = send_request_to_clickhouse(create_url).text
+        file_from_string = StringIO(initial_response)
+        inital_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names=INITIAL_QUERY_COLUMNS)
 
         # get goals
         counter_id = integration.metrika_counter_id
@@ -98,14 +108,22 @@ def generate_values(integration_id):
         # get gr campaigns
         grmonster = GrMonster(integration.api_key, callback_url=integration.callback_url)
         gr_campaigns = grmonster.get_gr_campaigns()
+        
+        uniqueOpSys = inital_data_df['OperatingSystem'].unique()
+        uniqueRegCyt = inital_data_df['RegionCity'].unique()
+        uniqueURL = inital_data_df['cutQueryString(URL)'].unique()
+        uniquePh = inital_data_df['MobilePhone'].unique()
+        uniquePhM = inital_data_df['MobilePhoneModel'].unique()
+        uniqueBro = inital_data_df['Browser'].unique()
+
         # Adding choices to the forms
-        form.OperatingSystem.choices = [(g,g) for g in a[0]]
-        form.RegionCity.choices = [(g,g) for g in a[1]]
-        form.URL.choices = [(g,g) for g in a[2]]
-        form.GoalsID.choices = [(g[0],g[1]) for g in goals]
-        form.MobilePhone.choices = [(g,g) for g in a[3]]
-        form.MobilePhoneModel.choices = [(g,g) for g in a[4]]
-        form.Browser.choices = [(g,g) for g in a[5]]
+        form.OperatingSystem.choices = list(zip(uniqueOpSys,uniqueOpSys))
+        form.RegionCity.choices = list(zip(uniqueRegCyt,uniqueRegCyt))
+        form.URL.choices = list(zip(uniqueURL,uniqueURL))
+        form.GoalsID.choices = goals
+        form.MobilePhone.choices = list(zip(uniquePh,uniquePh))
+        form.MobilePhoneModel.choices = list(zip(uniquePhM,uniquePhM))
+        form.Browser.choices = list(zip(uniqueBro,uniqueBro))
         #
         # if form.validate_on_submit():
         #     return redirect(url_for('analytics.after_analytics'))
