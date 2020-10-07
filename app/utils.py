@@ -17,3 +17,6 @@ def represents_int(s):
         return True
     except ValueError:
         return False
+
+def generate_full_CH_table_name(db_name, table_name, integration_id):
+    return f'{db_name}.{table_name}_{integration_id}'
