@@ -40,6 +40,8 @@ function drawTimeSeriesChart(timeSeriesData){
   var options = {
     series : series,
     title: 'Email эффект',
+    hAxis: { title: 'Дата' },
+    vAxis: { title: 'Количество целей' },
     legend: { position: 'top' },
     pointSize: 0.1,
     tooltip: { trigger: 'selection' },
