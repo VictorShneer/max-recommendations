@@ -39,12 +39,17 @@ def generate_grouped_columns_sql(restrictions):
 
 
 def generate_joined_json_for_time_series(time_series_df, messages_df):
-    messages_df_aggr = messages_df.groupby('send_on').agg({'subject':lambda s: ' '.join(s)})
-    messages_df_aggr.reset_index(level=0, inplace=True)
-    messages_df_aggr['point'] = 'point { size: 8; shape-type: star; fill-color: #a52714;}'
     time_series_df_raw = time_series_df[['Date','total_goals','goals_with_email','goals_just_after_email']]
-    time_series_messages_df = time_series_df_raw.merge(messages_df_aggr, how='left', left_on='Date', right_on='send_on')
-    time_series_messages_df.drop(['send_on'], axis=1, inplace=True)
+    if messages_df.shape[0] > 0:  
+        messages_df_aggr = messages_df.groupby('send_on').agg({'subject':lambda s: ' '.join(s)})
+        messages_df_aggr.reset_index(level=0, inplace=True)
+        messages_df_aggr['point'] = 'point { size: 8; shape-type: star; fill-color: #a52714;}'
+        time_series_messages_df = time_series_df_raw.merge(messages_df_aggr, how='left', left_on='Date', right_on='send_on')
+        time_series_messages_df.drop(['send_on'], axis=1, inplace=True)
+    else:
+        time_series_df_raw['point'] = None
+        time_series_df_raw['subject'] = None
+        time_series_messages_df = time_series_df_raw
     # # TODO: columns mess
     time_series_messages_df = time_series_messages_df[['Date','goals_with_email','goals_just_after_email','point','subject']]
     time_series_json = time_series_messages_df.to_json(orient='split')
