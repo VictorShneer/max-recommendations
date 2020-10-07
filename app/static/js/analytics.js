@@ -103,7 +103,7 @@ $(document).ready(function(){
               $('#form-response').html("");
           },
           success: function ( data ){
-              document.getElementById('search_count').innerHTML += ` ${data.data.length} контактов`;
+              document.getElementById('search_count').innerHTML = ` ${data.data.length} контактов`;
               drawAnalyticsTable(data);
           },
           error: function(xhr) {console.log("error. see details below.");
