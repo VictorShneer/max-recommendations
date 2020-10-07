@@ -46,7 +46,7 @@ def gr_post_wrapped_newsletter(key, newsletter_id, links):
                 'campaign': r.json()['campaign'], \
                 'sendSettings': r.json()['sendSettings'],
                 'editor': r.json()['editor'], \
-                'flags':['openrate','clicktrack']
+                'flags': r.json()['flags']
     }
     r = requests.post(url, headers=HEADERS, json=json)
     if r.status_code != 201:
@@ -92,7 +92,6 @@ def parse_links_from_content(content):
         if href == "" or href is None:
         # href empty tag
             continue
-        print(href)
         url = re.search(r'http[\w:/.\[\]\-=?&]*', href)
         if url:
             urls.add(url.group(0))
