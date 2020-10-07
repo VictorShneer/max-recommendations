@@ -72,7 +72,7 @@ def post_contact_to_list(email, campaign_id, api_key):
     r = requests.post('https://api.getresponse.com/v3/contacts', \
                         headers = {'X-Auth-Token': 'api-key {}'.format(api_key)}, \
                         json = {'email':email, 'campaign': {'campaignId':campaign_id}})
-    return (r.status_code, r.text)
+    return r
 
 
 def send_search_contacts_to_gr(search_contacts_list, campaignId, api_key, user_id):
@@ -87,13 +87,15 @@ def send_search_contacts_to_gr(search_contacts_list, campaignId, api_key, user_i
             _set_task_progress(int((idx*100)/len(search_contacts_list)))
             email = future_to_email[future]
             try:
-                response_status = future.result()
-                responses.append(response_status)
+                response = future.result()
+                responses.append(response)
             except Exception as exc:
                 print('%r generated an exception: %s' % (email, exc))
             else:
-                print('%r address loaded with status %d' % (email, response_status[0]))
-    _set_task_progress(100, len(responses), user_id)
+                print('%r address loaded with status %d' % (email, response.status_code))
+    success_load_count = len([response for response in responses if response.ok]) 
+    report_string = f'Загружено контатов в GR: {success_load_count} из {len(responses)}'
+    _set_task_progress(100, report_string, user_id)
 
 
 
