@@ -8,6 +8,7 @@ from pprint import pprint
 class GrMonster(GrUtils):
     hashed_email_custom_field_name = 'hash_metrika'
     big_enough_newsletter = 0
+    # TODO default value for callback_url
     def __init__(self, api_key, callback_url):
         super().__init__(api_key)
         self.callback_url = callback_url
