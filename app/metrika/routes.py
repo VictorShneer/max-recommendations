@@ -7,13 +7,13 @@ from app import db
 from app.metrika import bp
 from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from app.metrika.secur import current_user_own_integration
-from app.metrika.conversion_table_builder import generate_joined_json_for_time_series
 from app.grhub.grmonster import GrMonster
 from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
-from app.metrika.metrica_consts import COLUMNS, TIME_SERIES_QUERY, VISITS_RAW_QUERY,TIME_SERIES_DF_COLUMNS
+from app.metrika.metrika_sql_queries import TIME_SERIES_QUERY, VISITS_RAW_QUERY,TIME_SERIES_DF_COLUMNS, COLUMNS
 from app.main.utils import check_if_date_legal, integration_is_ready
 from app.metrika.utils import request_min_max_visits_dates,get_metrika_goals, get_df_from_CH
+from app.metrika.metrika_report import MetrikaReport
 
 @bp.route('/metrika/<integration_id>/get_data')
 @integration_is_ready
@@ -30,46 +30,26 @@ def metrika_get_data(integration_id):
     if not check_if_date_legal(request_start_date):
         print('Illigal start date')
         abort(404)
+    goals_filter_array=[]
     if request_goals:
-        filter_statements={'goals':request_goals.split(',')}
-    else:
-        filter_statements={}
-    time_series_goals_df = get_df_from_CH(current_user.crypto, integration_id, TIME_SERIES_QUERY,filter_statements,request_start_date,TIME_SERIES_DF_COLUMNS)
-    clientid_convers_df = get_df_from_CH(current_user.crypto, integration_id, VISITS_RAW_QUERY,filter_statements,request_start_date,COLUMNS)
-    # TODO move it to SQL
+        # list + map because CH store GoalsId as ints
+        # so we need ints too perform CH functions on it
+        goals_filter_array=list(map(int, request_goals.split(',')))
+    # TODO integrate it to class like metrika report
+    time_series_goals_df = get_df_from_CH(current_user.crypto, integration_id, TIME_SERIES_QUERY,goals_filter_array,request_start_date,TIME_SERIES_DF_COLUMNS)
+    clientid_convers_df = get_df_from_CH(current_user.crypto, integration_id, VISITS_RAW_QUERY,goals_filter_array,request_start_date,COLUMNS)
+    # bad outside target unit logic :(
     if request_goals:
         clientid_convers_df = clientid_convers_df[clientid_convers_df['Total Goals Complited']!=0]
-    # calculate pie stuff
-    regex = '^no-email*'    
-    email_visits_slice_df = clientid_convers_df[~clientid_convers_df['Email'].str.contains(regex)]
-    no_email_visits_slice_df = clientid_convers_df[clientid_convers_df['Email'].str.contains(regex)]
-    goals_no_email_count = no_email_visits_slice_df['Total Goals Complited'].sum()  
-    goals_from_email_count = clientid_convers_df['Total Goals From Newsletter'].sum() 
-    goals_has_email_count =  email_visits_slice_df['Total Goals Complited'].sum() 
-    #           # clientid_convers_df = clientid_convers_df[COLUMNS]
-    # legacy    # clientid_convers_df= clientid_convers_df.astype(str)
-    #           # clientid_convers_json = clientid_convers_df.to_json(default_handler=str, orient='table', index=False)
-    #           # json_to_return['conv_data'] =json.loads(clientid_convers_json)
-    # convert and store table data  
-    email_convers_df = email_visits_slice_df[COLUMNS]
-    email_convers_df= email_convers_df.astype(str)
-    email_convers_json = email_convers_df.to_json(default_handler=str, orient='table', index=False)
-    json_to_return = {}
-    json_to_return['conv_data'] =json.loads(email_convers_json)
-    # store summary data
-    json_to_return['total_unique_visitors'] = str(clientid_convers_df.shape[0]) 
-    json_to_return['total_email_visitors'] = str(email_visits_slice_df.shape[0]) 
-    # store pie data
-    json_to_return['goals_no_email_count'] = str(goals_no_email_count)
-    json_to_return['goals_has_email_count'] = str(goals_has_email_count)
-    json_to_return['goals_from_email_count'] = str(goals_from_email_count)
-    # time series builder
+    # generate report based on CH data
+    metrika_report = MetrikaReport(clientid_convers_df, time_series_goals_df)
+    metrika_report.load_email_visits_table()
     grmonster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
     broadcast_messages_since_date_subject_df = grmonster.get_broadcast_messages_since_date_subject_df(request_start_date)
-    time_series_goals_json =  generate_joined_json_for_time_series(time_series_goals_df, broadcast_messages_since_date_subject_df)
-    # store time series
-    json_to_return['time_series_data'] = time_series_goals_json
-    return json_to_return
+    metrika_report.load_time_series(broadcast_messages_since_date_subject_df)
+    metrika_report.load_pie()
+    metrika_report.load_summary()
+    return metrika_report.report_json
 
 @bp.route('/metrika/<integration_id>', methods = ['GET'])
 @login_required
