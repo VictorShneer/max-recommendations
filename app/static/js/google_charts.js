@@ -71,36 +71,22 @@ function drawTimeSeriesChart(timeSeriesData){
 
 }
 
-function drawChart(goals_hasnt_email, goals_has_email, goals_from_email) {
+function drawChart(goals_no_email_count, goals_has_email_count, goals_from_email_count) {
 
   //диаграмма
   var data_diag = google.visualization.arrayToDataTable([
     ['Источник', 'Количество выполненных целей'],
-    ['email известен',     parseInt(goals_has_email)],
-    ['email неизвестен',      parseInt(goals_hasnt_email)]
+    ['Целей выполненно - email неизвестен',     parseInt(goals_no_email_count)],
+    ['Целей выполненно - email известен',      parseInt(goals_has_email_count)],
+    ['Целей выполненно - прямой переход из письма',      parseInt(goals_from_email_count)],
   ]);
 
   var options_diag = {
-    title: 'Доля целей с известным и неизвестным email',
+    title: 'Доля целей с известным, неизвестным email и целей выполненных после прямого перехода из email',
     is3D: true,
   };
 
   var chart_diag = new google.visualization.PieChart(document.getElementById('piechart_3d'));
   chart_diag.draw(data_diag, options_diag);
 
-  //вторая диаграмма - доля целей непосредственно с email у тех, у кого он вообще известен
-   var goals_emailknown_notfromemail = goals_has_email - goals_from_email
-   var data_diag2 = google.visualization.arrayToDataTable([
-    ['Источник', 'Выполненные цели'],
-    ['Цели непосредственно после переходов с email',      parseInt(goals_from_email)],
-    ['Цели пользователей с известным email не с переходов с email',     parseInt(goals_emailknown_notfromemail)]
-  ]);
-
-  var options_diag2 = {
-    title: 'Доля целей с перехода из email',
-    is3D: true,
-  };
-
-  var chart_diag2 = new google.visualization.PieChart(document.getElementById('piechart_3d_goals'));
-  chart_diag2.draw(data_diag2, options_diag2);
 }

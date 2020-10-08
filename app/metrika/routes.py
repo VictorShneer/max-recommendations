@@ -42,27 +42,26 @@ def metrika_get_data(integration_id):
     # calculate pie stuff
     # here think what you need and grab it (all goals, known email goals, just after email goals)
     # and move it to utils
-    goals_all = clientid_convers_df['Total Goals Complited'].sum()  #все выполненные цели
-    regex = '^no-email*'
-    goals_hasnt_email =  clientid_convers_df[clientid_convers_df['Email'].str.contains(regex)]['Total Goals Complited'].sum() #все выполненные цели среди тех, чей email неизвестен
-    goals_has_email = goals_all - goals_hasnt_email     #количество целей у тех, чей email известен
-    goals_from_email = clientid_convers_df['Total Goals From Newsletter'].sum()  #количество целей непосредственно с email
-    # name it nice
-    # and put in separate dict key spot
-    front_end_df = clientid_convers_df[COLUMNS]
-    front_end_df= front_end_df.astype(str)
+    regex = '^no-email*'    
+    email_visits_slice_df = clientid_convers_df[~clientid_convers_df['Email'].str.contains(regex)]
+    no_email_visits_slice_df = clientid_convers_df[clientid_convers_df['Email'].str.contains(regex)]
+    goals_no_email_count = no_email_visits_slice_df['Total Goals Complited'].sum()  
+    goals_from_email_count = clientid_convers_df['Total Goals From Newsletter'].sum() 
+    goals_has_email_count =  email_visits_slice_df['Total Goals Complited'].sum() 
     # move it to utis
-    # all u need is conv_df and time_ser_df and COLUMNS for order it
-    json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
-    json_to_return =json.loads(json_to_return)
-    json_to_return['total_unique_visitors'] = str(front_end_df.shape[0])
-    temp_all_visots = front_end_df.shape[0]
-    total_email_visitors = temp_all_visots - front_end_df[front_end_df['Email'].str.contains("no-email")].shape[0]
+    # all u need is conv_df and time_ser_df 
+    clientid_convers_df = clientid_convers_df[COLUMNS]
+    clientid_convers_df= clientid_convers_df.astype(str)
+    clientid_convers_json = clientid_convers_df.to_json(default_handler=str, orient='table', index=False)
+    json_to_return = {}
+    json_to_return['conv_data'] =json.loads(clientid_convers_json)
+    json_to_return['total_unique_visitors'] = str(clientid_convers_df.shape[0])
+    temp_all_visots = clientid_convers_df.shape[0]
+    total_email_visitors = temp_all_visots - clientid_convers_df[clientid_convers_df['Email'].str.contains("no-email")].shape[0]
     json_to_return['total_email_visitors'] = str(total_email_visitors)
-    json_to_return['goals_hasnt_email'] = str(goals_hasnt_email)
-    json_to_return['goals_has_email'] = str(goals_has_email)
-    json_to_return['goals_from_email'] = str(goals_from_email)
-    json_to_return['columns_order'] = COLUMNS
+    json_to_return['goals_no_email_count'] = str(goals_no_email_count)
+    json_to_return['goals_has_email_count'] = str(goals_has_email_count)
+    json_to_return['goals_from_email_count'] = str(goals_from_email_count)
     # here it is
     # time series builder
     # move it to utils too

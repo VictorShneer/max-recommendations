@@ -139,9 +139,9 @@ class FilterableVisitsTable extends React.Component {
           this.setState({visits: data.conv_data, isLoading: false });
           // for graph
           drawChart(
-            data.goals_hasnt_email,
-            data.goals_has_email,
-            data.goals_from_email
+            data.goals_no_email_count,
+            data.goals_has_email_count,
+            data.goals_from_email_count
           );
           // for time series
           drawTimeSeriesChart(data.time_series_data);
@@ -181,10 +181,6 @@ class FilterableVisitsTable extends React.Component {
           <br />
 
           <div id="piechart_3d"  className="metrika-pie"></div>
-
-          <br />
-          <div id="piechart_3d_goals" className="metrika-pie"></div>
-
           <br />
           <VisitsTable visits={this.state.visits} />
         </div>
