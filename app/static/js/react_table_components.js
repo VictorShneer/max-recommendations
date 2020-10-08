@@ -42,12 +42,12 @@ class VisitsTable extends React.Component {
     if(this.props.visits){
       this.props.visits.data.forEach((visit) => {
         rows.push(
-          <VisitRow visit={visit} columnsOrder={this.props.visits.columns_order}/>
+          <VisitRow visit={visit} columnsOrder={this.props.visits.schema.fields.map(a => a.name)}/>
         );
       });
-      this.props.visits.columns_order.forEach((header_name) => {
+      this.props.visits.schema.fields.forEach((header_name) => {
         headerNames.push(
-          <HeaderVisitsTable header_name={header_name} />
+          <HeaderVisitsTable header_name={header_name.name} />
         );
       });
     }
@@ -136,7 +136,7 @@ class FilterableVisitsTable extends React.Component {
           setTotalUniqueVisitors(data.total_unique_visitors);
           setTotalEmailVisitors(data.total_email_visitors);
           // for table
-          this.setState({visits: data, isLoading: false });
+          this.setState({visits: data.conv_data, isLoading: false });
           // for graph
           drawChart(
             data.goals_hasnt_email,

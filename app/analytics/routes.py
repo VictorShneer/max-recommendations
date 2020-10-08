@@ -203,7 +203,6 @@ def process_values():
             front_end_df= columns_df.astype(str)
             json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
             json_to_return =json.loads(json_to_return)
-            json_to_return['columns_order'] = COLUMNS
 
             return json_to_return
         except Exception as err:
