@@ -40,34 +40,34 @@ def metrika_get_data(integration_id):
     if request_goals:
         clientid_convers_df = clientid_convers_df[clientid_convers_df['Total Goals Complited']!=0]
     # calculate pie stuff
-    # here think what you need and grab it (all goals, known email goals, just after email goals)
-    # and move it to utils
     regex = '^no-email*'    
     email_visits_slice_df = clientid_convers_df[~clientid_convers_df['Email'].str.contains(regex)]
     no_email_visits_slice_df = clientid_convers_df[clientid_convers_df['Email'].str.contains(regex)]
     goals_no_email_count = no_email_visits_slice_df['Total Goals Complited'].sum()  
     goals_from_email_count = clientid_convers_df['Total Goals From Newsletter'].sum() 
     goals_has_email_count =  email_visits_slice_df['Total Goals Complited'].sum() 
-    # move it to utis
-    # all u need is conv_df and time_ser_df 
-    clientid_convers_df = clientid_convers_df[COLUMNS]
-    clientid_convers_df= clientid_convers_df.astype(str)
-    clientid_convers_json = clientid_convers_df.to_json(default_handler=str, orient='table', index=False)
+    #           # clientid_convers_df = clientid_convers_df[COLUMNS]
+    # legacy    # clientid_convers_df= clientid_convers_df.astype(str)
+    #           # clientid_convers_json = clientid_convers_df.to_json(default_handler=str, orient='table', index=False)
+    #           # json_to_return['conv_data'] =json.loads(clientid_convers_json)
+    # convert and store table data  
+    email_convers_df = email_visits_slice_df[COLUMNS]
+    email_convers_df= email_convers_df.astype(str)
+    email_convers_json = email_convers_df.to_json(default_handler=str, orient='table', index=False)
     json_to_return = {}
-    json_to_return['conv_data'] =json.loads(clientid_convers_json)
-    json_to_return['total_unique_visitors'] = str(clientid_convers_df.shape[0])
-    temp_all_visots = clientid_convers_df.shape[0]
-    total_email_visitors = temp_all_visots - clientid_convers_df[clientid_convers_df['Email'].str.contains("no-email")].shape[0]
-    json_to_return['total_email_visitors'] = str(total_email_visitors)
+    json_to_return['conv_data'] =json.loads(email_convers_json)
+    # store summary data
+    json_to_return['total_unique_visitors'] = str(clientid_convers_df.shape[0]) 
+    json_to_return['total_email_visitors'] = str(email_visits_slice_df.shape[0]) 
+    # store pie data
     json_to_return['goals_no_email_count'] = str(goals_no_email_count)
     json_to_return['goals_has_email_count'] = str(goals_has_email_count)
     json_to_return['goals_from_email_count'] = str(goals_from_email_count)
-    # here it is
     # time series builder
-    # move it to utils too
     grmonster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
     broadcast_messages_since_date_subject_df = grmonster.get_broadcast_messages_since_date_subject_df(request_start_date)
     time_series_goals_json =  generate_joined_json_for_time_series(time_series_goals_df, broadcast_messages_since_date_subject_df)
+    # store time series
     json_to_return['time_series_data'] = time_series_goals_json
     return json_to_return
 
