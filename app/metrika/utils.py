@@ -1,32 +1,33 @@
 from app.utils import generate_full_CH_table_name
 from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from flask import flash, redirect, url_for, current_app
-from app.metrika.conversion_table_builder import generate_grouped_columns_sql
+from app.metrika.sql_query_builder import generate_filter_goals_sql_clause
 import requests
 from io import StringIO
 import pandas as pd
 
-def get_df_from_CH(crypto, integration_id, query_template, filter_statements,request_start_date,columns):
+def get_df_from_CH(crypto, integration_id, query_template, goals_filter_array, request_start_date, columns):
     clickhouse_table_name = generate_full_CH_table_name(crypto, 'visits_raw', integration_id)  
-    grouped_columns_sql = generate_grouped_columns_sql(filter_statements)
+    goals_fiter_sql_clause = generate_filter_goals_sql_clause(goals_filter_array)
     query_url = made_url_for_query(\
         query_template.format(\
             clickhouse_table_name=clickhouse_table_name,\
             start_date = request_start_date,\
-            grouped_columns = grouped_columns_sql
+            goals_filter_clause = goals_fiter_sql_clause
             ), crypto \
         )
     current_app.logger.info(f'### request_clickhouse start urls:\n{query_url}')
     return generate_df_from_query(query_url,columns)
+
 def generate_df_from_query(query_url, columns):
     try:
 
         # get table data and prepare it
         response_with_data =request_clickhouse (query_url, current_app.config['AUTH'], current_app.config['CERTIFICATE_PATH'])
         if not response_with_data.ok:
-            raise ConnectionRefusedError('Clickhouse staus code not ok')
+            raise ConnectionRefusedError(f'Clickhouse staus code not ok \n {response_with_data.text}')
     except ConnectionRefusedError as err:
-        current_app.logger.CRITICAL(err)
+        current_app.logger.critical(err)
 
     file_from_string = StringIO(response_with_data.text)
     return pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=columns)
