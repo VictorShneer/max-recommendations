@@ -54,7 +54,7 @@ class VisitsTable extends React.Component {
     }
 
     return (
-      <table className="table" >
+      <table className="table table_stats" >
         <thead>
             {headerNames}
         </thead>
