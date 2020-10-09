@@ -2,7 +2,7 @@ import requests
 import datetime
 from bs4 import BeautifulSoup
 import re
-from urllib.parse import urlparse,parse_qsl,urlencode,urlunparse
+from urllib.parse import urlparse,parse_qsl,urlencode,urlunparse, unquote_plus
 
 def wrap_links(links):
     params = {"mxm":"[[hash_metrika]]"}
@@ -13,7 +13,8 @@ def wrap_links(links):
         url_dict = dict(parse_qsl(query))
         url_dict.update(params)
         url_new_query = urlencode(url_dict)
-        url_parse = url_parse._replace(query=url_new_query)
+        url_new_query2 = unquote_plus(url_new_query)
+        url_parse = url_parse._replace(query=url_new_query2)
         new_url = urlunparse(url_parse)
         w_links.append(new_url)
     return {link : w_link for link,w_link in zip(links,w_links)}
