@@ -4,6 +4,8 @@ from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse,parse_qsl,urlencode,urlunparse, unquote_plus
 
+ugly_editor_dic = {'getresponse':'getresponse', 'html2':'html2','editor_v3':'getresponse'}
+
 def wrap_links(links):
     params = {"mxm":"[[hash_metrika]]"}
     w_links = []
@@ -37,6 +39,7 @@ def gr_post_wrapped_newsletter(key, newsletter_id, links):
     newsletter_content= r.json()['content']
     wrapped_html = replace_link_in_content(newsletter_content, links)
     url = 'https://api.getresponse.com/v3/newsletters/'
+    print(r.json()['editor'], '\n\n')
     json = {\
                 'content':{'html':wrapped_html},\
                 'name':r.json()['name']+' wrapped', \
@@ -46,13 +49,13 @@ def gr_post_wrapped_newsletter(key, newsletter_id, links):
                 'replyTo': r.json()['replyTo'], \
                 'campaign': r.json()['campaign'], \
                 'sendSettings': r.json()['sendSettings'],
-                'editor': r.json()['editor'], \
+                'editor': ugly_editor_dic[r.json()['editor']], \
                 'flags': r.json()['flags']
     }
     r = requests.post(url, headers=HEADERS, json=json)
     if r.status_code != 201:
         print(r.text)
-        raise Exception('Opps! Post wrapped newsletter failed')
+        raise ConnectionRefusedError('Opps! Post wrapped newsletter failed')
 
 
 def get_newsletters_names(key):
