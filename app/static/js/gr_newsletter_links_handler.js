@@ -33,7 +33,9 @@ function handleAvailableLinksForm(event){
             В GetResponse создано письмо с новыми ссылками\
                                     </p>' );
     } else {
-      alert('Что-то пошло не так...')
+      $('#info').replaceWith( '<p style="color:red">\
+                 Ошибка при попытке создания письма :( \
+                                          </p>' );
     }
   }).catch((error) => console.log(error));
 }
