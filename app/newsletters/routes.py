@@ -38,11 +38,12 @@ def post_wrapped_newsletter():
     try:
         gr_post_wrapped_newsletter(key, newsletter_id, links)
     except ConnectionRefusedError as err:
-        current_user.send_message(f'Ошибка создания письма в GR :( {str(timestamp)}')
+        current_user.send_message(f'{str(timestamp)} : ошибка создания письма в GR')
         current_user.add_notification('unread_message_count', current_user.new_messages())
         abort(300)
     else:
-        current_user.send_message(f'Успех! Черновик с обернутыми ссылками создан в GR. {str(timestamp)}')
+        # TODO add newsletter name for user message notif
+        current_user.send_message(f'{str(timestamp)} : черновик с обернутыми ссылками создан в GR')
         current_user.add_notification('unread_message_count', current_user.new_messages())
 
     return '<200>'
