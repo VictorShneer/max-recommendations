@@ -24,15 +24,15 @@ function drawTimeSeriesChart(timeSeriesData){
        *    altColor: changes the color of the legend entry (used to grey out hidden entries)
        */
       var series = {
-          goals_with_email: {
+          0: {
               hidden: false,
               visibleInLegend: true,
-              color: 'red'
+              color: '#e2431e'
           },
-          goals_just_after_email: {
+          0: {
               hidden: false,
               visibleInLegend: true,
-              color: 'green',
+              color: '#6f9654'
           },
       };
 
@@ -47,7 +47,7 @@ function drawTimeSeriesChart(timeSeriesData){
     tooltip: { trigger: 'selection' },
     chartArea:{left:'7%',top:40,width:'80%',height:'80%'},
     width: 1200, 
-    height: 500
+    height: 500,
   }
 
 
