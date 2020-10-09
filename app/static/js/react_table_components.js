@@ -37,6 +37,7 @@ class HeaderVisitsTable extends React.Component{
 
 class VisitsTable extends React.Component {
   render() {
+
     const rows = [];
     const headerNames = [];
     if(this.props.visits){
@@ -53,13 +54,11 @@ class VisitsTable extends React.Component {
     }
 
     return (
-      <table style={{display: "block", height:"320", overflow:"auto"}} className="table table-bordered table-striped mb-0">
+      <table className="table" >
         <thead>
-          <tr>
             {headerNames}
-          </tr>
         </thead>
-        <tbody >{rows}</tbody>
+        <tbody>{rows}</tbody>
       </table>
     );
   }
@@ -174,13 +173,13 @@ class FilterableVisitsTable extends React.Component {
             default_start_date={this.state.start_date}
         />
         <div hidden id="graphs">
-          <div id="dashboard_div">
+          <div id="dashboard_div" className="round_border_container">
             <div id="curve_chart" ></div>
             <div hidden id="filter_div"></div>
           </div>
           <br />
 
-          <div id="piechart_3d"  className="metrika-pie"></div>
+          <div id="piechart_3d"  className="round_border_container"></div>
           <br />
           <VisitsTable visits={this.state.visits} />
         </div>

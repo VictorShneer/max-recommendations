@@ -465,10 +465,19 @@ a#create_campaign {
   display: block;
 }
 
-.metrika-pie {
+.round_border_container {
   border: 2px solid rgb(226, 226, 226);
   border-radius: 8px;
   padding: 12px;
   box-shadow: rgba(100, 151, 203, 0.21) 0px 0px 7px 0px;
   min-height: 360px;
 }
+
+.table, .th, .tr > tbody {
+    display:block;
+    width:100%;
+    height:200px;
+    overflow:auto;
+}
+
+
