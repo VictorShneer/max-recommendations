@@ -21,6 +21,7 @@ import concurrent.futures
 import binascii
 from app.main.utils import integration_is_ready
 from app.analytics.analytics_consts import COLUMNS, INITIAL_QUERY,INITIAL_QUERY_COLUMNS
+from app.metrika.utils import get_metrika_goals
 import json
 
 @bp.route('/analytics/send_search_contacts/<integration_id>', methods=['POST'])
@@ -75,13 +76,7 @@ def generate_values(integration_id):
         # get goals
         counter_id = integration.metrika_counter_id
         metrika_key = integration.metrika_key
-        headers = {'Authorization':'OAuth {}'.format(metrika_key)}
-        ROOT = 'https://api-metrika.yandex.net/'
-        url = ROOT+'management/v1/counter/{}/goals'.format(counter_id)
-        r = requests.get(url, headers=headers)
-        current_app.logger.info('### get goals status code: {}'.format(r.status_code))
-        goals = [(goal['id'],goal['name']) for goal in r.json()['goals']]
-
+        goals = get_metrika_goals(metrika_key,counter_id)
         # get gr campaigns
         grmonster = GrMonster(integration.api_key, callback_url=integration.callback_url)
         gr_campaigns = grmonster.get_gr_campaigns()
