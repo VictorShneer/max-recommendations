@@ -3,7 +3,31 @@ $(document).ready(function(){
   const create_campaign_link = document.getElementById('create_campaign');
   create_campaign_link.addEventListener('click', drop_down_input_create_campaign);
   const send_gr_button = document.getElementById('sendGR');
-  send_gr_button.addEventListener('click', send_to_gr_handler)
+  send_gr_button.addEventListener('click', send_to_gr_handler);
+  const filter_choices_menu = document.querySelector('#filters_form ul');
+  filter_choices_menu.addEventListener('change', show_filter_menu);
+
+  function show_filter_menu(event){
+    divs_display_config = []
+    $('#filters_form li').each(function(){
+      $checkbox = $(this)
+      filter_name = $checkbox.find( "input" ).attr( "value" )
+      if (  $checkbox.hasClass( 'multiselect-all' ) ){
+        return;
+      } else if (  $checkbox.hasClass( 'grmax-multiselect-selected' ) ){
+        divs_display_config.push({filter_name:filter_name, settings:'show'});
+      } else {
+        divs_display_config.push({filter_name:filter_name, settings:'hide'});
+      }
+    });
+    divs_display_config.map(  function (filter_name_setting){
+      selector = `label[for=${filter_name_setting.filter_name}]`;
+      target_div = $($(selector)[0].parentElement);
+      target_div[filter_name_setting.settings]();
+   });
+  }
+
+
 
   function send_to_gr_handler(event){
     event.preventDefault()
@@ -14,8 +38,8 @@ $(document).ready(function(){
     $('#react-table-mount table tbody tr td:nth-child(1)').each(function() {
         contactsList.push($( this ).text());
     });
-    if(contactsList[0]==""){
-      $('#newcampaingform').replaceWith('<p id="newcampaingform" style="color:red">Невозможно экспортировать 0 контактов</p>')
+    if(contactsList.length == 0){
+      $('#newcampaingform').replaceWith('<p id="newcampaingform" style="color:red">Сперва отфильтруйте контакты для импорта</p>')
       return -1
     };
     // get campaign id
@@ -122,8 +146,6 @@ $(document).ready(function(){
       }
   });
 
-
-
   function drop_down_input_create_campaign(event){
       event.preventDefault();
       $form = $("<form id='create_campaign_form'></form>");
@@ -139,6 +161,7 @@ $(document).ready(function(){
       });
 
     }
+
   function create_gr_campaign(campaign_name){
     integration_id = window.location.href.split('/').pop()
     $.post('/analytics/create_gr_campaign/'+integration_id, {
@@ -149,4 +172,5 @@ $(document).ready(function(){
         $('#create_campaign_form').replaceWith($noformfail);
     });
   }
+
 });

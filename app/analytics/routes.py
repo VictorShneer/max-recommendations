@@ -11,7 +11,7 @@ from app.grhub.grmonster import GrMonster
 import traceback
 from pprint import pprint
 import pandas as pd
-from app.analytics.forms import AnalyticsBar
+from app.analytics.forms import AnalyticsBar, Filters
 from collections import defaultdict
 from io import StringIO
 import base64
@@ -56,6 +56,7 @@ def create_gr_campaign_route(integration_id):
 @integration_is_ready
 def generate_values(integration_id):
     form = AnalyticsBar()
+    filters_form = Filters()
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     # TODO make several try catches instad of one
     try:    
@@ -113,6 +114,7 @@ def generate_values(integration_id):
         return redirect(url_for('main.user_integrations'))
     return render_template('analytics.html',\
                             form=form,\
+                            filters_form=filters_form,\
                             gr_campaigns = gr_campaigns,\
                             start_date=start_date,\
                             end_date=end_date,\

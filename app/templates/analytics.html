@@ -14,56 +14,63 @@
   <div class="row">
     <div class="col-sm-4 col-md-3">
       <h3 class="text-center">Свойства:</h3>
-      {% if title %} <h2>{{title}}</h2> {% endif %}
+      <br>
+      <form class="filters_form" action="" method="post" role="form" id="filters_form">
+         <div  class="form-group analyticsform-div">
+            {{ filters_form.Filters.label() }}
+            {{ filters_form.Filters() }}
+        </div>
+      </form>
+    
       <form class="form" action="" method="post" role="form" id="analyticsform">
         {{ form.csrf_token() }}
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.DeviceCategory.label() }}
           {{ form.DeviceCategory() }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.OperatingSystem.label() }}
           {{ form.OperatingSystem() }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.RegionCity.label() }}
           {{ form.RegionCity() }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.MobilePhone.label() }}
           {{ form.MobilePhone() }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.MobilePhoneModel.label() }}
           {{ form.MobilePhoneModel() }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.Browser.label() }}
           {{ form.Browser() }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.Date.label() }}
           {{ form.clause_visits() }}
           <br><br>
           {{ form.Date(class='form-control') }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.amount_of_visits.label() }}
           {{ form.clause_visits_from_to() }}
           <br><br>
           {{ form.amount_of_visits(class='form-control') }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.GoalsID.label() }}
           {{ form.GoalsID() }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.amount_of_goals.label() }}
           {{ form.clause_goals() }}
           <br><br>
           {{ form.amount_of_goals(class='form-control') }}
         </div>
-        <div class="form-group analyticsform-div">
+        <div hidden class="form-group analyticsform-div">
           {{ form.URL.label() }}
           {{ form.clause_url(class='form-control') }}
           <br>
@@ -117,12 +124,26 @@
 
 {% block scripts %}
 {{ super() }}
-<script type="text/jsx" src='{{url_for("static",filename="js/analytics.js")}}'></script>
 <script type="text/jsx" src='{{url_for("static",filename="js/analytics_table.js")}}'></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.min.js" integrity="sha512-aFvi2oPv3NjnjQv1Y/hmKD7RNMendo4CZ2DwQqMWzoURKxcqAoktj0nNG4LU8m23+Ws9X5uVDD4OXLqpUVXD5Q==" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css" integrity="sha512-EvvoSMXERW4Pe9LjDN9XDzHd66p8Z49gcrB7LCUplh0GcEHiV816gXGwIhir6PJiwl0ew8GFM2QaIg2TW02B9A==" crossorigin="anonymous" />
 <script type="text/javascript">
   $(document).ready(function() {
+
+    // create checkbox menu with filters choices
+    const checkboxContainer = $('#Filters');
+    const filtersDivs = $('#analyticsform div.form-group.analyticsform-div');
+    const filtersLablesNames = [];
+    filtersDivs.each(function(){
+        var $element = $(this)
+        lable = $($element.children()[0])
+        filtersLablesNames.push({id:lable[0].htmlFor, title:lable[0].innerText});
+    }); 
+    filtersLablesNames.forEach((filter) => {
+        var newCheckBox = document.createElement('input');
+        checkboxContainer.append(new Option(filter.title, filter.id));
+    });
+
     var select_options = {
       includeSelectAllOption: true,
       selectAllText: 'Выбрать все',
@@ -153,6 +174,7 @@
                 }
             }
     }
+    $('#Filters').multiselect(select_options);
     $('#DeviceCategory').multiselect(select_options);
     $('#OperatingSystem').multiselect(select_options);
     $('#clause_visits').multiselect(select_options);
@@ -165,7 +187,9 @@
     $('#MobilePhoneModel').multiselect(select_options);
     $('#URL').multiselect(select_options);
     $('#RegionCity').multiselect(select_options);
+
   });
 </script>
+<script type="text/jsx" src='{{url_for("static",filename="js/analytics.js")}}'></script>
 
 {% endblock %}

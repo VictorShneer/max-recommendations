@@ -22,3 +22,6 @@ class AnalyticsBar(FlaskForm):
     URL = SelectMultipleField('URL', default = 'Не выбрано')
 
     submit = SubmitField("Отправить")
+ 
+class Filters(FlaskForm):
+    Filters = SelectMultipleField('Добавить фильтр...', choices=[])
