@@ -125,11 +125,10 @@ def process_values():
     if request.method == 'POST':
         try:
             #geting the dict from the form
-            dict = request.form.to_dict(flat=False)
+            dict_raw = request.form.to_dict(flat=False)
             integration_id = request.form["integration_id"]
-            dict_of_requests = {value: dict[value] for value in dict if dict[value] not in ([''], ['0'],['Не выбрано']) if value != 'csrf_token'}
+            dict_of_requests = {value: dict_raw[value] for value in dict_raw if dict_raw[value] not in ([''], ['0'],['Не выбрано']) if value != 'csrf_token'}
 
-            pprint(dict_of_requests)
             #changing the values for the query
             dict_of_requests = {value: '>=' if dict_of_requests[value] == ['1'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
                                 '<=' if dict_of_requests[value] == ['2'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
@@ -151,7 +150,6 @@ def process_values():
                         where = where + ' has(h.GoalsID,' + str(j) + ') !=0 or'
             where = where[:-3]
 
-            pprint(dict_of_requests)
             for index, i in enumerate(dict_of_requests):
                 if i == 'clause_visits_from_to':
                     print(i)
