@@ -24,11 +24,25 @@ $(document).ready(function(){
       selector = `label[for=${filter_name_setting.filter_name}]`;
       target_div = $($(selector)[0].parentElement);
       target_div[filter_name_setting.settings]();
+      if (filter_name_setting.settings == 'hide'){
+        // diselect all on hidden element
+        target_div.find( "li" ).each(function () {
+          $(this).removeClass('grmax-multiselect-selected');
+        })
+        target_div.find( "option" ).each(function () {
+          $(this).prop("selected", false);
+        })
+        target_div.find( "input" ).each(function () {
+          $(this).prop("checked", false);
+        })
+        target_div.find( "button" ).each(function () {
+          $(this).attr('title', 'None selected');
+          $($(this).find('span')[0]).text('Не выбрано...');
+        })
+      }
    });
   }
-
-
-
+  
   function send_to_gr_handler(event){
     event.preventDefault()
     $noformsuccess = $('<p id="newcampaingform" style="color:green;">Загрузка контактов в GetResponse<p>')
