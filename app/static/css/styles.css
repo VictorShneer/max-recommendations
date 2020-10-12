@@ -480,4 +480,37 @@ a#create_campaign {
     overflow:auto;
 }
 
+.container-doc p {
+  margin: 30px 0px;
+  font-size: 16px;
+}
 
+.container-doc ol{
+  counter-reset: myCounter;
+  padding-top: 3px;
+  padding-left: 0px !important;
+}
+
+.container-doc ol li{
+  list-style: none;
+  margin: 40px 0px;
+
+}
+
+.container-doc ol li:before {
+  counter-increment: myCounter;
+  content:counter(myCounter);
+  color: #00baff;
+  background: #fff;
+  display: inline-block;
+  text-align: center;
+  margin: 0px 10px;
+  padding: 3px;
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+  border: 1px solid #00baff;
+  font-size: 16px;
+  font-weight: 900;
+  float: left;
+}

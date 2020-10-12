@@ -242,3 +242,8 @@ def metexample():
 @bp.route('/documentation')
 def documentation():
     return render_template('documentation.html')
+
+#for documentation
+@bp.route('/documentation/api_key_from_ym')
+def api_key_from_ym():
+    return render_template('doc_api_key_from_ym.html')

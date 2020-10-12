@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+<a class="grmax-justlink" href="{{url_for('main.documentation')}}"><i class="fa fa-long-arrow-left" aria-hidden="true"></i> Назад</a>
+<div class="container container-doc">
+  <h2>Создание API-ключа в Яндекс-метрике</h2>
+  <p class="">Для того, чтобы платформа аналитики смогла получить доступ к данным вашего счетчика Яндекс-метрики, нужно получить API-ключ, который вам нужно будет указать при создании интеграции. Ниже предоставляем подробную инструкцию по получению API-ключа</p>
+  <ol>
+    <li><p>В первую очередь вам нужно зайти на страницу <a href="https://metrika.yandex.ru">вашего счетчика</a>, чтобы убедиться, что вы залогинены в системе и имеете доступ к нему.</p></li>
+    <li><p>Далее заходим на страницу <a href="https://oauth.yandex.ru/client/new">https://oauth.yandex.ru/client/new</a> и создаем новое приложение.<p>
+    <p>Вводим любое название приложения, в разделе "платформы" выбираем "Веб-сервисы". Нажимаем на ссылку "Подставить URL для разработки".</p>
+    <p class="text-center"><img src="{{ url_for('static', filename='img/doc_api_key_from_ym_1.png') }}"></p>
+    <p>В разделе "Доступы" выбираем Яндекс.Метрика и отмечаем пункт "Получение статистики, чтение параметров своих и доверенных счетчиков"</p>
+    <p class="text-center"><img src="{{ url_for('static', filename='img/doc_api_key_from_ym_2.png') }}"></p>
+    <p>Нажимаем "Создать приложение" в самом низу страницы.</p>
+    </li>
+    <li><p>Видим страницу с данными, необходимыми для получения ключа. <strong>ВНИМАНИЕ</strong> - страницу пока не закрываем!!!</p>
+    <p class="text-center"><img src="{{ url_for('static', filename='img/doc_api_key_from_ym_3.png') }}"></p>
+    </li>
+    <li><p>Формируем ссылку вида:</p>
+      <p><code>https://oauth.yandex.ru/authorize?response_type=token&client_id=<идентификатор приложения></code></p>
+      <p>Здесь <идентификатор приложения> - это ID из предыдущего пункта.</p>
+    </li>
+    <li><p>Заходим по ссылке, сформированной в предыдущем пункте и видим примерно такую страницу:</p>
+      <p class="text-center"><img src="{{ url_for('static', filename='img/doc_api_key_from_ym_4.png') }}"></p>
+      <p>Код, который вы видите в центре страницы - это и есть необходимый нам API-ключ. Вам нужно его скопировать (лучше сохранить куда-нибудь, чтобы в будущем не проходить процедуру получения ключа заново) и  указать при создании интеграции.</p>
+    </li>
+  </ol>
+
+</div>
+
+{% endblock %}
