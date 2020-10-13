@@ -483,6 +483,7 @@ a#create_campaign {
 .container-doc p {
   margin: 30px 0px;
   font-size: 16px;
+  padding-top: 4px;
 }
 
 .container-doc ol{
@@ -513,4 +514,40 @@ a#create_campaign {
   font-size: 16px;
   font-weight: 900;
   float: left;
+}
+
+.container-documentation {
+  padding-top: 50px;
+}
+
+.container-documentation ul li {
+  list-style: none;
+  position: relative;
+  padding-left: 1.2rem;
+  font-size: 1.7rem;
+  line-height: 1.4;
+  font-weight: 400;
+  font-family: Roboto,Helvetica,Arial,sans-serif;
+}
+
+
+.container-documentation ul li:before{
+  content: "";
+  background: #e7e7e7;
+  border-radius: 50%;
+  width: .6rem;
+  height: .6rem;
+  position: absolute;
+  top: .9rem;
+  left: 0;
+}
+
+a.grmax-blue-link {
+  text-decoration: none;
+  outline: none;
+  color: #00afec;
+}
+
+a.grmax-blue-link:hover {
+  color: #ff7200;
 }

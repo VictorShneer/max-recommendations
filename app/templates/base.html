@@ -87,8 +87,8 @@
                 {{ ('Уведомления') }}
                 {% set new_messages = current_user.new_messages() %}
                 <span id="message_count" class="badge"
-                      style="visibility: {% if new_messages %}visible
-                                         {% else %}hidden {% endif %};">
+                      style="display: {% if new_messages %}inline-block
+                                         {% else %}none {% endif %};">
                     {{ new_messages }}
                 </span>
             </a>
