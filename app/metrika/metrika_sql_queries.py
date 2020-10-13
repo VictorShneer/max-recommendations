@@ -32,7 +32,6 @@ VISITS_RAW_QUERY = \
 '''
     select * from(
         SELECT
-            any(ClientID) as clientid,
             CASE  when isNotNull(id_email_table.shit)
                   then id_email_table.shit
                   else concat('no-email',toString(ClientID)) 
@@ -42,7 +41,8 @@ VISITS_RAW_QUERY = \
             sum(case when notEmpty(extractURLParameter(StartURL, 'mxm'))
                      then {goals_filter_clause} 
                      else 0 
-                     end) as goals_just_after_email
+                     end) as goals_just_after_email,
+            any(ClientID) as clientid
         FROM {clickhouse_table_name} as base
             left join (select ClientID, 
                               any(case when notEmpty(extractURLParameter(StartURL, 'mxm'))
@@ -58,10 +58,14 @@ VISITS_RAW_QUERY = \
     where total_visits != 0
 '''
 TIME_SERIES_DF_COLUMNS = ['Date','total_goals','goals_with_email','goals_just_after_email']
-COLUMNS = [ 'ClientID',\
+
+# order of columns here
+# related to oreder of columns in VISITS_RAW_QUERY
+COLUMNS = [ 
             'Email', \
             'Визитов всего', \
             'Всего целей выполнено', \
             'Кол-во целей после прямого перехода из email', \
+            'ClientID'
             ]
 
