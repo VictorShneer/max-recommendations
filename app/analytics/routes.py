@@ -188,10 +188,9 @@ def process_values():
 
             #doing magic with the data
             file_from_string = StringIO(get_data)
-            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = ["ClientID", "hash", "OperatingSystem","RegionCity", "MobilePhone", "MobilePhoneModel", "Browser"])
-            # columns_df = columns_df.hash
-            columns_df = columns_df.dropna(subset=['hash'])
-            columns_df = columns_df.drop_duplicates(subset=['hash'])
+            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = COLUMNS)
+            columns_df = columns_df.dropna(subset=['Email'])
+            columns_df = columns_df.drop_duplicates(subset=['Email'])
             count = columns_df.count()
             print(count)
             pprint(columns_df)

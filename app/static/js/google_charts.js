@@ -8,8 +8,8 @@ function drawTimeSeriesChart(timeSeriesData){
   });
   var data = new google.visualization.DataTable();
   data.addColumn('date', 'Date'); // Implicit domain label col.
-  data.addColumn('number', 'goals_with_email');
-  data.addColumn('number', 'goals_just_after_email');
+  data.addColumn('number', 'Кол-во целей выполненных подписчиками');
+  data.addColumn('number', 'Кол-во целей выполненных после прямого перехода из email');
   data.addColumn({'type': 'string', 'role': 'style' , 'opt_label':'send_on'});
   data.addColumn({'type': 'string', 'role': 'tooltip'});
 
@@ -42,7 +42,7 @@ function drawTimeSeriesChart(timeSeriesData){
     title: 'Email эффект',
     hAxis: { title: 'Дата' },
     vAxis: { title: 'Количество целей' },
-    legend: { position: 'top' },
+    legend: { position: 'top' , maxLines: 2},
     pointSize: 0.1,
     tooltip: { trigger: 'selection' },
     chartArea:{left:'7%',top:40,width:'80%',height:'80%'},
@@ -76,9 +76,9 @@ function drawChart(goals_no_email_count, goals_has_email_count, goals_from_email
   //диаграмма
   var data_diag = google.visualization.arrayToDataTable([
     ['Источник', 'Количество выполненных целей'],
-    ['Целей выполненно - email неизвестен',     parseInt(goals_no_email_count)],
-    ['Целей выполненно - email известен',      parseInt(goals_has_email_count)],
-    ['Целей выполненно - прямой переход из письма',      parseInt(goals_from_email_count)],
+    ['Целей выполнено - email неизвестен',     parseInt(goals_no_email_count)],
+    ['Целей выполнено - email известен',      parseInt(goals_has_email_count)],
+    ['Целей выполнено - прямой переход из письма',      parseInt(goals_from_email_count)],
   ]);
 
   var options_diag = {

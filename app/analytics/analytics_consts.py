@@ -1,4 +1,5 @@
-COLUMNS = ['hash','OperatingSystem','RegionCity','MobilePhone', 'MobilePhoneModel','Browser']
+COLUMNS = ["ClientID",'Email','Операционная система','Город','Марка мобильного телефона', 'Модель мобильного телефона','Браузер']
+
 
 INITIAL_QUERY_COLUMNS = ['Date','mxm','OperatingSystem','RegionCity','cutQueryString(URL)','MobilePhone','MobilePhoneModel', 'Browser']
 

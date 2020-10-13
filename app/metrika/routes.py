@@ -40,7 +40,7 @@ def metrika_get_data(integration_id):
     clientid_convers_df = get_df_from_CH(current_user.crypto, integration_id, VISITS_RAW_QUERY,goals_filter_array,request_start_date,COLUMNS)
     # bad outside target unit logic :(
     if request_goals:
-        clientid_convers_df = clientid_convers_df[clientid_convers_df['Total Goals Complited']!=0]
+        clientid_convers_df = clientid_convers_df[clientid_convers_df['Всего целей выполнено']!=0]
     # generate report based on CH data
     metrika_report = MetrikaReport(clientid_convers_df, time_series_goals_df)
     metrika_report.load_email_visits_table()

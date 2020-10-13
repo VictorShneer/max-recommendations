@@ -36,9 +36,9 @@ class MetrikaReport(object):
 
     def load_pie(self):
         # calc pie numbers
-        goals_no_email_count = self.no_email_visits_slice_df['Total Goals Complited'].sum()  
-        goals_from_email_count = self.clientid_convers_df['Total Goals From Newsletter'].sum() 
-        goals_has_email_count =  self.email_visits_slice_df['Total Goals Complited'].sum()         
+        goals_no_email_count = self.no_email_visits_slice_df['Всего целей выполнено'].sum()  
+        goals_from_email_count = self.clientid_convers_df['Кол-во целей после прямого перехода из email'].sum() 
+        goals_has_email_count =  self.email_visits_slice_df['Всего целей выполнено'].sum()         
         # store pie data
         self.report_json['goals_no_email_count'] = str(goals_no_email_count)
         self.report_json['goals_has_email_count'] = str(goals_has_email_count)
