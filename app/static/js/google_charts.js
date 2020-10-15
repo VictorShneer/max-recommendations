@@ -46,7 +46,6 @@ function drawTimeSeriesChart(timeSeriesData){
     pointSize: 0.1,
     tooltip: { trigger: 'selection' },
     chartArea:{left:'7%',top:40,width:'80%',height:'80%'},
-    width: 1200, 
     height: 500,
   }
 
@@ -64,7 +63,7 @@ function drawTimeSeriesChart(timeSeriesData){
 
   });
 
-  goalsTypeCategory.setOptions({'width': '1200','height': '50','filterColumnLabel': 'Date'})
+  goalsTypeCategory.setOptions({'width': '100%','height': '50','filterColumnLabel': 'Date'})
   dashboard.bind(goalsTypeCategory,chart);
   // Draw the dashboard.
   dashboard.draw(data);

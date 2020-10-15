@@ -217,7 +217,6 @@ body {
 
 .form-search-date {
   max-width: 300px;
-  margin: 0 auto;
 }
 
 .form-search-date label{
@@ -476,7 +475,8 @@ a#create_campaign {
 .table_stats, .th, .tr > tbody {
     display:block;
     width:100%;
-    height:200px;
+    height:100%;
+    max-height: 360px;
     overflow:auto;
 }
 
@@ -550,4 +550,18 @@ a.grmax-blue-link {
 
 a.grmax-blue-link:hover {
   color: #ff7200;
+}
+
+.integration_info .info-text {
+  text-align: left;
+  font-size: 14px;
+  padding-top: 50px;
+  min-height: 134px;
+}
+
+.integration_info .info-selects {
+  padding-top: 40px;
+  text-align: left;
+  font-size: 14px;
+  min-height: 134px;
 }

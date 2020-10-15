@@ -4,19 +4,26 @@
 <div class="grmax-back">
   <a class="grmax-justlink" href="{{url_for('main.user_integrations')}}"><i class="fa fa-long-arrow-left" aria-hidden="true"></i> Назад</a>
 </div>
-<div class='integration_info text-center'>
-  <p id='atb' hidden>{{integration_id}}</p>
-  <p><b>{{integration_name}}</b></p>
-  <p>Доступны данные с <b id="start_date">{{min_date}}</b> по <b>{{max_date}}</b></p>
-  <p id="total_unique_visitors"></p>
-  <p id="total_email_visitors"></p>
-  <p><label for="">Выберите цели: </label>
-  <select multiple id="goals">
-    {% for goal in goals %}
-      <option value="{{ goal[0] }}">{{ goal[1] }}</option>
-    {% endfor %}
-  </select>
-  </p>
+<div class='integration_info text-center row'>
+  <div class="col-sm-12">
+    <p id='atb' hidden>{{integration_id}}</p>
+    <h3><b>{{integration_name}}</b></h3>
+  </div>
+  <div class="col-sm-6 info-selects">
+    <p><label for="">Выберите цели: </label>
+    <select multiple id="goals">
+      {% for goal in goals %}
+        <option value="{{ goal[0] }}">{{ goal[1] }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-sm-6 info-text">
+    <p>Доступны данные с <b id="start_date">{{min_date}}</b> по <b>{{max_date}}</b></p>
+    <p id="total_unique_visitors"></p>
+    <p id="total_email_visitors"></p>
+    </p>
+  </div>
+
 </div>
 
 <div id='mount-button_run_table'></div>

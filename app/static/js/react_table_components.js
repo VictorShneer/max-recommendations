@@ -181,7 +181,9 @@ class FilterableVisitsTable extends React.Component {
 
           <div id="piechart_3d"  className="round_border_container"></div>
           <br />
+          <div className="round_border_container">
           <VisitsTable visits={this.state.visits} />
+          </div>
         </div>
        </div>
     );
