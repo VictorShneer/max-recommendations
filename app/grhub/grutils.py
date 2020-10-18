@@ -53,7 +53,7 @@ class GrUtils(GrConnector):
     def post_contact_to_list(self, email, campaign_id):
         return self.request_gr('post', 'contacts/', \
                             json = {'email':email, 'campaign': {'campaignId':campaign_id}})
-        return r
+
 
     def set_callback(self, url, actions):
         actions_json = {\
