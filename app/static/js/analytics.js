@@ -49,7 +49,7 @@ $(document).ready(function(){
     $noformfail = $('<p id="newcampaingform" style="color:red;">Что-то пошло не так..<p>')
     // get search contacts
     var contactsList = [];
-    $('#react-table-mount table tbody tr td:nth-child(1)').each(function() {
+    $('#react-table-mount table tbody tr td:nth-child(2)').each(function() {
         contactsList.push($( this ).text());
     });
     if(contactsList.length == 0){
