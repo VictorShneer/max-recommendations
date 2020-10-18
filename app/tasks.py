@@ -67,34 +67,26 @@ def assign_crypto_to_user_id(admin_user_id, user_id, crypto):
     app.logger.info('### Done!')
 
 
-# TODO relocate to GrMonster
-def post_contact_to_list(email, campaign_id, api_key):
-    r = requests.post('https://api.getresponse.com/v3/contacts', \
-                        headers = {'X-Auth-Token': 'api-key {}'.format(api_key)}, \
-                        json = {'email':email, 'campaign': {'campaignId':campaign_id}})
-    return r
-
-
 def send_search_contacts_to_gr(search_contacts_list, campaignId, api_key, user_id):
     _set_task_progress(0)
-    responses = []
+    success_load_count = 0
+    grmonster = GrMonster(api_key, '')
     # for contact_email in search_contacts_list:
     # We can use a with statement to ensure threads are cleaned up promptly
     with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
         # Start the load operations and mark each future with its URL
-        future_to_email = {executor.submit(post_contact_to_list, email, campaignId, api_key): email for email in search_contacts_list}
+        future_to_email = {executor.submit(grmonster.post_contact_to_list, email, campaignId): email for email in search_contacts_list}
         for idx,future in enumerate(concurrent.futures.as_completed(future_to_email)):
             _set_task_progress(int((idx*100)/len(search_contacts_list)))
             email = future_to_email[future]
             try:
                 response = future.result()
-                responses.append(response)
             except Exception as exc:
                 print('%r generated an exception: %s' % (email, exc))
             else:
+                success_load_count+=1
                 print('%r address loaded with status %d' % (email, response.status_code))
-    success_load_count = len([response for response in responses if response.ok]) 
-    report_string = f'Загружено контатов в GR: {success_load_count} из {len(responses)}'
+    report_string = f'Загружено контатов в GR: {success_load_count} из {len(search_contacts_list)}'
     _set_task_progress(100, report_string, user_id)
 
 
