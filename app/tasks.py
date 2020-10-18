@@ -149,13 +149,13 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regu
         else:
             _set_task_progress(100, f'Создание уведомления - Успех' ,user_id)
 
-#legacy
+#legacy ???
 def fill_encode_email_custom_field_for_subscribers_chunk(id_email_dic_list,grmonster):
     _set_task_progress(33, 'Продолжается инициализация GR аккаунта...')
     grmonster.upsert_every_email_with_hashed_email(id_email_dic_list)
     _set_task_progress(100)
 
-#legacy
+#legacy ???
 def init_gr_account(api_key, user_id, callback_url):
     _set_task_progress(0)
     grmonster = GrMonster(api_key=api_key, \
@@ -191,18 +191,3 @@ def init_gr_account(api_key, user_id, callback_url):
         _set_task_progress(100, f'Инициализация gr аккаунта - Успех' ,user_id)
 
 
-
-def example(seconds):
-    job = get_current_job()
-    print('Starting task')
-    _set_task_progress(0)
-    for i in range(seconds):
-        job.meta['progress'] = 100.0 * i / seconds
-        job.save_meta()
-        _set_task_progress(100 * i // seconds)
-        print(i)
-        time.sleep(1)
-    job.meta['progress'] = 100
-    _set_task_progress(100)
-    job.save_meta()
-    print('Task completed')
