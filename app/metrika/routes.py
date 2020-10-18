@@ -84,7 +84,6 @@ def callback_add_custom_field(identificator):
     integration = Integration.query.filter_by(id = int(integration_id)).first()
     user = User.query.filter_by(id = int(user_id)).first()
     action = request.args.get('action')
-    user.send_message(f'Пришел callback {str(datetime.now())}')
     if user == integration.user and action == 'subscribe':
         gr_monster = GrMonster(api_key=integration.api_key, callback_url=integration.callback_url)
         contact_email = request.args.get('contact_email')
