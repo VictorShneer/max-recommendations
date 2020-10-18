@@ -50,6 +50,12 @@ class GrUtils(GrConnector):
     def get_messages(self):
         return self.request_gr('get', 'newsletters?perPage=1000')
 
+    def post_contact_to_list(self, email, campaign_id):
+        return self.request_gr('post', 'contacts/')
+        r = requests.post('https://api.getresponse.com/v3/contacts', \
+                            json = {'email':email, 'campaign': {'campaignId':campaign_id}})
+        return r
+
     def set_callback(self, url, actions):
         actions_json = {\
             "open": False,\
