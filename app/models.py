@@ -148,6 +148,8 @@ class Integration(UserMixin,db.Model):
     auto_load = db.Column(db.Boolean)
     start_date = db.Column(db.Date)
     callback_url = db.Column(db.String(100))
+    ftp_login = db.Column(db.String(100))
+    ftp_pass = db.Column(db.String(100))
 
     def __repr__(self):
         return '<Integration {}>'.format(self.integration_name)
