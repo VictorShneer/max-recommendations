@@ -31,7 +31,7 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
 
     #REDIS
-    REDIS_URL = os.environ.get('REDISTOGO_URL') or 'redis://'
+    REDISTOGO_URL = os.environ.get('REDISTOGO_URL') or 'redis://'
     GR_CHUNK_SIZE = 1000
 
     # CLICKHOUSE
