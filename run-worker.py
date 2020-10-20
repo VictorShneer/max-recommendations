@@ -4,7 +4,7 @@ from redis import Redis
 from rq import Queue, Connection
 from rq.worker import HerokuWorker as Worker
 
-listen = ['high', 'default', 'low']
+listen = ['max-tasks']
 
 redis_url = os.getenv('REDISTOGO_URL')
 if not redis_url:
