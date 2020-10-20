@@ -1,4 +1,6 @@
 from app.grhub.grconnector import GrConnector
+from ftplib import FTP
+import ftplib
 
 class GrUtils(GrConnector):
     hash_email_custom_field_id = None
@@ -44,7 +46,7 @@ class GrUtils(GrConnector):
     def ftp_create_dir(self, dir_path):
         ftp_obj = FTP(host = self.ftp_host)
         login = ftp_obj.login(self.ftp_login,self.ftp_pass)
-        ftpResponse = ftp_obj.mkd(path);
+        ftpResponse = ftp_obj.mkd(dir_path);
         print(ftpResponse);    
         ftp_obj.quit()
 

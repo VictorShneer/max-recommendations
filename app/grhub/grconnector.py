@@ -1,6 +1,5 @@
 import requests
-from ftplib import FTP
-import ftplib
+
 
 
 class GrConnector(object):

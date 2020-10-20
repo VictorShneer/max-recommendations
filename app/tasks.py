@@ -134,12 +134,16 @@ def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regu
         app.logger.info('### init_clickhouse_tables EXCEPTION regular_load={}'.format(regular_load))
         app.logger.error('### Unhandled exception {exc_info}\n{err}'.format(exc_info=sys.exc_info(), err=err))
 
+    # callbacks and ftp folders init
     if not regular_load:
         try:
             integration = Integration.query.filter_by(id = id).first()
             grmonster = GrMonster(api_key=integration.api_key, \
-                                    callback_url=integration.callback_url)
+                                    callback_url=integration.callback_url, \
+                                    ftp_login = integration.ftp_login, \
+                                    ftp_pass = integration.ftp_pass)
             set_callback_response = grmonster.set_callback_if_not_busy()
+            grmonster.init_ftp_folders()
         except KeyError as err:
             _set_task_progress(100, f'Создание уведомления - Ошибка - \n{err}' ,user_id)
         else:

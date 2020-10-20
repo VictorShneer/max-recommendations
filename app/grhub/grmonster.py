@@ -9,7 +9,9 @@ import io
 class GrMonster(GrUtils):
     hashed_email_custom_field_name = 'hash_metrika'
     big_enough_newsletter = 0
-    # TODO default value for callback_url
+    external_segments_root_dir = 'sync_external_segments'
+    external_segments_method_dirs = ['insert','replace']
+
     def __init__(self, api_key, callback_url = '', ftp_login = '', ftp_pass = ''):
         super().__init__(api_key,ftp_login,ftp_pass)
         self.callback_url = callback_url
@@ -32,6 +34,14 @@ class GrMonster(GrUtils):
             return self.get_user_details()['email']
         except ConnectionRefusedError as err:
             print('Unable to get user email',err)
+
+    def init_ftp_folders(self):
+        print('init_ftp_folders')
+        if self.external_segments_root_dir not in self.ftp_list_files(''):
+            self.ftp_create_dir(self.external_segments_root_dir)
+        for method_dir in self.external_segments_method_dirs:
+            if method_dir not in self.ftp_list_files(self.external_segments_root_dir):
+                self.ftp_create_dir(self.external_segments_root_dir+'/'+method_dir)
 
     #legacy
     def instantiate_contacts_with_hashed_email(self):
