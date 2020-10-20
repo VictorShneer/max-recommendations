@@ -4,6 +4,8 @@ $(document).ready(function(){
   create_campaign_link.addEventListener('click', drop_down_input_create_campaign);
   const send_gr_button = document.getElementById('sendGR');
   send_gr_button.addEventListener('click', send_to_gr_handler);
+  const send_gr_ftp_button = document.getElementById('sendGRFtp');
+  send_gr_ftp_button.addEventListener('click', send_ftp_gr_handler);
   const filter_choices_menu = document.querySelector('#filters_form ul');
   filter_choices_menu.addEventListener('change', show_filter_menu);
 
@@ -41,6 +43,34 @@ $(document).ready(function(){
         })
       }
    });
+  }
+
+
+  function send_ftp_gr_handler(event){
+    event.preventDefault()
+    $noformsuccess = $('<p id="newexternal" style="color:green;">Загрузка внешнего сегмента в GetResponse<p>')
+    $noformfail = $('<p id="newexternal" style="color:red;">Что-то пошло не так..<p>')
+    // get search contacts
+    var contactsList = [];
+    $('#react-table-mount table tbody tr td:nth-child(2)').each(function() {
+        contactsList.push($( this ).text());
+    });
+    if(contactsList.length == 0){
+      $('#newexternal').replaceWith('<p id="newexternal" style="color:red">Сперва отфильтруйте контакты для импорта</p>')
+      return -1
+    };
+    // get external segment name id
+    external_name = $('#external_name_input').val()
+    //send it to backend
+    integration_id = window.location.href.split('/').pop()
+    $.post('/analytics/ftp_search_contacts/' + integration_id, {
+        external_name : external_name,
+        contactsList : contactsList.join(),
+      }).done(function(response) {
+          $('#newexternal').replaceWith($noformsuccess);
+      }).fail(function() {
+          $('#newexternal').replaceWith($noformfail);
+      });
   }
   
   function send_to_gr_handler(event){

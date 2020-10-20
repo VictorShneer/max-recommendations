@@ -3,8 +3,8 @@ from app.grhub.grconnector import GrConnector
 class GrUtils(GrConnector):
     hash_email_custom_field_id = None
 
-    def __init__(self,api_key):
-        super().__init__(api_key)
+    def __init__(self,api_key, ftp_login, ftp_pass):
+        super().__init__(api_key,ftp_login,ftp_pass)
 
     def create_custom_field(self, name):
         return self.request_gr('post', 'custom-fields', json={'name':name,\
@@ -55,6 +55,9 @@ class GrUtils(GrConnector):
                             json = {'email':email, 'campaign': {'campaignId':campaign_id}})
 
 
+    def get_user_details(self):
+        return self.request_gr('get', 'accounts/').json()
+
     def set_callback(self, url, actions):
         actions_json = {\
             "open": False,\
@@ -67,6 +70,9 @@ class GrUtils(GrConnector):
         for action in actions:
             actions_json[action] = True
         return self.request_gr('post','accounts/callbacks', json = {'url':url,'actions':actions_json})
+
+    def store_external_segment(self, url, file_buffer):
+        self.ftp_gr(url, file_buffer)
 
     def upsert_hash_field_for_contact(self, contact_id, custom_field_value):
         r = self.request_gr('post', f'contacts/{contact_id}/custom-fields', \

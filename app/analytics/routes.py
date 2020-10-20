@@ -41,6 +41,26 @@ def send_search_contacts(integration_id):
         return {'status':'<400>'}
     return {'status':'<200>'}
 
+@bp.route('/analytics/ftp_search_contacts/<integration_id>', methods=['POST'])
+@current_user_own_integration
+@login_required
+def ftp_search_contacts(integration_id):
+    integration = Integration.query.filter_by(id = integration_id).first_or_404()
+    grmonster = GrMonster(integration.api_key,\
+                          ftp_login = integration.ftp_login, \
+                          ftp_pass = integration.ftp_pass)
+    try:
+        current_user.launch_task('send_search_contacts_to_gr_ftp', \
+                                    'Загрузка контактов в GR FTP, прогресс: ', \
+                                    request.form['contactsList'].split(','), \
+                                    request.form['external_name'],\
+                                    grmonster,\
+                                    current_user.id)
+        db.session.commit()
+    except:
+        return {'status':'<400>'}
+    return {'status':'<200>'}
+
 @bp.route('/analytics/create_gr_campaign/<integration_id>', methods=["POST"])
 @current_user_own_integration
 @login_required
