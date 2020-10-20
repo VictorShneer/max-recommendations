@@ -111,6 +111,8 @@ def create_integration():
         integration = Integration(
         integration_name = form.integration_name.data,
         api_key = form.api_key.data,
+        ftp_login = ftp_login,
+        ftp_pass= ftp_pass,
         metrika_key = form.metrika_key.data,
         metrika_counter_id = form.metrika_counter_id.data,
         auto_load = form.auto_load.data,
@@ -191,6 +193,8 @@ def edit_integration(integration_id):
     form.metrika_key.render_kw = {'readonly': True}
     form.metrika_counter_id.render_kw = {'readonly':True}
     form.api_key.render_kw = {'readonly':True}
+    form.ftp_login.render_kw = {'readonly':True}
+    form.ftp_pass.render_kw = {'readonly':True}
     del form.start_date
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
     if not current_user_own_integration(integration, current_user):
@@ -207,6 +211,8 @@ def edit_integration(integration_id):
     elif request.method == 'GET':
         form.integration_name.data = integration.integration_name
         form.api_key.data = integration.api_key
+        form.ftp_login.data = integration.ftp_login
+        form.ftp_pass.data = integration.ftp_pass
         form.metrika_key.data = integration.metrika_key
         form.metrika_counter_id.data = integration.metrika_counter_id
         form.auto_load.data = integration.auto_load
