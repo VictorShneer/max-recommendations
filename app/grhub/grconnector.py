@@ -5,12 +5,9 @@ import ftplib
 
 class GrConnector(object):
     gr_api_root = 'https://api.getresponse.com/v3/'
-    ftp_host = 'ftp.getresponse360.com'
 
-    def __init__(self,api_key, ftp_login, ftp_pass):
+    def __init__(self,api_key):
         self.headers = {'X-Auth-Token': f'api-key {api_key}'}
-        self.ftp_login = ftp_login
-        self.ftp_pass = ftp_pass
 
     def request_gr(self, method ,url, json={}):
         action = getattr(requests, method, None)
@@ -25,12 +22,5 @@ class GrConnector(object):
             else:
                 raise ConnectionRefusedError((f'Ошибка при попытке контакта с GetResponse\n{r.text}'))
 
-    def ftp_gr(self, url, file_buffer):
-        ftp = FTP(host = self.ftp_host)
-        login = ftp.login(self.ftp_login,self.ftp_pass)
-        try:
-            operation_response = ftp.storlines(f'STOR {url}', file_buffer)
-            print(operation_response)
-        except ftplib.error_perm as err:
-            raise ConnectionRefusedError((f'Ошибка при попытке FTP контакта с GetResponse\n{err}'))
-        ftp.quit()
+
+

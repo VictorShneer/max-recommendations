@@ -2,9 +2,12 @@ from app.grhub.grconnector import GrConnector
 
 class GrUtils(GrConnector):
     hash_email_custom_field_id = None
+    ftp_host = 'ftp.getresponse360.com'
 
     def __init__(self,api_key, ftp_login, ftp_pass):
-        super().__init__(api_key,ftp_login,ftp_pass)
+        super().__init__(api_key)
+        self.ftp_login = ftp_login
+        self.ftp_pass = ftp_pass
 
     def create_custom_field(self, name):
         return self.request_gr('post', 'custom-fields', json={'name':name,\
@@ -26,6 +29,33 @@ class GrUtils(GrConnector):
 
     def disable_callback(self):
         return self.request_gr('delete', 'accounts/callbacks')
+
+    def ftp_gr(self, url, file_buffer):
+        ftp = FTP(host = self.ftp_host)
+        login = ftp.login(self.ftp_login,self.ftp_pass)
+        try:
+            operation_response = ftp.storlines(f'STOR {url}', file_buffer)
+            print(operation_response)
+            ftp.quit()
+        except ftplib.error_perm as err:
+            ftp.quit()
+            raise ConnectionRefusedError((f'Ошибка при попытке FTP загрузки\n{err}'))
+
+    def ftp_create_dir(self, dir_path):
+        ftp_obj = FTP(host = self.ftp_host)
+        login = ftp_obj.login(self.ftp_login,self.ftp_pass)
+        ftpResponse = ftp_obj.mkd(path);
+        print(ftpResponse);    
+        ftp_obj.quit()
+
+
+    def ftp_list_files(self, target_dir):
+        ftp_obj = FTP(host = self.ftp_host)
+        login = ftp_obj.login(self.ftp_login,self.ftp_pass)
+        ftp_obj.cwd(target_dir)
+        dir_list = ftp_obj.nlst()
+        ftp_obj.quit()
+        return dir_list
 
     def get_callbacks(self):
         return self.request_gr('get', 'accounts/callbacks')
