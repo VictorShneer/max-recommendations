@@ -29,7 +29,7 @@ class CustomValidators(object):
         # ftp object
         ftp = FTP(host = current_app.config['GR_FTP_HOST'])
         try:
-            ftp.login(self.ftp_login.data, ftp_pass)
+            ftp.login(self.ftp_login.data, self.ftp_pass.data)
         except:
             raise ValidationError(('Нет контакта с FTP. Проверьте логин и пароль'))
 

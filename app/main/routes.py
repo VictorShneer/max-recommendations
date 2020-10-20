@@ -111,8 +111,8 @@ def create_integration():
         integration = Integration(
         integration_name = form.integration_name.data,
         api_key = form.api_key.data,
-        ftp_login = ftp_login,
-        ftp_pass= ftp_pass,
+        ftp_login = form.ftp_login.data,
+        ftp_pass= form.ftp_pass.data,
         metrika_key = form.metrika_key.data,
         metrika_counter_id = form.metrika_counter_id.data,
         auto_load = form.auto_load.data,
