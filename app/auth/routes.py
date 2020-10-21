@@ -26,7 +26,7 @@ def login():
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('main.index')
         return redirect(next_page)
-    return render_template('auth/login.html', title='Sign In', form=form)
+    return render_template('auth/login.html', title='Вход', form=form)
 
 @bp.route('/logout')
 def logout():
@@ -44,10 +44,9 @@ def register():
         user.active = True
         db.session.add(user)
         db.session.commit()
-        # user_datastore.create_user(email=email, name=name, password=form.password.data)
-        flash('Congratulations!')
+        flash('Вы зарегистрированы!')
         return redirect(url_for('auth.login'))
-    return render_template('auth/register.html', title='Register', form=form)
+    return render_template('auth/register.html', title='Регистрация', form=form)
 
 
 @bp.route('/reset_password/<token>', methods=['GET', 'POST'])
@@ -61,7 +60,7 @@ def reset_password(token):
     if form.validate_on_submit():
         user.set_password(form.password.data)
         db.session.commit()
-        flash('Your password has been reset.')
+        flash('Новый пароль задан')
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password.html', form=form)
 
@@ -74,7 +73,7 @@ def reset_password_request():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
             send_password_reset_email(user)
-        flash('Check your email for the instructions to reset your password')
+        flash('Проверьте почту для сброса пароля')
         return redirect(url_for('auth.login'))
     return render_template('auth/reset_password_request.html',
-                           title='Reset Password', form=form)
+                           title='Сброс пароля', form=form)
