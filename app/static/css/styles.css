@@ -166,6 +166,7 @@ body {
   min-height: 70px;
   position: absolute;
   bottom: 0px;
+  left: 0px;
   width: 100%;
 }
 
@@ -215,9 +216,6 @@ body {
   height: 18px;
 }
 
-.form-search-date {
-  max-width: 300px;
-}
 
 .form-search-date label{
   display: block;
@@ -228,7 +226,7 @@ body {
 }
 
 .form-search-date input[type=date] {
-  width: auto !important;
+  width: 300px;
 }
 
 .grmax-btn {
@@ -426,6 +424,7 @@ body {
   border-color: rgb(0, 186, 255) !important;
   box-shadow: none;
   min-width: 100%;
+  margin-left: 5px;
 }
 
 form#analyticsform {
@@ -553,15 +552,19 @@ a.grmax-blue-link:hover {
 }
 
 .integration_info .info-text {
-  text-align: left;
+  text-align: right;
   font-size: 14px;
-  padding-top: 50px;
-  min-height: 134px;
+  padding-top: 40px;
+  max-height: 87px;
 }
 
 .integration_info .info-selects {
   padding-top: 40px;
   text-align: left;
   font-size: 14px;
-  min-height: 134px;
+}
+
+.integration_info .grmax-select-button {
+  margin-left: 5px !important;
+  width: 300px !important;
 }
