@@ -113,41 +113,56 @@ def _set_task_progress(progress, comment='', user_id=0):
             user.add_notification('unread_message_count', user.new_messages())
         db.session.commit()
 
-def init_clickhouse_tables(token, counter_id, crypto, id, paramss, user_id, regular_load=False):
+def init_clickhouse_tables(integration_obj, user_obj, paramss,regular_load=False):
     _set_task_progress(0)
     try:
         for count,params in enumerate(paramss):
             _set_task_progress(50 * count // len(paramss))
-            handle_integration(token, counter_id,crypto,id,params)
+            handle_integration(integration_obj, user_obj, params)
         if regular_load:
-            _set_task_progress(100, 'Ежедневная автоматическая загрузка - Готово', user_id)
+            _set_task_progress(100, 'Ежедневная автоматическая загрузка - Готово', user_obj['user_id'])
         else:
-            _set_task_progress(100, 'Создание интеграции - Готово', user_id)
+            _set_task_progress(100, 'Создание базы данных - Готово', user_obj['user_id'])
     except Exception as err:
         _set_task_progress(100)
         if not regular_load:
-            _set_task_progress(100, 'Создание интеграции - Ошибка', user_id)
-            drop_integration(crypto, id)
-            Integration.query.filter_by(id = id).first_or_404().delete_myself()
+            _set_task_progress(100, 'Создание базы данных - Ошибка', user_obj['user_id'])
+            drop_integration(user_obj['user_crypto'], integration_obj.id)
+            Integration.query.filter_by(id = integration_obj.id).first_or_404().delete_myself()
         else:
-            _set_task_progress(100, 'Ежедневная автоматическая загрузка - Ошибка', user_id)
+            _set_task_progress(100, 'Ежедневная автоматическая загрузка - Ошибка', user_obj['user_id'])
+        
         app.logger.info('### init_clickhouse_tables EXCEPTION regular_load={}'.format(regular_load))
         app.logger.error('### Unhandled exception {exc_info}\n{err}'.format(exc_info=sys.exc_info(), err=err))
 
-    # callbacks and ftp folders init
-    if not regular_load:
-        try:
-            integration = Integration.query.filter_by(id = id).first()
-            grmonster = GrMonster(api_key=integration.api_key, \
-                                    callback_url=integration.callback_url, \
-                                    ftp_login = integration.ftp_login, \
-                                    ftp_pass = integration.ftp_pass)
-            set_callback_response = grmonster.set_callback_if_not_busy()
-            grmonster.init_ftp_folders()
-        except KeyError as err:
-            _set_task_progress(100, f'Создание уведомления - Ошибка - \n{err}' ,user_id)
-        else:
-            _set_task_progress(100, f'Создание уведомления - Успех' ,user_id)
+def set_callback(integration_obj,user_obj):
+    _set_task_progress(0)
+    try:
+        grmonster = GrMonster(api_key=integration_obj.api_key, \
+                                callback_url=integration_obj.callback_url, \
+                                ftp_login = integration_obj.ftp_login, \
+                                ftp_pass = integration_obj.ftp_pass)
+        set_callback_response = grmonster.set_callback_if_not_busy()
+    except KeyError as err:
+        integration_obj.callback_url = 'busy'
+        db.session.commit()
+        _set_task_progress(100, f'Создание уведомления - Ошибка - \n{err}' ,user_obj['user_id'])
+    else:
+        _set_task_progress(100, f'Создание уведомления - Успех' ,user_obj['user_id'])
+
+def set_ftp(integration_obj,user_obj):
+    # ftp folders init
+    _set_task_progress(0)
+    try:
+        grmonster = GrMonster(api_key=integration_obj.api_key, \
+                                callback_url=integration_obj.callback_url, \
+                                ftp_login = integration_obj.ftp_login, \
+                                ftp_pass = integration_obj.ftp_pass)
+        grmonster.init_ftp_folders()
+    except:
+        _set_task_progress(100, f'Создание FTP директорий - Ошибка - \n{err}' ,user_obj['user_id'])
+    else:
+        _set_task_progress(100, f'Создание FTP директорий - Успех' ,user_obj['user_id'])       
 
 #legacy ???
 def fill_encode_email_custom_field_for_subscribers_chunk(id_email_dic_list,grmonster):

@@ -6,6 +6,7 @@ import logging
 import app.clickhousehub.logs_api as logs_api
 import app.clickhousehub.utils as utils
 import app.clickhousehub.clickhouse as clickhouse
+from pprint import pprint
 
 def setup_logging(config):
     global logger
@@ -127,22 +128,21 @@ def drop_integration(crypto, integration_id, source = None):
         url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS {db_name}.{table_name}'.format(db_name = crypto, table_name = clickhouse_hits_table))
         url_for_visits_aggr_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS {db_name}.{table_name}'.format(db_name = crypto, table_name = clickhouse_visits_aggr_table_name))
 
-def handle_integration(token,counter_id, crypto, id, params):
+def handle_integration(integration_obj, user_obj, params):
     # print(crypto,type(crypto))
     # print(id,type(id))
     print('##### python', utils.get_python_version())
     start_time = time.time()
     # config = utils.get_config()
-    # clickhouse.
-    clickhouse.CH_VISITS_TABLE = clickhouse.config['clickhouse']['visits_table'] = "visits_raw_"+str(id)
-    clickhouse.CH_HITS_TABLE = clickhouse.config['clickhouse']['hits_table'] = "hits_raw_"+str(id)
-    clickhouse.TOKEN = clickhouse.config['token'] = token
-    clickhouse.COUNTER_ID = clickhouse.config['counter_id'] = counter_id
-    clickhouse.CH_DATABASE = clickhouse.config['clickhouse']['database'] = crypto
-    # print(clickhouse.config)
+    clickhouse.CH_VISITS_TABLE = clickhouse.config['clickhouse']['visits_table'] = "visits_raw_"+str(integration_obj.id)
+    clickhouse.CH_HITS_TABLE = clickhouse.config['clickhouse']['hits_table'] = "hits_raw_"+str(integration_obj.id)
+    clickhouse.TOKEN = clickhouse.config['token'] = integration_obj.metrika_key
+    clickhouse.COUNTER_ID = clickhouse.config['counter_id'] = integration_obj.metrika_counter_id
+    clickhouse.CH_DATABASE = clickhouse.config['clickhouse']['database'] = user_obj['user_crypto']
     # nessessary to config
     setup_logging(clickhouse.config)
-
+     
+    
     user_request = build_user_request(clickhouse.config, params)
 
 

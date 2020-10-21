@@ -36,7 +36,6 @@ class GrMonster(GrUtils):
             print('Unable to get user email',err)
 
     def init_ftp_folders(self):
-        print('init_ftp_folders')
         if self.external_segments_root_dir not in self.ftp_list_files(''):
             self.ftp_create_dir(self.external_segments_root_dir)
         for method_dir in self.external_segments_method_dirs:

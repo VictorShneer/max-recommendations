@@ -12,7 +12,7 @@ from app.clickhousehub.metrica_logs_api import drop_integration
 from wtforms.fields.html5 import DateField
 import datetime
 from app.grhub.grmonster import GrMonster
-from app.main.utils import integration_is_ready
+from app.main.utils import integration_is_ready, run_integration_setup
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
@@ -118,40 +118,20 @@ def create_integration():
         auto_load = form.auto_load.data,
         user_id = current_user.id
         )
-
         db.session.add(integration)
-
         db.session.flush()
         integration.set_callback_url(request.url_root)
         try:
-            timing = ['-start_date={}'.format(form.start_date.data)]
-            end_date = datetime.date.today()
-            days = datetime.timedelta(2)
-            end_date = end_date - days
-            timing.append('-end_date={}'.format(str(end_date)))
-            params = ['-source=hits', *timing]
-            params_2 = ['-source=visits', *timing]
-            if current_user.get_task_in_progress('init_clickhouse_tables'):
-                flash('Нельзя запускать создание больше одной интеграции одновременно!')
-                db.session.rollback()
-            else:
-                current_user.launch_task('init_clickhouse_tables', \
-                                        (f'Init integration id:{integration.id}'), \
-                                        integration.metrika_key, \
-                                        integration.metrika_counter_id, \
-                                        current_user.crypto,  \
-                                        integration.id, \
-                                        [params,params_2], \
-                                        current_user.id)
-                db.session.commit()
+            run_integration_setup(integration, form.start_date.data)
         except Exception as err:
-            flash("Проблемки..")
+            flash("Что-то пошло не так..")
             current_app.logger.info(err)
             db.session.rollback()
             abort(404)
 
         db.session.commit()
-        flash('You just have added new {} integration '.format(integration.integration_name))
+        flash('Запущено создание {}'.format(integration.integration_name))
+        
         return redirect(url_for('main.user_integrations'))
 
     return render_template('create_integration.html', form=form)
