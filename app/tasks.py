@@ -144,9 +144,10 @@ def set_callback(integration_obj,user_obj):
                                 ftp_pass = integration_obj.ftp_pass)
         set_callback_response = grmonster.set_callback_if_not_busy()
     except KeyError as err:
-        integration_obj.callback_url = 'busy'
+        integration = Integration.query.filter_by(id = integration_obj.id).first()
+        integration.set_callback_dummy()
         db.session.commit()
-        _set_task_progress(100, f'Создание уведомления - Ошибка - \n{err}' ,user_obj['user_id'])
+        _set_task_progress(100, f'Создание уведомления - Уведомления вашего аккаунта уже заняты' ,user_obj['user_id'])
     else:
         _set_task_progress(100, f'Создание уведомления - Успех' ,user_obj['user_id'])
 

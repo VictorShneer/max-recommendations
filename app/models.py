@@ -162,6 +162,9 @@ class Integration(UserMixin,db.Model):
         encoded_identifier = encode_this_string('-'.join([str(self.user_id),str(self.id)]))
         self.callback_url = root + current_app.config['CALLBACK_URL'] + encoded_identifier
 
+    def set_callback_dummy(self):
+        self.callback_url = 'busy'
+
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(100), unique=True)
