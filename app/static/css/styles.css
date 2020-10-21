@@ -216,9 +216,6 @@ body {
   height: 18px;
 }
 
-.form-search-date {
-  max-width: 300px;
-}
 
 .form-search-date label{
   display: block;
@@ -229,7 +226,7 @@ body {
 }
 
 .form-search-date input[type=date] {
-  width: auto !important;
+  width: 300px;
 }
 
 .grmax-btn {
@@ -427,6 +424,7 @@ body {
   border-color: rgb(0, 186, 255) !important;
   box-shadow: none;
   min-width: 100%;
+  margin-left: 5px;
 }
 
 form#analyticsform {
@@ -568,4 +566,5 @@ a.grmax-blue-link:hover {
 
 .integration_info .grmax-select-button {
   margin-left: 5px !important;
+  width: 300px !important;
 }
