@@ -16,7 +16,7 @@ from app.metrika.utils import request_min_max_visits_dates,get_metrika_goals, ge
 from app.metrika.metrika_report import MetrikaReport
 
 @bp.route('/metrika/<integration_id>/get_data')
-@integration_is_ready
+# @integration_is_ready
 @login_required
 def metrika_get_data(integration_id):
     # check secur stuff
@@ -53,7 +53,7 @@ def metrika_get_data(integration_id):
 
 @bp.route('/metrika/<integration_id>', methods = ['GET'])
 @login_required
-@integration_is_ready
+# @integration_is_ready
 def metrika(integration_id):
     # check secur stuff
     integration = Integration.query.filter_by(id=integration_id).first_or_404()

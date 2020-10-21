@@ -166,7 +166,7 @@ def gr_init():
 
 @bp.route('/edit_integration/<integration_id>', methods = ['GET','POST'])
 @login_required
-@integration_is_ready
+# @integration_is_ready
 def edit_integration(integration_id):
 
     form = EditIntegration()

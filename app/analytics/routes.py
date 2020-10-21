@@ -74,7 +74,7 @@ def create_gr_campaign_route(integration_id):
 @bp.route('/analytics/<integration_id>', methods = ['GET', 'POST'])
 @login_required
 @current_user_own_integration
-@integration_is_ready
+# @integration_is_ready
 def generate_values(integration_id):
     form = AnalyticsBar()
     filters_form = Filters()
