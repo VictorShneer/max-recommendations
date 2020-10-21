@@ -554,15 +554,18 @@ a.grmax-blue-link:hover {
 }
 
 .integration_info .info-text {
-  text-align: left;
+  text-align: right;
   font-size: 14px;
-  padding-top: 50px;
-  min-height: 134px;
+  padding-top: 40px;
+  max-height: 87px;
 }
 
 .integration_info .info-selects {
   padding-top: 40px;
   text-align: left;
   font-size: 14px;
-  min-height: 134px;
+}
+
+.integration_info .grmax-select-button {
+  margin-left: 5px !important;
 }
