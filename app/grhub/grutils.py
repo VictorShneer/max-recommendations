@@ -5,7 +5,7 @@ import math
 
 class GrUtils(GrConnector):
     hash_email_custom_field_id = None
-    ftp_host = 'ftp.getresponse360.com'
+    ftp_host = 'ftp.getresponse360.pl'
 
     def __init__(self,api_key, ftp_login, ftp_pass):
         super().__init__(api_key)

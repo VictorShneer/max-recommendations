@@ -7,32 +7,10 @@ from pprint import pprint
 import io
 
 class GrMonster(GrUtils):
-    per_page = 1000
     hashed_email_custom_field_name = 'hash_metrika'
     big_enough_newsletter = 0
     external_segments_root_dir = 'sync_external_segments'
     external_segments_method_dirs = ['insert','replace']
-    custom_not_assigned_search_json = {
-        'subscribersType':['subscribed'],
-        'sectionLogicOperator':'and',
-        'section':[{
-            'campaignIdsList':None,
-            "logicOperator": "or",
-            "subscriberCycle": [
-                "receiving_autoresponder",
-                "not_receiving_autoresponder"
-            ],
-            "subscriptionDate": "all_time",
-            "conditions":[
-                {
-                    "conditionType": "custom",
-                    "operator": "not_assigned",
-                    "operatorType": "string_operator",
-                    'scope': None
-                }
-            ]
-        }]
-    }
 
     def __init__(self, api_key, callback_url = '', ftp_login = '', ftp_pass = ''):
         super().__init__(api_key,ftp_login,ftp_pass)
@@ -51,22 +29,35 @@ class GrMonster(GrUtils):
         messages_df = pd.DataFrame(big_enough_since_array_dic)
         return messages_df
 
-    def get_search_contacts_total_pages_count(self, field_id, campaigns_names_list):
-        # TODO make it less ugly
-        self.custom_not_assigned_search_json['section'][0]['campaignIdsList'] = campaigns_names_list
-        self.custom_not_assigned_search_json['section'][0]["conditions"][0]['scope'] = field_id
-        return self.get_total_pages_count('search-contacts/contacts?perPage=1',self.per_page ,self.custom_not_assigned_search_json)
-
-    def get_search_contacts_field_not_assigned_chunk(self, field_id, campaigns_names_list, chunk):
+    def get_search_contacts_field_not_assigned(self, field_id, campaigns_names_list):
+        per_page = 1000
         search_contacts = []
         success_load_count = 0
-        # TODO make it less ugly
-        # put it in the single pipe with get_search_contacts_total_pages_count function
-        self.custom_not_assigned_search_json['section'][0]['campaignIdsList'] = campaigns_names_list
-        self.custom_not_assigned_search_json['section'][0]["conditions"][0]['scope'] = field_id
+        json = {
+            'subscribersType':['subscribed'],
+            'sectionLogicOperator':'and',
+            'section':[{
+                'campaignIdsList':campaigns_names_list,
+                "logicOperator": "or",
+                "subscriberCycle": [
+                    "receiving_autoresponder",
+                    "not_receiving_autoresponder"
+                ],
+                "subscriptionDate": "all_time",
+                "conditions":[
+                    {
+                        "conditionType": "custom",
+                        "operator": "not_assigned",
+                        "operatorType": "string_operator",
+                        'scope': field_id
+                    }
+                ]
+            }]
+        }
+        search_contacts_total_pages = self.get_total_pages_count('search-contacts/contacts?perPage=1',per_page ,json)
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             # Start the get search contacts operations and mark each future with its page
-            future_to_page = {executor.submit(self.get_search_contacts_contacts, self.custom_not_assigned_search_json, self.per_page, page):page for page in chunk}
+            future_to_page = {executor.submit(self.get_search_contacts_contacts, json, per_page, page):page for page in range(1, search_contacts_total_pages+1)}
             for idx,future in enumerate(concurrent.futures.as_completed(future_to_page)):
                 page = future_to_page[future]
                 try:
