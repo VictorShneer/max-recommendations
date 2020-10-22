@@ -3,10 +3,13 @@ import sys
 import requests
 import datetime
 import concurrent.futures
+import pandas as pd
+import io
 from rq import get_current_job
 from app import db
 from app import create_app
 from app.models import Task, Integration,Message, User
+from app.utils import encode_this_string
 from app.clickhousehub.metrica_logs_api import handle_integration
 from app.clickhousehub.metrica_logs_api import drop_integration
 from app.clickhousehub.clickhouse import get_tables
@@ -164,6 +167,40 @@ def set_ftp(integration_obj,user_obj):
         _set_task_progress(100, f'Создание FTP директорий - Ошибка - \n{err}' ,user_obj['user_id'])
     else:
         _set_task_progress(100, f'Создание FTP директорий - Успех' ,user_obj['user_id'])       
+
+def init_gr_contacts(integration_obj, user_obj):
+    _set_task_progress(0)
+    grmonster = GrMonster(api_key=integration_obj.api_key, \
+                            ftp_login=integration_obj.ftp_login,\
+                            ftp_pass=integration_obj.ftp_pass)
+    hash_field_name = grmonster.hashed_email_custom_field_name
+    hash_field_id = grmonster.get_hash_field_id()
+    campaigns = grmonster.get_gr_campaigns()
+    campaigns_names = [c[0] for c in campaigns]
+    campaigns_df = pd.DataFrame(campaigns, columns=['campaignId', 'name'])
+    all_empty_contacts = grmonster.get_search_contacts_field_not_assigned(hash_field_id, campaigns_names)
+    rows = []
+    for contact in all_empty_contacts:
+        rows.append([contact['email'], contact['campaign']['campaignId']])
+    email_cid_df = pd.DataFrame(rows, columns=['email','campaign_id'])
+    email_cname = email_cid_df.merge(campaigns_df, left_on='campaign_id',right_on='campaignId')[['email','name']]
+    email_cname[hash_field_name] = email_cname['email'].apply(lambda x: encode_this_string(x))
+    unique_campaign_names = email_cname['name'].unique()
+    ready_campaign_string_buffers = {}
+    for campaign_name in unique_campaign_names:
+        single_campaign_df = email_cname[email_cname['name'] == campaign_name]
+        if single_campaign_df.shape[0]:
+            rec = single_campaign_df[['email',hash_field_name]].to_csv(index=False)
+            df_bytes = rec.encode('utf-8')
+            # text buffer
+            # set buffer start point at the begining
+            s_buf = io.BytesIO(df_bytes)
+            s_buf.seek(0)
+            ready_campaign_string_buffers[campaign_name] = s_buf
+    for campaign_name,string_buffer in ready_campaign_string_buffers.items():
+        print(campaign_name,string_buffer)
+        grmonster.ftp_gr(f'sync_contacts/update/{campaign_name}.csv',string_buffer)
+    _set_task_progress(100)
 
 #legacy ???
 def fill_encode_email_custom_field_for_subscribers_chunk(id_email_dic_list,grmonster):

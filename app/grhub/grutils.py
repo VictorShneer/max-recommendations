@@ -1,6 +1,7 @@
 from app.grhub.grconnector import GrConnector
 from ftplib import FTP
 import ftplib
+import math
 
 class GrUtils(GrConnector):
     hash_email_custom_field_id = None
@@ -81,6 +82,15 @@ class GrUtils(GrConnector):
 
     def get_messages(self):
         return self.request_gr('get', 'newsletters?perPage=1000')
+
+    def get_search_contacts_contacts(self, json, per_page, page):
+        return self.request_gr('post',f'search-contacts/contacts?perPage={per_page}&page={page}', json=json)
+
+    def get_total_pages_count(self, url, per_page, json={}):
+        r = self.request_gr('post', url, json=json)
+        total_pages = r.headers['TotalPages']
+        total_pages_in_per_page_respect_raw = int(total_pages)/per_page
+        return math.ceil(total_pages_in_per_page_respect_raw)
 
     def post_contact_to_list(self, email, campaign_id):
         return self.request_gr('post', 'contacts/', \

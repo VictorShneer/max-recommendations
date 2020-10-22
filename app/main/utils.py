@@ -60,4 +60,8 @@ def run_integration_setup(integration,start_date):
                                 ('Создание FTP директорий'),\
                                 integration,\
                                 {'user_id':current_user.id, 'user_crypto':current_user.crypto})
+        current_user.launch_task('init_gr_contacts',\
+                                'Проставление служебного поля контактам GR аккаунта',\
+                                integration,\
+                                {'user_id':current_user.id, 'user_crypto':current_user.crypto})
         db.session.commit()

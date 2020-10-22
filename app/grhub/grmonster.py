@@ -29,6 +29,47 @@ class GrMonster(GrUtils):
         messages_df = pd.DataFrame(big_enough_since_array_dic)
         return messages_df
 
+    def get_search_contacts_field_not_assigned(self, field_id, campaigns_names_list):
+        per_page = 1000
+        search_contacts = []
+        success_load_count = 0
+        json = {
+            'subscribersType':['subscribed'],
+            'sectionLogicOperator':'and',
+            'section':[{
+                'campaignIdsList':campaigns_names_list,
+                "logicOperator": "or",
+                "subscriberCycle": [
+                    "receiving_autoresponder",
+                    "not_receiving_autoresponder"
+                ],
+                "subscriptionDate": "all_time",
+                "conditions":[
+                    {
+                        "conditionType": "custom",
+                        "operator": "not_assigned",
+                        "operatorType": "string_operator",
+                        'scope': field_id
+                    }
+                ]
+            }]
+        }
+        search_contacts_total_pages = self.get_total_pages_count('search-contacts/contacts?perPage=1',per_page ,json)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            # Start the get search contacts operations and mark each future with its page
+            future_to_page = {executor.submit(self.get_search_contacts_contacts, json, per_page, page):page for page in range(1, search_contacts_total_pages+1)}
+            for idx,future in enumerate(concurrent.futures.as_completed(future_to_page)):
+                page = future_to_page[future]
+                try:
+                    response = future.result()
+                    search_contacts += response.json()
+                except Exception as exc:
+                    print(f'{page} generated an exception: {exc}')
+                else:
+                    success_load_count+=1
+                    print(f'{page} requested success')
+        return search_contacts
+
     def get_user_email(self):
         try: 
             return self.get_user_details()['email']
@@ -53,6 +94,16 @@ class GrMonster(GrUtils):
         custom_fields = self.get_customs()
         return custom_field_name in [custom_field['name'] for custom_field in custom_fields.json()]
 
+    def get_hash_field_id(self):
+        custom_fields = self.get_customs()
+        if self.hashed_email_custom_field_name in [custom_field['name'] for custom_field in custom_fields.json()]:
+            return [custom_field['customFieldId'] for custom_field \
+                                                  in custom_fields.json() \
+                                                  if custom_field['name'] == self.hashed_email_custom_field_name].pop()
+        else:
+            return self.create_custom_field(self.hashed_email_custom_field_name).json()['customFieldId']
+
+    # legacy
     # create hash_metrika custom field
     # if it doesn't exists
     def prepare_GR_account(self):
