@@ -2,6 +2,7 @@ import time
 import sys
 import requests
 import datetime
+import concurrent.futures
 from rq import get_current_job
 from app import db
 from app import create_app
@@ -9,7 +10,6 @@ from app.models import Task, Integration,Message, User
 from app.clickhousehub.metrica_logs_api import handle_integration
 from app.clickhousehub.metrica_logs_api import drop_integration
 from app.clickhousehub.clickhouse import get_tables
-import concurrent.futures
 from app.grhub.grmonster import GrMonster
 from app.clickhousehub.clickhouse import get_dbs
 from app.clickhousehub.clickhouse_custom_request import create_ch_db

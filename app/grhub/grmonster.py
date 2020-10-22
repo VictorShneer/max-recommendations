@@ -53,9 +53,11 @@ class GrMonster(GrUtils):
         custom_fields = self.get_customs()
         return custom_field_name in [custom_field['name'] for custom_field in custom_fields.json()]
 
+    # create hash_metrika custom field
+    # if it doesn't exists
     def prepare_GR_account(self):
         if self.if_custom_field_exists(self.hashed_email_custom_field_name):
-            raise KeyError(f'Custom field name {self.hashed_email_custom_field_name} already in use!')
+            raise KeyError(f'Custom field {self.hashed_email_custom_field_name} already in exists!')
         else:
             self.hash_email_custom_field_id = self.create_custom_field(name=self.hashed_email_custom_field_name).json()['customFieldId']
             return self.hash_email_custom_field_id
