@@ -46,20 +46,20 @@ def run_integration_setup(integration,start_date):
         flash('Нельзя запускать создание больше одной интеграции одновременно!')
         db.session.rollback()
     else:
-        current_user.launch_task('init_clickhouse_tables', \
-                                # I need this to check futher if integration is ready
-                                (f'Создание базы данных для {integration.integration_name}:{integration.id}'), \
-                                integration,
-                                {'user_id':current_user.id, 'user_crypto':current_user.crypto},
-                                [params,params_2])
-        current_user.launch_task('set_callback',\
-                                ('Создание callback уведомления'),\
-                                integration,\
-                                {'user_id':current_user.id, 'user_crypto':current_user.crypto})
-        current_user.launch_task('set_ftp',\
-                                ('Создание FTP директорий'),\
-                                integration,\
-                                {'user_id':current_user.id, 'user_crypto':current_user.crypto})
+        # current_user.launch_task('init_clickhouse_tables', \
+        #                         # I need this to check futher if integration is ready
+        #                         (f'Создание базы данных для {integration.integration_name}:{integration.id}'), \
+        #                         integration,
+        #                         {'user_id':current_user.id, 'user_crypto':current_user.crypto},
+        #                         [params,params_2])
+        # current_user.launch_task('set_callback',\
+        #                         ('Создание callback уведомления'),\
+        #                         integration,\
+        #                         {'user_id':current_user.id, 'user_crypto':current_user.crypto})
+        # current_user.launch_task('set_ftp',\
+        #                         ('Создание FTP директорий'),\
+        #                         integration,\
+        #                         {'user_id':current_user.id, 'user_crypto':current_user.crypto})
         current_user.launch_task('init_gr_contacts',\
                                 'Проставление служебного поля контактам GR аккаунта',\
                                 integration,\
