@@ -65,7 +65,7 @@ class GrMonster(GrUtils):
                 except Exception as exc:
                     print(f'{page} generated an exception: {exc}')
                 else:
-                    print(f'{len(range(search_contacts_total_pages))}{page} requested success')
+                    print(f'{len(range(search_contacts_total_pages))}:{page} requested success')
         return search_contacts
 
     def get_user_email(self):
