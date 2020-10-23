@@ -200,7 +200,6 @@ def edit_integration(integration_id):
                             form=form,\
                             title=title)
 
-
 @bp.route('/link_creation', methods=['GET','POST'])
 @login_required
 def link_creation():

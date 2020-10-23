@@ -9,10 +9,17 @@ import requests
 from flask import current_app
 from ftplib import FTP
 from alphabet_detector import AlphabetDetector
+from datetime import datetime, timedelta
 
 ad = AlphabetDetector()
 
 class CustomValidators(object):
+
+    def validate_start_date(self, start_date):
+        aval_date = (datetime.today() - timedelta(days=2)).strftime("%Y-%m-%d")
+        if str(start_date.data) >= aval_date:
+            raise ValidationError((f'Начальная дата должна быть не позже {aval_date}'))
+
 
     def validate_integration_name(self, integration_name):
         if not all([ch.isalnum() or ch=='_' for ch in integration_name.data]):
