@@ -54,7 +54,6 @@ class GrMonster(GrUtils):
             }]
         }
         search_contacts_total_pages = self.get_total_pages_count('search-contacts/contacts?perPage=1',per_page ,json)
-        print(len(search_contacts_total_pages))
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             # Start the get search contacts operations and mark each future with its page
             future_to_page = {executor.submit(self.get_search_contacts_contacts, json, per_page, page):page for page in range(1, search_contacts_total_pages+1)}
