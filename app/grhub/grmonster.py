@@ -54,6 +54,9 @@ class GrMonster(GrUtils):
             }]
         }
         search_contacts_total_pages = self.get_total_pages_count('search-contacts/contacts?perPage=1',per_page ,json)
+        if search_contacts_total_pages > 150:
+            print('GR lists are too big')
+            raise TimeoutError
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             # Start the get search contacts operations and mark each future with its page
             future_to_page = {executor.submit(self.get_search_contacts_contacts, json, per_page, page):page for page in range(1, search_contacts_total_pages+1)}
@@ -62,11 +65,9 @@ class GrMonster(GrUtils):
                 try:
                     response = future.result()
                     search_contacts += [[r['email'],r['campaign']['campaignId']] for r in response.json()]
-                except Exception as exc:
+                except ConnectionRefusedError as exc:
                     print(f'{page} generated an exception: {exc}')
-                else:
-                    print(f'{len(range(search_contacts_total_pages))}:{page} requested success')
-        yield search_contacts
+        return search_contacts
 
     def get_user_email(self):
         try: 
