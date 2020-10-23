@@ -8,9 +8,17 @@ from app.grhub.grmonster import GrMonster
 import requests
 from flask import current_app
 from ftplib import FTP
+from alphabet_detector import AlphabetDetector
 
+ad = AlphabetDetector()
 
 class CustomValidators(object):
+
+    def validate_integration_name(self, integration_name):
+        if not all([ch.isalnum() or ch=='_' for ch in integration_name.data]):
+            raise ValidationError(('Название интеграции может содержать только латинские буквы, цифры и нижнее подчеркивание'))
+        elif not ad.only_alphabet_chars(integration_name.data, "LATIN"):
+            raise ValidationError(('Название интеграции может содержать только латинские буквы, цифры и нижнее подчеркивание'))
     def validate_api_key(self, api_key):
         r = requests.get('https://api.getresponse.com/v3/accounts', \
                     headers={'X-Auth-Token': 'api-key {}'.format(api_key.data)})
