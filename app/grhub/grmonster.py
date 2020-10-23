@@ -32,7 +32,6 @@ class GrMonster(GrUtils):
     def get_search_contacts_field_not_assigned(self, field_id, campaigns_names_list):
         per_page = 1000
         search_contacts = []
-        success_load_count = 0
         json = {
             'subscribersType':['subscribed'],
             'sectionLogicOperator':'and',
@@ -55,6 +54,7 @@ class GrMonster(GrUtils):
             }]
         }
         search_contacts_total_pages = self.get_total_pages_count('search-contacts/contacts?perPage=1',per_page ,json)
+        print(len(search_contacts_total_pages))
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
             # Start the get search contacts operations and mark each future with its page
             future_to_page = {executor.submit(self.get_search_contacts_contacts, json, per_page, page):page for page in range(1, search_contacts_total_pages+1)}
@@ -66,8 +66,7 @@ class GrMonster(GrUtils):
                 except Exception as exc:
                     print(f'{page} generated an exception: {exc}')
                 else:
-                    success_load_count+=1
-                    print(f'{page} requested success')
+                    print(f'{len(range(search_contacts_total_pages))}{page} requested success')
         return search_contacts
 
     def get_user_email(self):
