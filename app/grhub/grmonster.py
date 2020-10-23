@@ -62,7 +62,7 @@ class GrMonster(GrUtils):
                 page = future_to_page[future]
                 try:
                     response = future.result()
-                    search_contacts += response.json()
+                    search_contacts += [[r['email'],r['campaign']['campaignId']] for r in response.json()]
                 except Exception as exc:
                     print(f'{page} generated an exception: {exc}')
                 else:

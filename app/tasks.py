@@ -179,10 +179,7 @@ def init_gr_contacts(integration_obj, user_obj):
     campaigns_names = [c[0] for c in campaigns]
     campaigns_df = pd.DataFrame(campaigns, columns=['campaignId', 'name'])
     all_empty_contacts = grmonster.get_search_contacts_field_not_assigned(hash_field_id, campaigns_names)
-    rows = []
-    for contact in all_empty_contacts:
-        rows.append([contact['email'], contact['campaign']['campaignId']])
-    email_cid_df = pd.DataFrame(rows, columns=['email','campaign_id'])
+    email_cid_df = pd.DataFrame(all_empty_contacts, columns=['email','campaign_id'])
     email_cname = email_cid_df.merge(campaigns_df, left_on='campaign_id',right_on='campaignId')[['email','name']]
     email_cname[hash_field_name] = email_cname['email'].apply(lambda x: encode_this_string(x))
     unique_campaign_names = email_cname['name'].unique()
