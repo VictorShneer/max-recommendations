@@ -1,4 +1,5 @@
 alembic==1.4.2
+alphabet-detector==0.0.7
 Babel==2.8.0
 bcrypt==3.1.7
 beautifulsoup4==4.9.1
