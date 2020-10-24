@@ -6,15 +6,39 @@ import pandas as pd
 from pprint import pprint
 import io
 
+
 class GrMonster(GrUtils):
     hashed_email_custom_field_name = 'hash_metrika'
     big_enough_newsletter = 0
     external_segments_root_dir = 'sync_external_segments'
     external_segments_method_dirs = ['insert','replace']
+    per_page = 1000
 
     def __init__(self, api_key, callback_url = '', ftp_login = '', ftp_pass = ''):
         super().__init__(api_key,ftp_login,ftp_pass)
         self.callback_url = callback_url
+        self.custom_not_assigned_search_json = {
+            'subscribersType':['subscribed'],
+            'sectionLogicOperator':'and',
+            'section':[{
+                'campaignIdsList':None,
+                "logicOperator": "or",
+                "subscriberCycle": [
+                    "receiving_autoresponder",
+                    "not_receiving_autoresponder"
+                ],
+                "subscriptionDate": "all_time",
+                "conditions":[
+                    {
+                        "conditionType": "custom",
+                        "operator": "not_assigned",
+                        "operatorType": "string_operator",
+                        'scope': None
+                    }
+                ]
+            }]
+        }
+
 
     def get_broadcast_messages_since_date_subject_df(self, since_date):
         messages_raw_response = self.get_messages()
@@ -29,14 +53,38 @@ class GrMonster(GrUtils):
         messages_df = pd.DataFrame(big_enough_since_array_dic)
         return messages_df
 
-    def get_search_contacts_field_not_assigned(self, field_id, campaigns_names_list):
+    def get_search_contacts_total_pages_count(self, field_id, campaigns_ids_list):
+        self.custom_not_assigned_search_json['section'][0]['campaignIdsList'] = campaigns_ids_list
+        self.custom_not_assigned_search_json['section'][0]["conditions"][0]['scope'] = field_id
+        return self.get_total_pages_count('search-contacts/contacts?perPage=1',self.per_page ,self.custom_not_assigned_search_json)
+
+    def get_contacts_field_not_assigned_chunk(self, pages_chunk):
+        search_contacts = []
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            # Start the get search contacts operations and mark each future with its page
+            future_to_page = { executor.submit(self.get_search_contacts_contacts, \
+                                               self.custom_not_assigned_search_json, \
+                                               self.per_page, page):page for page in pages_chunk}
+            for idx,future in enumerate(concurrent.futures.as_completed(future_to_page)):
+                page = future_to_page[future]
+                print(f'{idx}:{len(future_to_page)}\r', end='')
+                try:
+                    response = future.result()
+                    search_contacts += [[r['email'],r['campaign']['campaignId']] for r in response.json()]
+                except ConnectionRefusedError as exc:
+                    print()
+                    print(f'{page} generated an exception: {exc}')
+        print()
+        return search_contacts
+
+    def get_search_contacts_field_not_assigned(self, field_id, campaigns_ids_list):
         per_page = 1000
         search_contacts = []
         json = {
             'subscribersType':['subscribed'],
             'sectionLogicOperator':'and',
             'section':[{
-                'campaignIdsList':campaigns_names_list,
+                'campaignIdsList':campaigns_ids_list,
                 "logicOperator": "or",
                 "subscriberCycle": [
                     "receiving_autoresponder",

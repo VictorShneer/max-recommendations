@@ -3,6 +3,7 @@ from flask import url_for, redirect, flash
 from app.models import Task, Integration
 from app import db
 from flask_login import current_user
+from app.grhub.grmonster import GrMonster
 
 def check_if_date_legal(user_date):
     today = str(date.today())
@@ -16,7 +17,6 @@ def check_if_date_legal(user_date):
         print(today < user_date)
         return False
     return True
-
 
 def integration_is_ready(function):
     def wrapper(integration_id):
@@ -33,6 +33,27 @@ def integration_is_ready(function):
     # Renaming the function name:
     wrapper.__name__ = function.__name__
     return wrapper
+
+def plan_init_gr_contacts(integration_obj):
+    grmonster = GrMonster(api_key=integration_obj.api_key,\
+                            ftp_login=integration_obj.ftp_login,\
+                            ftp_pass=integration_obj.ftp_pass)
+    hash_field_id = grmonster.get_hash_field_id()
+    campaigns = grmonster.get_gr_campaigns()
+    campaigns_ids_list = [c[0] for c in campaigns]
+    search_contacts_total_pages_count = grmonster.get_search_contacts_total_pages_count(hash_field_id, campaigns_ids_list)
+    chunk_size = 100
+    chunks = [range(n,n+chunk_size) \
+                if n<search_contacts_total_pages_count-chunk_size \
+                else range(n,search_contacts_total_pages_count) \
+                for n in range(0,search_contacts_total_pages_count,chunk_size)]
+    for chunk_number, chunk in enumerate(chunks):
+        print(f'Проставление служебного поля контактам GR аккаунта {chunk_number+1}:{len(chunks)}')
+        current_user.launch_task('init_gr_contacts_chunk',\
+                                f'Проставление служебного поля контактам GR аккаунта {chunk_number+1}:{len(chunks)}',\
+                                grmonster,\
+                                {'user_id':current_user.id, 'user_crypto':current_user.crypto}, \
+                                chunk)
 
 def run_integration_setup(integration,start_date):
     timing = ['-start_date={}'.format(start_date)]
@@ -60,8 +81,6 @@ def run_integration_setup(integration,start_date):
                                 ('Создание FTP директорий'),\
                                 integration,\
                                 {'user_id':current_user.id, 'user_crypto':current_user.crypto})
-        current_user.launch_task('init_gr_contacts',\
-                                'Проставление служебного поля контактам GR аккаунта',\
-                                integration,\
-                                {'user_id':current_user.id, 'user_crypto':current_user.crypto})
+        plan_init_gr_contacts(integration)
+
         db.session.commit()
