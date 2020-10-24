@@ -8,6 +8,8 @@ from app.clickhousehub.clickhouse_custom_request import create_ch_db
 from app.clickhousehub.clickhouse_custom_request import give_user_grant
 from app.clickhousehub.clickhouse_custom_request import request_iam
 from app.utils import represents_int
+from app.main.utils import plan_init_gr_contacts
+
 app = create_app()
 
 
@@ -50,6 +52,14 @@ def give_admin_role_to_id(id):
 @app.cli.command()
 def check_ch_auth():
     request_iam()
+
+@app.cli.command()
+def regular_gr_contacts_init():
+    users = User.query.filter_by(active=True).all()
+    for user in users:
+        user_integrations=Integration.query.filter_by(user_id=user.id).all()
+        for integration in user_integrations:
+            plan_init_gr_contacts(integration, user)
 
 @app.cli.command()
 def regular_load_to_clickhouse():
