@@ -44,7 +44,7 @@ def plan_init_gr_contacts(integration_obj, user=None):
     campaigns_ids_list = [c[0] for c in campaigns]
     search_contacts_total_pages_count = grmonster.get_search_contacts_total_pages_count(hash_field_id, campaigns_ids_list)
     chunk_size = 100
-    chunks = math.ceil(search_contacts_total_pages_count/chunk_size)+2 # два запасных пробега :) 
+    chunks = math.ceil(search_contacts_total_pages_count/chunk_size)+1 # + n запасных пробега :) 
     for chunk in range(chunks):
         print(f'Проставление служебного поля контактам GR аккаунта {chunk+1}:{chunks}')
         if user:
