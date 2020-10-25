@@ -67,4 +67,6 @@ class LinkGenerator(FlaskForm):
 class GrInitializer(FlaskForm, CustomValidators):
     integration_name = StringField("Название интеграции", validators=[DataRequired()])
     api_key = StringField('API ключ GetResponse', validators=[DataRequired()])
+    ftp_login = StringField('Логин GR FTP', validators=[DataRequired()])
+    ftp_pass = StringField('Пароль GR FTP', validators=[DataRequired()])
     submit = SubmitField("Отправить")

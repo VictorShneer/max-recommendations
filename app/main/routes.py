@@ -13,6 +13,7 @@ from wtforms.fields.html5 import DateField
 import datetime
 from app.grhub.grmonster import GrMonster
 from app.main.utils import integration_is_ready, run_integration_setup
+from app.main.utils import plan_init_gr_contacts
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
@@ -144,24 +145,21 @@ def gr_init():
         integration = Integration(
         integration_name = form.integration_name.data,
         api_key = form.api_key.data,
+        ftp_login = form.ftp_login.data,
+        ftp_pass = form.ftp_pass.data,
         user_id = current_user.id
         )
         db.session.add(integration)
         db.session.flush()
         integration.set_callback_url(request.url_root)
         try:
-            current_user.launch_task('init_gr_account',\
-                                    'Инициализация контактов...', \
-                                    integration.api_key,\
-                                    integration.user_id, \
-                                    integration.callback_url)
-            db.session.commit()
+            plan_init_gr_contacts(integration, current_user)
         except Exception as err:
             flash("Проблемки..")
             current_app.logger.info(err)
             db.session.rollback()
             abort(404)
-
+        return redirect(url_for('main.user_integrations'))
     return render_template('create_integration.html', form=form)
 
 @bp.route('/edit_integration/<integration_id>', methods = ['GET','POST'])
