@@ -14,16 +14,14 @@ from app.metrika.metrika_sql_queries import TIME_SERIES_QUERY, VISITS_RAW_QUERY,
 from app.main.utils import check_if_date_legal, integration_is_ready
 from app.metrika.utils import request_min_max_visits_dates,get_metrika_goals, get_df_from_CH
 from app.metrika.metrika_report import MetrikaReport
+from app.analytics.utils import current_user_own_integration
+
 
 @bp.route('/metrika/<integration_id>/get_data')
-# @integration_is_ready
 @login_required
+@current_user_own_integration
 def metrika_get_data(integration_id):
-    # check secur stuff
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
-    if not current_user_own_integration(integration, current_user):
-        print('Permission abort')
-        abort(404)
     # retrieve args and validate them
     request_start_date = request.args.get('start_date')
     request_goals = request.args.get('goals') # TODO: validate goals
@@ -53,12 +51,9 @@ def metrika_get_data(integration_id):
 
 @bp.route('/metrika/<integration_id>', methods = ['GET'])
 @login_required
-# @integration_is_ready
+@current_user_own_integration
 def metrika(integration_id):
-    # check secur stuff
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
-    if not current_user_own_integration(integration, current_user):
-        abort(404)
     #request init info
     response, min_date_text, max_date_text = request_min_max_visits_dates(current_user.crypto,integration_id)
     if not response.ok:
