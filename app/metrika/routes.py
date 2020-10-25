@@ -60,7 +60,10 @@ def metrika(integration_id):
     if not current_user_own_integration(integration, current_user):
         abort(404)
     #request init info
-    min_date_text, max_date_text = request_min_max_visits_dates(current_user.crypto,integration_id)
+    response, min_date_text, max_date_text = request_min_max_visits_dates(current_user.crypto,integration_id)
+    if not response.ok:
+        flash('Ошибка или создание интеграции не завершено')
+        return redirect(url_for('main.user_integrations'))
     # get goals
     counter_id = integration.metrika_counter_id
     metrika_key = integration.metrika_key
