@@ -79,7 +79,7 @@ def generate_values(integration_id):
     form = AnalyticsBar()
     filters_form = Filters()
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
-    # TODO make several try catches instad of one
+    # TODO make several try catches instead of one
     try:    
         # build CH table names    
         visits_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'visits', integration_id)
@@ -89,7 +89,11 @@ def generate_values(integration_id):
         query = INITIAL_QUERY.format(hits_table_name=hits_table_name,\
                                         visits_table_name=visits_table_name)
         create_url = create_url_for_query(query, current_user.crypto)
-        initial_response = send_request_to_clickhouse(create_url).text
+        initial_response_raw = send_request_to_clickhouse(create_url)
+        if not initial_response_raw.ok:
+            flash('Ошибка или создание интеграции не завершено')
+            return redirect(url_for('main.user_integrations'))
+        initial_response = initial_response_raw.text
         file_from_string = StringIO(initial_response)
         inital_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names=INITIAL_QUERY_COLUMNS)
 
