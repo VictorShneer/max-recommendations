@@ -48,9 +48,10 @@ def request_min_max_visits_dates(crypto,integration_id):
         query_max = 'SELECT max(Date) FROM {}'.format(clickhouse_visits_raw_table_name)
         query_min_date = made_url_for_query(query_min, crypto)
         query_max_date = made_url_for_query(query_max, crypto)
-        min_date_text = request_clickhouse(query_min_date, auth, certificate_path).text.strip()
+        min_date_response = request_clickhouse(query_min_date, auth, certificate_path)
+        min_date_text = min_date_response.text.strip()
         max_date_text = request_clickhouse(query_max_date, auth, certificate_path).text.strip()
-        return min_date_text, max_date_text
+        return min_date_response,min_date_text, max_date_text
 
     except Exception as e:
         flash('Ошибки в настройках интеграции!')
