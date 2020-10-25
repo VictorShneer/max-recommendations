@@ -35,7 +35,7 @@ def integration_is_ready(function):
     wrapper.__name__ = function.__name__
     return wrapper
 
-def plan_init_gr_contacts(integration_obj, user=None):
+def plan_init_gr_contacts(integration_obj, user):
     grmonster = GrMonster(api_key=integration_obj.api_key,\
                             ftp_login=integration_obj.ftp_login,\
                             ftp_pass=integration_obj.ftp_pass)
@@ -43,23 +43,24 @@ def plan_init_gr_contacts(integration_obj, user=None):
     campaigns = grmonster.get_gr_campaigns()
     campaigns_ids_list = [c[0] for c in campaigns]
     search_contacts_total_pages_count = grmonster.get_search_contacts_total_pages_count(hash_field_id, campaigns_ids_list)
-    chunk_size = 100
-    chunks = math.ceil(search_contacts_total_pages_count/chunk_size)+1 # + n запасных пробега :) 
-    for chunk in range(chunks):
-        print(f'Проставление служебного поля контактам GR аккаунта {chunk+1}:{chunks}')
-        if user:
-            user.launch_task('init_gr_contacts_chunk',\
-                                f'Проставление служебного поля контактам GR аккаунта {chunk+1}:{chunks}',\
-                                grmonster,\
-                                {'user_id':user.id, 'user_crypto':user.crypto})
-        else:
-            current_user.launch_task('init_gr_contacts_chunk',\
+    if search_contacts_total_pages_count <= 100:
+        user.launch_task('init_gr_contacts_chunk',\
+                            f'Проставление служебного поля контактам GR аккаунта',\
+                            grmonster,\
+                            {'user_id':user.id, 'user_crypto':user.crypto},\
+                            search_contacts_total_pages_count)
+        db.session.commit()
+    else:
+        chunk_size = 100
+        chunks = math.ceil(search_contacts_total_pages_count/chunk_size)
+        for chunk in range(chunks):
+            print(f'Проставление служебного поля контактам GR аккаунта {chunk+1}:{chunks}')
+            if user:
+                user.launch_task('init_gr_contacts_chunk',\
                                     f'Проставление служебного поля контактам GR аккаунта {chunk+1}:{chunks}',\
                                     grmonster,\
-                                    {'user_id':current_user.id, 'user_crypto':current_user.crypto})
-        db.session.commit()
-    # TODO здесь давай проверочный такс
-    # чтобы убедиться, что все контакты промечены
+                                    {'user_id':user.id, 'user_crypto':user.crypto})
+            db.session.commit()
 def run_integration_setup(integration,start_date):
     timing = ['-start_date={}'.format(start_date)]
     end_date = date.today()
@@ -89,6 +90,4 @@ def run_integration_setup(integration,start_date):
                                 integration,\
                                 {'user_id':current_user.id, 'user_crypto':current_user.crypto})
         db.session.commit()
-        plan_init_gr_contacts(integration)
-
-        db.session.commit()
+        plan_init_gr_contacts(integration, current_user)

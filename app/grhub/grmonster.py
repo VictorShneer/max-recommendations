@@ -58,13 +58,13 @@ class GrMonster(GrUtils):
         self.custom_not_assigned_search_json['section'][0]["conditions"][0]['scope'] = field_id
         return self.get_total_pages_count('search-contacts/contacts?perPage=1',self.per_page ,self.custom_not_assigned_search_json)
 
-    def get_contacts_field_not_assigned_chunk(self):
+    def get_contacts_field_not_assigned_chunk(self,chunk_size):
         search_contacts = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
             # Start the get search contacts operations and mark each future with its page
             future_to_page = { executor.submit(self.get_search_contacts_contacts, \
                                                self.custom_not_assigned_search_json, \
-                                               self.per_page, page):page for page in range(1,101)}
+                                               self.per_page, page):page for page in range(1,chunk_size+1)}
             for idx,future in enumerate(concurrent.futures.as_completed(future_to_page)):
                 page = future_to_page[future]
                 print(f'page handled : total pages - {idx}:{len(future_to_page)}')
