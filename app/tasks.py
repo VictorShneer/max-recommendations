@@ -19,7 +19,6 @@ from app.clickhousehub.clickhouse_custom_request import create_ch_db
 from app.clickhousehub.clickhouse_custom_request import give_user_grant
 from app.clickhousehub.clickhouse_custom_request import request_iam
 
-
 app = create_app(adminFlag=False)
 app.app_context().push()
 
@@ -170,9 +169,9 @@ def set_ftp(integration_obj,user_obj):
         _set_task_progress(100, f'Создание FTP директорий - Успех' ,user_obj['user_id'])       
 
 
-def init_gr_contacts_chunk(grmonster,user_obj):
+def init_gr_contacts_chunk(grmonster,user_obj, chunk_size=100):
     _set_task_progress(0)
-    empty_contacts_chunk = grmonster.get_contacts_field_not_assigned_chunk()
+    empty_contacts_chunk = grmonster.get_contacts_field_not_assigned_chunk(chunk_size)
     email_cid_df = pd.DataFrame(empty_contacts_chunk, columns=['email','campaign_id'])
     campaigns = grmonster.get_gr_campaigns()
     campaigns_df = pd.DataFrame(campaigns, columns=['campaignId', 'name'])    
@@ -199,11 +198,29 @@ def init_gr_contacts_chunk(grmonster,user_obj):
             if cur_attempt >= attempts:
                 _set_task_progress(100, 'Проблемы с GR FTP. Повторите операцию позже', user_obj['user_id'])  
                 return
-            time.sleep(5*60)
+            time.sleep(3*60)
             ftp_files_list = grmonster.ftp_list_files('sync_contacts/update/')
             print('Files in sync_contacts/update/ \n',ftp_files_list, f'\n Current attempt: {cur_attempt}')
             cur_attempt += 1
         grmonster.ftp_gr(f'sync_contacts/update/{campaign_name}.csv',string_buffer)
+    
+    # continue only after all files dissapear from ftp folder
+    print('continue only after all files dissapear from ftp folder')
+    cur_attempt = 0
+    ftp_files_set = set(grmonster.ftp_list_files('sync_contacts/update/'))
+    print('ftp_files_set', ftp_files_set)
+    loaded_campaigns = set(ready_campaign_string_buffers.keys())
+    loaded_campaigns_names_set = {campaign + '.csv' for campaign in loaded_campaigns}
+    print('loaded_campaigns_names_set', loaded_campaigns_names_set)
+    intesection_names = loaded_campaigns_names_set.intersection(ftp_files_set)
+    print('intesection_names', intesection_names)
+    while loaded_campaigns_names_set.intersection(ftp_files_set):
+        if cur_attempt == attempts:
+            print('Fuck that FTP is too slow. So let\'s moove on')
+        cur_attempt+=1
+        print('\t cur_attempt', cur_attempt)
+        time.sleep(1*60)
+        ftp_files_set = set(grmonster.ftp_list_files('sync_contacts/update/'))
     _set_task_progress(100, 'Проставление служебного поля контактам GR завершена успешно', user_obj['user_id'])  
 
 
