@@ -9,6 +9,9 @@ anableKeyForm.addEventListener('click', enableKeyFormHandler)
 
 function enableKeyFormHandler(event){
   $('#apikeyform form input#key.form-control').removeAttr('disabled');
+  $("#available_links").empty();
+  $("#available_newsletters").empty();
+  $("#key").val('');
 }
 function handleAvailableLinksForm(event){
   //
