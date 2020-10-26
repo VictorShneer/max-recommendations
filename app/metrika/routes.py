@@ -15,7 +15,7 @@ from app.grhub.grmonster import GrMonster
 from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
 from app.metrika.metrika_sql_queries import TIME_SERIES_QUERY, VISITS_RAW_QUERY,TIME_SERIES_DF_COLUMNS, COLUMNS
-from app.main.utils import check_if_date_legal, integration_is_ready
+from app.main.utils import check_if_date_legal
 from app.metrika.utils import request_min_max_visits_dates,get_metrika_goals, get_df_from_CH
 from app.metrika.metrika_report import MetrikaReport
 from app.analytics.utils import current_user_own_integration
@@ -71,17 +71,14 @@ def metrika(integration_id):
     counter_id = integration.metrika_counter_id
     metrika_key = integration.metrika_key
     goals = get_metrika_goals(metrika_key,counter_id)
-    # render
-    if (current_user.email == 'sales@getresponse.com'):
-        return render_template('metrika_example.html')
-    else:
-        return render_template(\
-            'metrika.html',\
-            min_date=min_date_text,\
-            max_date=max_date_text,\
-            integration_name=integration.integration_name,\
-            integration_id=integration_id,\
-            goals=goals)
+
+    return render_template(\
+        'metrika.html',\
+        min_date=min_date_text,\
+        max_date=max_date_text,\
+        integration_name=integration.integration_name,\
+        integration_id=integration_id,\
+        goals=goals)
 
 # this route handles GR subscribe callback 
 # TODO looks like it should be in MAIN bp

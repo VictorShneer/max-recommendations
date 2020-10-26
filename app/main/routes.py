@@ -46,11 +46,6 @@ def delete_integration():
 def index():
     return render_template('index.html')
 
-@bp.route('/profile')
-@login_required
-def profile():
-    return render_template('profile.html', name=current_user.name)
-
 @bp.route('/admin')
 @login_required
 def admin():
@@ -202,7 +197,6 @@ def edit_integration(integration_id):
                             form=form,\
                             title=title)
 
-# legacy ???
 @bp.route('/link_creation', methods=['GET','POST'])
 @login_required
 def link_creation():
@@ -220,12 +214,6 @@ def link_creation():
         flash('Ваша ссылка: {} '.format(link))
         return render_template('link_creation.html', form=form)
     return render_template('link_creation.html', form=form)
-
-# legacy ???
-#for metrika examples
-@bp.route('/metrika-examples')
-def metexample():
-    return render_template('metrika_example.html')
 
 #for documentation
 @bp.route('/documentation')

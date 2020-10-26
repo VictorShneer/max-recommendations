@@ -135,13 +135,6 @@ class GrMonster(GrUtils):
             if method_dir not in self.ftp_list_files(self.external_segments_root_dir):
                 self.ftp_create_dir(self.external_segments_root_dir+'/'+method_dir)
 
-    #legacy
-    def instantiate_contacts_with_hashed_email(self):
-        if self.if_custom_field_exists(self.hashed_email_custom_field_name):
-            raise KeyError(f'Custom field name {self.hashed_email_custom_field_name} already in use!')
-        else:
-            return self.install_hash_email_for_every_contact()  # return list of responses for each usert request
-
     def if_custom_field_exists(self, custom_field_name):
         custom_fields = self.get_customs()
         return custom_field_name in [custom_field['name'] for custom_field in custom_fields.json()]
@@ -154,22 +147,6 @@ class GrMonster(GrUtils):
                                                   if custom_field['name'] == self.hashed_email_custom_field_name].pop()
         else:
             return self.create_custom_field(self.hashed_email_custom_field_name).json()['customFieldId']
-
-    # legacy
-    # create hash_metrika custom field
-    # if it doesn't exists
-    def prepare_GR_account(self):
-        if self.if_custom_field_exists(self.hashed_email_custom_field_name):
-            raise KeyError(f'Custom field {self.hashed_email_custom_field_name} already in exists!')
-        else:
-            self.hash_email_custom_field_id = self.create_custom_field(name=self.hashed_email_custom_field_name).json()['customFieldId']
-            return self.hash_email_custom_field_id
-    #legacy
-    def install_hash_email_for_every_contact(self):
-        id_email_dic_list = self.get_id_email_dic_list()
-        self.hash_email_custom_field_id = self.create_custom_field(name=self.hashed_email_custom_field_name).json()['customFieldId']
-        raw_upsert_responses_list = self.upsert_every_email_with_hashed_email(id_email_dic_list)
-        return raw_upsert_responses_list # return list of responses for each usert request
 
     def set_callback_if_not_busy(self):
         # if ConnectionRefusedError then callback is free

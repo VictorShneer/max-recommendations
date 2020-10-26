@@ -23,7 +23,6 @@ import urllib.parse
 import numpy as np
 import concurrent.futures
 import binascii
-from app.main.utils import integration_is_ready
 from app.analytics.analytics_consts import COLUMNS, INITIAL_QUERY,INITIAL_QUERY_COLUMNS
 from app.metrika.utils import get_metrika_goals
 import json

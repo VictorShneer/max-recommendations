@@ -23,23 +23,6 @@ def check_if_date_legal(user_date):
         return False
     return True
 
-# legacy ?? 
-def integration_is_ready(function):
-    def wrapper(integration_id):
-        integration = Integration.query.filter_by(id = integration_id).first_or_404()
-        task = Task.query.filter_by(description=f'Создание базы данных для {integration.integration_name}:{integration.id}').first_or_404()
-        try:
-            if not task.complete:
-                flash('Подождите завершения создания интеграции')
-                return redirect(url_for('main.user_integrations'))
-        except AttributeError:
-            print('Task losted')
-        else:
-            return function(integration_id)
-    # Renaming the function name:
-    wrapper.__name__ = function.__name__
-    return wrapper
-
 # this func plan GR init process
 # it splits GR contacts into 100k chunks
 # and runs separate task for every chunk
@@ -47,6 +30,7 @@ def plan_init_gr_contacts(integration_obj, user):
     grmonster = GrMonster(api_key=integration_obj.api_key,\
                             ftp_login=integration_obj.ftp_login,\
                             ftp_pass=integration_obj.ftp_pass)
+    # get hash field id id exists else create and get
     hash_field_id = grmonster.get_hash_field_id()
     print('hash_field_id', hash_field_id)
     campaigns = grmonster.get_gr_campaigns()

@@ -64,7 +64,6 @@ class EditIntegration(FlaskForm,CustomValidators):
     auto_load = BooleanField('Автозагрузка')
     submit = SubmitField("Отправить")
 
-# legacy a lil bit
 class LinkGenerator(FlaskForm):
     link = StringField("Введите ссылку", validators=[DataRequired()])
     submit = SubmitField("Получить ссылку")
