@@ -40,6 +40,7 @@ def plan_init_gr_contacts(integration_obj, user):
                             ftp_login=integration_obj.ftp_login,\
                             ftp_pass=integration_obj.ftp_pass)
     hash_field_id = grmonster.get_hash_field_id()
+    print('hash_field_id', hash_field_id)
     campaigns = grmonster.get_gr_campaigns()
     campaigns_ids_list = [c[0] for c in campaigns]
     search_contacts_total_pages_count = grmonster.get_search_contacts_total_pages_count(hash_field_id, campaigns_ids_list)
