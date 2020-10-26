@@ -88,6 +88,9 @@ $(document).ready(function(){
     if(contactsList.length == 0){
       $('#newcampaingform').replaceWith('<p id="newcampaingform" style="color:red">Сперва отфильтруйте контакты для импорта</p>')
       return -1
+    }else if(contactsList.length > 1200){
+      $('#newcampaingform').replaceWith('<p id="newexternal" style="color:red">Контактов больше 1200. Рекомендуем использовать FTP через форму справа</p>')
+      return -1
     };
     // get campaign id
     campaingId = $('#gr_campaigns').val()
