@@ -21,9 +21,10 @@ function handleAvailableLinksForm(event){
   event.preventDefault();
   const selectedLinks = $("#available_links").val();
   if(!selectedLinks){
-    $('#info').replaceWith( '<p style="color:red"> Стоп! Сначала выберите ссылки для оборачивания </p>');
+    $('#info').replaceWith( '<p id="info" style="color:red"> Стоп! Сначала выберите ссылки для оборачивания </p>');
     return -1
   }
+  $('#info').replaceWith('<p id="info">Создаю новый черновик в GetResponse..</p>');
   const id = $('#available_links').attr('newsletter_id')
   const key = document.getElementById("key").value;
   let response = fetch('/post_wrapped_newsletter',{
@@ -35,11 +36,11 @@ function handleAvailableLinksForm(event){
   }).then((response) => {
     event.submitter.disabled=false;
     if (response.ok){
-      $('#info').replaceWith( '<p style="color:green">\
+      $('#info').replaceWith( '<p id="info" style="color:green">\
             В GetResponse создано письмо с новыми ссылками\
                                     </p>' );
     } else {
-      $('#info').replaceWith( '<p style="color:red">\
+      $('#info').replaceWith( '<p id="info" style="color:red">\
                  Ошибка при попытке создания письма :( \
                                           </p>' );
     }

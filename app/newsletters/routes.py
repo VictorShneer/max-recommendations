@@ -49,7 +49,7 @@ def post_wrapped_newsletter():
         abort(300)
     else:
         # TODO add newsletter name for user message notif
-        current_user.send_message(f'{str(timestamp)} : черновик с обернутыми ссылками создан в GR')
+        current_user.send_message(f'{str(timestamp)} : Черновик с обернутыми ссылками создан в GR')
         current_user.add_notification('unread_message_count', current_user.new_messages())
 
     return '<200>'
