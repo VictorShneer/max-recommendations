@@ -186,7 +186,7 @@ class FilterableVisitsTable extends React.Component {
     }
 
     if (isLoading) {
-      return <p>Loading ...</p>;
+      return <p>Загрузка...</p>;
     }
 
     return (

@@ -169,12 +169,12 @@ $(document).ready(function(){
           processData: false,
           contentType: false,
           beforeSend: function() {
-              // show the preloader (progress bar)
-              $('#form-response').html("<div class='progress'><div class='indeterminate'></div></div>");
+              // show the preloader
+              document.getElementById('search_count').innerHTML = 'Загрузка...';
           },
           complete: function () {
               // hide the preloader (progress bar)
-              $('#form-response').html("");
+              // $('#search_count').html("");
           },
           success: function ( data ){
               document.getElementById('search_count').innerHTML = ` ${data.data.length} контактов`;
