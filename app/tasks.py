@@ -218,8 +218,8 @@ def init_gr_contacts_chunk(grmonster,user_obj, chunk_size=100):
         if cur_attempt == attempts:
             print('Fuck that FTP is too slow. So let\'s moove on')
         cur_attempt+=1
-        print('\t cur_attempt', cur_attempt)
-        time.sleep(1*60)
+        print(f'{len(loaded_campaigns_names_set)} files on load. Waiting {len(loaded_campaigns_names_set)} minutes. \t attempt № ', cur_attempt)
+        time.sleep(len(loaded_campaigns_names_set)*60)
         ftp_files_set = set(grmonster.ftp_list_files('sync_contacts/update/'))
     _set_task_progress(100, 'Проставление служебного поля контактам GR завершена успешно', user_obj['user_id'])  
 
