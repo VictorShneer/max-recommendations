@@ -1,12 +1,12 @@
 from app.grhub.grmonster import GrMonster
 import json
+import pandas as pd
 class MetrikaReport(object):
     report_json = {}
     no_email_regex = '^no-email*'    
 
 
-
-    def __init__(self, clientid_convers_df, time_series_goals_df):
+    def __init__(self, clientid_convers_df, time_series_goals_df = pd.DataFrame()):
         self.clientid_convers_df = clientid_convers_df
         self.time_series_goals_df = time_series_goals_df
         self.email_visits_slice_df = self.clientid_convers_df[~self.clientid_convers_df['Email'].str.contains(self.no_email_regex)]
@@ -55,7 +55,7 @@ class MetrikaReport(object):
         # store time series
         self.report_json['time_series_data'] = time_series_goals_json
 
-
+# I forgot what does it mean :((
 # *** ALL YOU NEED TO MAKE self.load_clientid_email_table *** ALL YOU NEED TO MAKE self.load_clientid_email_table
 #           # clientid_convers_df = clientid_convers_df[COLUMNS]
 #           # clientid_convers_df= clientid_convers_df.astype(str)

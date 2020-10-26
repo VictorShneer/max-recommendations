@@ -16,7 +16,6 @@ from app.metrika.utils import request_min_max_visits_dates,get_metrika_goals, ge
 from app.metrika.metrika_report import MetrikaReport
 from app.analytics.utils import current_user_own_integration
 
-
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
 @current_user_own_integration

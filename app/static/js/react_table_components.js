@@ -36,6 +36,21 @@ class HeaderVisitsTable extends React.Component{
 
 
 class VisitsTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      file_name: window.location.pathname.split('/')[1] +'.csv',
+    };
+    this.exportCsv.bind(this.state.file_name);
+
+  }
+
+  exportCsv(){
+    $('.table').csvExport({
+      title: this.state.file_name
+    });
+  }
+
   render() {
 
     const rows = [];
@@ -54,12 +69,20 @@ class VisitsTable extends React.Component {
     }
 
     return (
-      <table className="table table_stats" >
-        <thead>
-            {headerNames}
-        </thead>
-        <tbody>{rows}</tbody>
-      </table>
+      <div>
+        <form onSubmit={() => {
+            this.exportCsv();
+            event.preventDefault();
+          }}>
+          <input type="submit" value='Экспорт csv' className="btn grmax-btn" />
+        </form>
+        <table className="table table_stats" >  
+          <thead>
+              {headerNames}
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
     );
   }
 }
@@ -92,7 +115,7 @@ class SearchBar extends React.Component {
             <input type="submit" value="Загрузить данные" className="btn grmax-btn"/>
           </form>
       </div>
-    );
+    )
   }
 }
 
@@ -105,7 +128,6 @@ class FilterableVisitsTable extends React.Component {
       error: null,
       url: '/metrika/'+this.props.atb+'/get_data?',
       start_date:this.props.default_start_date,
-
     };
     // &&!7^!^^! WTF
     this.fetch_metrika_view.bind(this.state.visits);
@@ -151,6 +173,8 @@ class FilterableVisitsTable extends React.Component {
     // code works after data loaded
     $('#graphs').show();
   }
+
+ 
   render() {
 
     const { visits, isLoading, error } = this.state;
@@ -182,7 +206,7 @@ class FilterableVisitsTable extends React.Component {
           <div id="piechart_3d"  className="round_border_container"></div>
           <br />
           <div className="round_border_container">
-          <VisitsTable visits={this.state.visits} />
+          <VisitsTable visits={this.state.visits}/>
           </div>
         </div>
        </div>
