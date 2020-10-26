@@ -10,7 +10,8 @@ from app.analytics import bp
 import requests
 from app.analytics.utils import current_user_own_integration, \
                                 create_url_for_query, \
-                                send_request_to_clickhouse
+                                send_request_to_clickhouse, \
+                                validate_external_segment_name
 from app.grhub.grmonster import GrMonster
 import traceback
 from pprint import pprint
@@ -54,6 +55,8 @@ def ftp_search_contacts(integration_id):
     grmonster = GrMonster(integration.api_key,\
                           ftp_login = integration.ftp_login, \
                           ftp_pass = integration.ftp_pass)
+    if not validate_external_segment_name(request.form['external_name']):
+        abort(404)
     try:
         current_user.launch_task('send_search_contacts_to_gr_ftp', \
                                     'Загрузка контактов в GR FTP, прогресс: ', \

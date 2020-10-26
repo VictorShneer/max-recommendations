@@ -7,6 +7,7 @@ from flask_login import current_user
 from flask import abort
 import requests
 from flask import current_app
+from alphabet_detector import AlphabetDetector
 
 # decoration to check if user owns integration he try to access
 def current_user_own_integration(function):
@@ -30,3 +31,12 @@ def send_request_to_clickhouse(url):
     auth = {'X-ClickHouse-User': current_app.config['CLICKHOUSE_LOGIN'],'X-ClickHouse-Key': current_app.config['CLICKHOUSE_PASSWORD']}
     r = requests.get(url = url, headers=auth, verify=certificate_path)
     return r
+
+def validate_external_segment_name(external_segment_name):
+    ad = AlphabetDetector()
+    if not all([ch.isalnum() or ch=='_' for ch in external_segment_name]):
+        return False
+    elif not ad.only_alphabet_chars(external_segment_name, "LATIN"):
+        return False
+    else:
+        return True

@@ -51,7 +51,7 @@ $(document).ready(function(){
   function send_ftp_gr_handler(event){
     event.preventDefault()
     $noformsuccess = $('<p id="newexternal" style="color:green;">Загрузка внешнего сегмента в GetResponse<p>')
-    $noformfail = $('<p id="newexternal" style="color:red;">Что-то пошло не так..<p>')
+    $noformfail = $('<p id="newexternal" style="color:red;">Что-то пошло не так.. Проверьте имя для сегмента. Допускаются только латинские буквы, цифры и нижнее подчеркивание<p>')
     // get search contacts
     var contactsList = [];
     $('#react-table-mount table tbody tr td:nth-child(2)').each(function() {

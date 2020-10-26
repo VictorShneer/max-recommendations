@@ -24,7 +24,6 @@ class CustomValidators(object):
         if str(start_date.data) >= aval_date:
             raise ValidationError((f'Начальная дата должна быть не позже {aval_date}'))
 
-
     def validate_integration_name(self, integration_name):
         if not all([ch.isalnum() or ch=='_' for ch in integration_name.data]):
             raise ValidationError(('Название интеграции может содержать только латинские буквы, цифры и нижнее подчеркивание'))
