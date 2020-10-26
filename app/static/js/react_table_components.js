@@ -70,18 +70,18 @@ class VisitsTable extends React.Component {
 
     return (
       <div>
-        <form onSubmit={() => {
-            this.exportCsv();
-            event.preventDefault();
-          }}>
-          <input type="submit" value='Экспорт csv' className="btn grmax-btn" />
-        </form>
         <table className="table table_stats" >  
           <thead>
               {headerNames}
           </thead>
           <tbody>{rows}</tbody>
         </table>
+        <form onSubmit={() => {
+            this.exportCsv();
+            event.preventDefault();
+          }}>
+          <input type="submit" value='Экспорт csv' className="btn grmax-btn" />
+        </form>
       </div>
     );
   }
