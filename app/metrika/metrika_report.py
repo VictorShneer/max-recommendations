@@ -1,6 +1,13 @@
+"""
+class can build performance table 
+and time series data with GR newsletters
+data collected from CH and GR account
+"""
+
 from app.grhub.grmonster import GrMonster
 import json
 import pandas as pd
+
 class MetrikaReport(object):
     report_json = {}
     no_email_regex = '^no-email*'    

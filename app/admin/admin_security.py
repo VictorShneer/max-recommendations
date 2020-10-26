@@ -1,3 +1,8 @@
+"""
+Admin security rules
+We check if current user is authenticated and has proper role to view admin pages
+TODO duplicated code need refactor
+"""
 from flask_admin.contrib.sqla import ModelView
 from flask_admin import AdminIndexView, expose
 from flask_login import current_user
@@ -13,8 +18,11 @@ class MyModelView(ModelView):
         super(MyModelView, self).__init__(model, session, name=name, category=category, endpoint=endpoint, url=url)
 
     def is_accessible(self):
+        if not current_user.is_authenticated:
+            return False
         current_roles = [role.name for role in current_user.roles]
-        return (current_user.is_authenticated and current_app.config['ADMIN_ROLE_TITLE'] in current_roles)
+        return current_app.config['ADMIN_ROLE_TITLE'] in current_roles
+
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('auth.login'))
@@ -33,8 +41,10 @@ class MyAdminIndexView(AdminIndexView):
         return self.render('admin/adminindex.html', form=form)
 
     def is_accessible(self):
+        if not current_user.is_authenticated:
+            return False
         current_roles = [role.name for role in current_user.roles]
-        return (current_user.is_authenticated and current_app.config['ADMIN_ROLE_TITLE'] in current_roles)
+        return current_app.config['ADMIN_ROLE_TITLE'] in current_roles
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('auth.login'))

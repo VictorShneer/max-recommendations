@@ -1,4 +1,6 @@
-# models.py
+"""
+this module is about SQLAlchemy model or DB structure
+"""
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_security import UserMixin, RoleMixin
 from app import db, login
@@ -12,11 +14,15 @@ import rq
 from datetime import datetime
 from app.utils import encode_this_string
 
+# this table connects Users and Roles
+# admin security is based on this
 roles_users = db.Table('roles_users', \
     db.Column('user_id', db.Integer(), db.ForeignKey('user.id')),\
     db.Column('role_id', db.Integer(), db.ForeignKey('role.id'))
 )
 
+# this model lets us track tasks progress
+# and inform users about it
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), index=True)

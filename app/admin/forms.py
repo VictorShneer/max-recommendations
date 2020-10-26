@@ -1,9 +1,13 @@
+"""
+This form is for AMs
+here they can assign crypto to new customers
+to let them create integrations
+"""
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import ValidationError, DataRequired
 from app.models import User
-
-
 
 class AssignCryptoForm(FlaskForm):
 

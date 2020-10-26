@@ -1,3 +1,6 @@
+'''
+These code runs worker that works on Heroku
+'''
 import os
 import urllib.parse
 from redis import Redis

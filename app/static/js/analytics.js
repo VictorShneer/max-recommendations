@@ -9,6 +9,8 @@ $(document).ready(function(){
   const filter_choices_menu = document.querySelector('#filters_form ul');
   filter_choices_menu.addEventListener('change', show_filter_menu);
 
+  // this function makes filter menu dynamic
+  // user see only that filters that he choose
   function show_filter_menu(event){
     divs_display_config = []
     $('#filters_form li').each(function(){
@@ -73,6 +75,7 @@ $(document).ready(function(){
       });
   }
   
+  // http API GR interface
   function send_to_gr_handler(event){
     event.preventDefault()
     $noformsuccess = $('<p id="newcampaingform" style="color:green;">Загрузка контактов в GetResponse<p>')

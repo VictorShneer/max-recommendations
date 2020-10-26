@@ -1,3 +1,7 @@
+"""
+these functions
+handle needs thats can appear in diffent places of the app
+"""
 import base64
 
 

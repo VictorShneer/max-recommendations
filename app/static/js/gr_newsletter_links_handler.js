@@ -7,12 +7,15 @@ availableLinksForm.addEventListener('submit', handleAvailableLinksForm);
 anableKeyForm  = document.getElementById('enable_key_form_button')
 anableKeyForm.addEventListener('click', enableKeyFormHandler)
 
+// drop all collected data before new key is in place
 function enableKeyFormHandler(event){
   $('#apikeyform form input#key.form-control').removeAttr('disabled');
   $("#available_links").empty();
   $("#available_newsletters").empty();
   $("#key").val('');
 }
+
+// POST new draft in GR account
 function handleAvailableLinksForm(event){
   //
   event.preventDefault();
@@ -43,6 +46,7 @@ function handleAvailableLinksForm(event){
   }).catch((error) => console.log(error));
 }
 
+//GET links in certain newsletter
 function handleAvailableNewslettersForm(event){
   event.preventDefault();
   event.submitter.disabled = true;
@@ -76,7 +80,7 @@ function handleAvailableNewslettersForm(event){
   }).catch((error) => console.log(error));
 }
 
-
+// GET newsletters from GR account
 function handleApiKeyForm(event){
   event.preventDefault();
   event.submitter.disabled = true;

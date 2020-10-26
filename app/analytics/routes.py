@@ -1,3 +1,7 @@
+"""
+analytics routes
+"""
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from app.models import User, Integration
@@ -24,6 +28,7 @@ from app.analytics.analytics_consts import COLUMNS, INITIAL_QUERY,INITIAL_QUERY_
 from app.metrika.utils import get_metrika_goals
 import json
 
+# send search contacs to GR campaing by http API
 @bp.route('/analytics/send_search_contacts/<integration_id>', methods=['POST'])
 @current_user_own_integration
 @login_required
@@ -41,6 +46,7 @@ def send_search_contacts(integration_id):
         return {'status':'<400>'}
     return {'status':'<200>'}
 
+# send search contacs to GR campaing by FTP
 @bp.route('/analytics/ftp_search_contacts/<integration_id>', methods=['POST'])
 @current_user_own_integration
 @login_required
@@ -61,6 +67,7 @@ def ftp_search_contacts(integration_id):
         return {'status':'<400>'}
     return {'status':'<200>'}
 
+# this route hande POST new GR campaign by http API
 @bp.route('/analytics/create_gr_campaign/<integration_id>', methods=["POST"])
 @current_user_own_integration
 @login_required
@@ -70,11 +77,13 @@ def create_gr_campaign_route(integration_id):
     grmonster.create_gr_campaign(request.form['gr_campaign_name'])
     return '<200>'
 
-
+# this route handle initial analytics page call
+# make first request to CH and GR to get initial integration data
+# like dates ranges, GR campaigns and YM goals
+# TODO need refactor
 @bp.route('/analytics/<integration_id>', methods = ['GET', 'POST'])
 @login_required
 @current_user_own_integration
-# @integration_is_ready
 def generate_values(integration_id):
     form = AnalyticsBar()
     filters_form = Filters()
@@ -140,8 +149,9 @@ def generate_values(integration_id):
                             total_unique_emails=total_unique_emails,
                             integration_name=integration.integration_name)
 
-
-
+# this route handle analytics form send
+# here we make calls to CH to get visitors
+# that meet conditions choosed by user in /analytics/<integration_id> route 
 @bp.route('/analytics/getdata', methods = ['GET','POST'])
 @login_required
 # @current_user_own_integration

@@ -1,3 +1,10 @@
+"""
+here are SQL queries templates
+and order of table columns
+if you need to change columns or their order
+you should do it here 
+"""
+
 TIME_SERIES_QUERY = \
 """
     select b.Date,

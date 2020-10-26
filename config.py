@@ -1,3 +1,8 @@
+"""
+Max Recommendation Config File
+this config is stored in every current_app context
+"""
+
 import os
 from dotenv import load_dotenv
 

@@ -1,4 +1,8 @@
-# main.py
+"""
+main routes
+CRUD integration
+GR initializer
+"""
 from flask import Blueprint, render_template, redirect, url_for, flash,request, abort, current_app
 from flask_login import login_required, current_user
 from app.models import User, Message,Integration,Notification
@@ -12,7 +16,7 @@ from app.clickhousehub.metrica_logs_api import drop_integration
 from wtforms.fields.html5 import DateField
 import datetime
 from app.grhub.grmonster import GrMonster
-from app.main.utils import integration_is_ready, run_integration_setup
+from app.main.utils import run_integration_setup
 from app.main.utils import plan_init_gr_contacts
 
 @bp.route('/delete_integration', methods=['GET','POST'])
@@ -137,6 +141,7 @@ def create_integration():
 
     return render_template('create_integration.html', form=form)
 
+# this route handle GR initialization with out YM keys and counters
 @bp.route('/gr_init', methods = ['GET','POST'])
 @login_required
 def gr_init():
@@ -164,7 +169,6 @@ def gr_init():
 
 @bp.route('/edit_integration/<integration_id>', methods = ['GET','POST'])
 @login_required
-# @integration_is_ready
 def edit_integration(integration_id):
 
     form = EditIntegration()
@@ -198,6 +202,7 @@ def edit_integration(integration_id):
                             form=form,\
                             title=title)
 
+# legacy ???
 @bp.route('/link_creation', methods=['GET','POST'])
 @login_required
 def link_creation():
@@ -216,6 +221,7 @@ def link_creation():
         return render_template('link_creation.html', form=form)
     return render_template('link_creation.html', form=form)
 
+# legacy ???
 #for metrika examples
 @bp.route('/metrika-examples')
 def metexample():

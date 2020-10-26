@@ -1,3 +1,11 @@
+"""
+module handles all process from getting newsletters
+to wrapping links in certain one 
+and POSTing new draft in GR account
+
+TODO 
+this module should be moved on GrMonster rails
+"""
 import requests
 import datetime
 from bs4 import BeautifulSoup
@@ -101,5 +109,3 @@ def parse_links_from_content(content):
             urls.add(url.group(0))
 
     return urls
-
-# u0bwk7n5i3u9w2g2hndz8yn346x361g0

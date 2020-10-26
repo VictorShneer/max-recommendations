@@ -1,3 +1,8 @@
+"""
+Here is the main class of the module
+it lays on the top of inheritance
+it aggragates and do bussines logic over low level GrUtils methods
+"""
 import concurrent.futures
 from pprint import pprint
 from app.grhub.grutils import GrUtils

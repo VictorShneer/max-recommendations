@@ -128,6 +128,7 @@ def drop_integration(crypto, integration_id, source = None):
         url_for_hits_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS {db_name}.{table_name}'.format(db_name = crypto, table_name = clickhouse_hits_table))
         url_for_visits_aggr_delete = clickhouse.get_clickhouse_data('DROP TABLE IF EXISTS {db_name}.{table_name}'.format(db_name = crypto, table_name = clickhouse_visits_aggr_table_name))
 
+# this function is entry point to the whole Metrika-ClickHouse integration
 def handle_integration(integration_obj, user_obj, params):
     # print(crypto,type(crypto))
     # print(id,type(id))

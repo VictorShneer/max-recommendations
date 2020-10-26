@@ -1,3 +1,9 @@
+"""
+This GrUtils mostly looks like 
+implementation of GR API reference functions
+also it can do some stuff with GR FTP server
+"""
+
 from app.grhub.grconnector import GrConnector
 from ftplib import FTP
 import ftplib

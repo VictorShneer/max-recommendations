@@ -1,3 +1,9 @@
+"""
+Here are code that create main app
+also here you can find cli commands
+all regular proccess are here
+"""
+
 from app import create_app
 from app.models import User, Integration, Notification, Role
 from app import db
@@ -45,8 +51,6 @@ def give_admin_role_to_id(id):
             db.session.commit()
 
         app.logger.info('Готово! Роль присвоена')
-
-
 
 
 @app.cli.command()

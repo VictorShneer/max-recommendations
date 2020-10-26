@@ -1,3 +1,7 @@
+"""
+sub functions
+handle route and differenct module need in general
+"""
 from app.utils import generate_full_CH_table_name
 from app.clickhousehub.clickhouse_custom_request import made_url_for_query,request_clickhouse
 from flask import flash, redirect, url_for, current_app
@@ -6,6 +10,7 @@ import requests
 from io import StringIO
 import pandas as pd
 
+# build pandas df from CH SQL template and filter statements
 def get_df_from_CH(crypto, integration_id, query_template, goals_filter_array, request_start_date, columns):
     clickhouse_table_name = generate_full_CH_table_name(crypto, 'visits_raw', integration_id)  
     goals_fiter_sql_clause = generate_filter_goals_sql_clause(goals_filter_array)
@@ -19,6 +24,10 @@ def get_df_from_CH(crypto, integration_id, query_template, goals_filter_array, r
     current_app.logger.info(f'### request_clickhouse start urls:\n{query_url}')
     return generate_df_from_query(query_url,columns)
 
+# build pandas df from CH response
+# first requset clickhouse 
+# then interpret repsponse as StringIO
+# and read it as csv file
 def generate_df_from_query(query_url, columns):
     try:
 

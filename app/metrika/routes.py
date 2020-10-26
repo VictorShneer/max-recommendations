@@ -1,3 +1,7 @@
+"""
+metrika (performance analytics) routs
+"""
+
 import json
 from datetime import datetime, timedelta
 from flask import render_template, request, redirect, url_for, flash, abort, current_app
@@ -16,6 +20,8 @@ from app.metrika.utils import request_min_max_visits_dates,get_metrika_goals, ge
 from app.metrika.metrika_report import MetrikaReport
 from app.analytics.utils import current_user_own_integration
 
+# this route handle building convesion and timeseries data
+# based on date and goals filters set up by user
 @bp.route('/metrika/<integration_id>/get_data')
 @login_required
 @current_user_own_integration
@@ -48,6 +54,9 @@ def metrika_get_data(integration_id):
     metrika_report.load_summary()
     return metrika_report.report_json
 
+
+# init metrika page view
+# it collectes data ranges data from CH and goals from YM
 @bp.route('/metrika/<integration_id>', methods = ['GET'])
 @login_required
 @current_user_own_integration
@@ -74,6 +83,8 @@ def metrika(integration_id):
             integration_id=integration_id,\
             goals=goals)
 
+# this route handles GR subscribe callback 
+# TODO looks like it should be in MAIN bp
 @bp.route('/metrika/callback_add_custom_field/<identificator>', methods = ['GET','POST'])
 def callback_add_custom_field(identificator):
     identificator_decoded=decode_this_string(identificator)

@@ -2,6 +2,7 @@ import json
 import requests
 import base64
 
+# legacy 
 def add_custom_field(contact_email,contact_id, custom_field_id):
     domain = "https://api.getresponse.com/v3" #SMBшный домен сейчас, т.к. здесь все под аккаунт Макса
     headers = {

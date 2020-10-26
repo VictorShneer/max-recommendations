@@ -1,3 +1,7 @@
+"""
+this forms 
+allow user to gel all GR newsletters and newsletters links 
+"""
 from flask_wtf import FlaskForm
 from wtforms import SelectMultipleField, StringField, SubmitField, SelectField
 from wtforms.validators import DataRequired

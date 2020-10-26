@@ -1,3 +1,7 @@
+"""
+Here all CRUD integration forms
+and separate GR contacts initializer form
+"""
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, IntegerField, DateField,BooleanField
 from wtforms.validators import DataRequired, ValidationError
@@ -48,6 +52,7 @@ class CustomValidators(object):
         except:
             raise ValidationError(('Нет контакта с FTP. Проверьте логин и пароль'))
 
+# this form class handles the both - C and U integration
 class EditIntegration(FlaskForm,CustomValidators):
     integration_name = StringField("Название интеграции", validators=[DataRequired()])
     api_key = StringField('API ключ GetResponse', validators=[DataRequired()])
@@ -59,10 +64,11 @@ class EditIntegration(FlaskForm,CustomValidators):
     auto_load = BooleanField('Автозагрузка')
     submit = SubmitField("Отправить")
 
-
+# legacy a lil bit
 class LinkGenerator(FlaskForm):
     link = StringField("Введите ссылку", validators=[DataRequired()])
     submit = SubmitField("Получить ссылку")
+
 
 class GrInitializer(FlaskForm, CustomValidators):
     integration_name = StringField("Название интеграции", validators=[DataRequired()])

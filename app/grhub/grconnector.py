@@ -1,6 +1,10 @@
+"""
+This is the core of the module inheritance structure
+this class handle evere connection event
+it can GET, POST, DELETE and handel conncetion errors
+"""
+
 import requests
-
-
 
 class GrConnector(object):
     gr_api_root = 'https://api.getresponse.com/v3/'

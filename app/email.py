@@ -1,3 +1,7 @@
+"""
+this module handles sending GR transac email needs
+TODO maybe this can be moved on GrMonster rails
+"""
 import requests
 from flask import current_app
 

@@ -1,9 +1,10 @@
+"""
+Here we store 
+some consts and SQL query templates for 
+analytics blueprint
+"""
 COLUMNS = ["ClientID",'Email','Операционная система','Город','Марка мобильного телефона', 'Модель мобильного телефона','Браузер']
-
-
 INITIAL_QUERY_COLUMNS = ['Date','mxm','OperatingSystem','RegionCity','cutQueryString(URL)','MobilePhone','MobilePhoneModel', 'Browser']
-
-
 INITIAL_QUERY = '''
   SELECT
   		Date, 

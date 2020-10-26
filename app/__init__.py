@@ -1,4 +1,7 @@
-# init.py
+"""
+this module instantiate the whole app
+by app factory (create_app fucntion)
+"""
 from logging.handlers import RotatingFileHandler
 import os
 import logging
@@ -14,7 +17,7 @@ from flask_admin import Admin
 from rq import Queue
 import rq
 from redis import Redis
-# from flask_wtf.csrf import CSRFProtect
+
 db = SQLAlchemy()
 bootstrap = Bootstrap()
 login = LoginManager()
@@ -22,7 +25,6 @@ migrate = Migrate()
 login.login_view = 'auth.login'
 login.login_message = "Please login to view that page."
 
-# csrf = CSRFProtect()
 
 def create_app(adminFlag=True,config_class=Config):
     app = Flask(__name__)

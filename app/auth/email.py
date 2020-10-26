@@ -1,3 +1,7 @@
+"""
+Here we handle send passwod reset email
+is goes by GR transactional email system
+"""
 from flask import render_template, current_app
 from app.email import send_email
 from flask import current_app

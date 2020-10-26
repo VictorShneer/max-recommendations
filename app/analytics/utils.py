@@ -1,9 +1,14 @@
+"""
+sub function
+pretty every blueprint has such module
+"""
 from app.models import User, Integration
 from flask_login import current_user
 from flask import abort
 import requests
 from flask import current_app
 
+# decoration to check if user owns integration he try to access
 def current_user_own_integration(function):
     def wrapper(integration_id):
         integration = Integration.query.filter_by(id=integration_id).first_or_404()

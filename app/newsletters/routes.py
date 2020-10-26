@@ -1,3 +1,8 @@
+"""
+wrapping GR newsletter links routes
+most call come from analytics js
+"""
+
 from flask import render_template, redirect, url_for, request, flash, abort
 from flask_login import login_required, current_user
 from app.newsletters import bp
@@ -9,6 +14,7 @@ from app.newsletters.gr_requests import get_newsletters_names,\
                                         gr_post_wrapped_newsletter
 import datetime
 
+# main page view
 @bp.route('/newsletters')
 @login_required
 def newsletters():

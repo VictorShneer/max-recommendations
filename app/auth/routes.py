@@ -1,4 +1,6 @@
-# auth.py
+"""
+authentication routes
+"""
 
 from flask import render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash

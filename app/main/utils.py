@@ -1,3 +1,7 @@
+"""
+sub fucntions
+that handles routes needs
+"""
 from datetime import date, datetime, timedelta
 from flask import url_for, redirect, flash
 from app.models import Task, Integration
@@ -19,6 +23,7 @@ def check_if_date_legal(user_date):
         return False
     return True
 
+# legacy ?? 
 def integration_is_ready(function):
     def wrapper(integration_id):
         integration = Integration.query.filter_by(id = integration_id).first_or_404()
@@ -35,6 +40,9 @@ def integration_is_ready(function):
     wrapper.__name__ = function.__name__
     return wrapper
 
+# this func plan GR init process
+# it splits GR contacts into 100k chunks
+# and runs separate task for every chunk
 def plan_init_gr_contacts(integration_obj, user):
     grmonster = GrMonster(api_key=integration_obj.api_key,\
                             ftp_login=integration_obj.ftp_login,\
@@ -62,6 +70,9 @@ def plan_init_gr_contacts(integration_obj, user):
                                     grmonster,\
                                     {'user_id':user.id, 'user_crypto':user.crypto})
             db.session.commit()
+
+# this func setup the whole integration creating process
+# CH tables, callback url, FTP folders, init GR contacts
 def run_integration_setup(integration,start_date):
     timing = ['-start_date={}'.format(start_date)]
     end_date = date.today()

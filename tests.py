@@ -1,3 +1,7 @@
+"""
+here are unit tests
+TODO add more tests
+"""
 #!/usr/bin/env python
 from datetime import datetime, timedelta
 import unittest

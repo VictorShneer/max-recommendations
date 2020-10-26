@@ -1,3 +1,8 @@
+"""
+Our analytics search based on flask form class
+here we declare all fields that allow
+user make searches over his site visitors
+"""
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField, IntegerField, SelectField, SelectMultipleField, widgets
 from wtforms.fields.html5 import DateField

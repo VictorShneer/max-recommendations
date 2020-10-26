@@ -1,3 +1,5 @@
+# WHAT IS IT???
+# legacy
 from pandahouse import read_clickhouse
 
 connection = {'host': 'https://rc1b-6wcv9d6xfzgvj459.mdb.yandexcloud.net:8443',

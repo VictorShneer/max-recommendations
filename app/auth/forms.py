@@ -1,3 +1,10 @@
+"""
+authentication forms
+registation
+login
+reset password request
+reset password form
+"""
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import ValidationError, DataRequired, Email, EqualTo, Length
