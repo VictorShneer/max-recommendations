@@ -63,7 +63,7 @@
         {% if current_user.is_authenticated %}
         <li id="navbar-profile">
         <a href="" class="navbar-item" id='navbar-profile-link'>
-            Профиль
+             Возможности
         </a>
         <div class="navbar-submenu navbar-submenu-profile">
           <ul>
@@ -85,7 +85,6 @@
                 </span>
             </a>
         </li>
-        {% endif %}
         {% if current_user.email == 'george1@mail.ru' %}
         <li>
         <a href="{{ url_for('main.admin') }}" class="navbar-item">
@@ -93,14 +92,16 @@
         </a>
         </li>
         {% endif %}
-        {% if current_user.is_authenticated %}
         <li>
         <a href="{{ url_for('main.documentation') }}" class="navbar-item">
             Документация
         </a>
         </li>
-        {% endif %}
-        {% if current_user.is_authenticated %}
+        <li>
+        <a href="{{ url_for('main.profile') }}" class="navbar-item">
+            Личный кабинет
+        </a>
+        </li>
         <li>
         <a href="{{ url_for('auth.logout') }}" class="navbar-item">
             Выйти
