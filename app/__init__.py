@@ -36,7 +36,7 @@ def create_app(adminFlag=True,config_class=Config):
     migrate.init_app(app,db)
     bootstrap.init_app(app)
     login.init_app(app)
-    cors.init_app(app, resources={r"/tracking/*": {"origins": "*"}})
+    cors.init_app(app, resources={r"/tracking/test": {"origins": "*"}})
     #ADMIN PANEL
     if (adminFlag):
         from app.admin.admin_security import MyModelView, MyAdminIndexView
