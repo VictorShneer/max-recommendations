@@ -11,21 +11,7 @@ import pandas as pd
 import json
 from functools import wraps
 
-def support_jsonp(f):
-    """Wraps JSONified output for JSONP"""
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        callback = request.args.get('callback', False)
-        if callback:
-            content = str(callback) + '(' + str(f().data) + ')'
-            return current_app.response_class(content, mimetype='application/json')
-        else:
-            return f(*args, **kwargs)
-    return decorated_function
-
-# then in your view
 @bp.route('/tracking/test', methods=['GET', 'POST'])
-@support_jsonp
 def test():
     print('try me!!!!!!!!')
     req = request.get_json()
@@ -34,23 +20,13 @@ def test():
     res = make_response(jsonify({"message": "OK"}), 200)
 
     return res
-    # return jsonify({"foo":"bar"})
 
-# @bp.route('/tracking/<integration_id>', methods=['POST','GET'])
-# @current_user_own_integration
-# @login_required
-# def get_tracking_code(integration_id):
-#     req = request.get_json()
-#
-#     print(req)
-#
-#     res = make_response(jsonify({"message": "OK"}), 200)
-#
-#     return res
-#
-#
-# @bp.route('/trackingTest', methods=['POST','GET'])
-# @login_required
-# def tracking_test():
-#     print('hui')
-#     return render_template('trackingTest.html')
+@bp.route('/tracking/dev', methods=['GET', 'POST'])
+def teststst():
+    print('DEV NO CORS')
+    req = request.get_json()
+    print(req)
+
+    res = make_response(jsonify({"DEV": "SUCCESS"}), 200)
+
+    return res
