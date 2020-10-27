@@ -2,6 +2,7 @@
 main routes
 CRUD integration
 GR initializer
+profile
 """
 from flask import Blueprint, render_template, redirect, url_for, flash,request, abort, current_app
 from flask_login import login_required, current_user
@@ -15,9 +16,11 @@ from flask import jsonify
 from app.clickhousehub.metrica_logs_api import drop_integration
 from wtforms.fields.html5 import DateField
 import datetime
+from app.auth.email import send_password_reset_email
 from app.grhub.grmonster import GrMonster
 from app.main.utils import run_integration_setup
 from app.main.utils import plan_init_gr_contacts
+from app.auth.forms import ResetPasswordRequestForm,ChangeEmailForm
 
 @bp.route('/delete_integration', methods=['GET','POST'])
 @login_required
@@ -202,6 +205,7 @@ def edit_integration(integration_id):
 def link_creation():
     form = LinkGenerator()
     if form.validate_on_submit():
+        print('hey')
         input_link = form.link.data.strip()
         last_sym = input_link[-1:]
         if (input_link.find('?') == -1):
@@ -214,6 +218,29 @@ def link_creation():
         flash('Ваша ссылка: {} '.format(link))
         return render_template('link_creation.html', form=form)
     return render_template('link_creation.html', form=form)
+
+@bp.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    reset_password_request_form = ResetPasswordRequestForm()
+    reset_password_request_form.email.render_kw = {'readonly': True, 'value': current_user.email}
+    change_email_form = ChangeEmailForm()
+    user = User.query.filter_by(id=current_user.id).first()   
+    if reset_password_request_form.validate_on_submit() and reset_password_request_form.submit.data:
+        print(reset_password_request_form.submit.data)
+        user = User.query.filter_by(email=reset_password_request_form.email.data).first()
+        if user:
+            send_password_reset_email(user)
+        flash('Проверьте почту для сброса пароля')
+        return redirect(url_for('main.profile'))
+    if change_email_form.validate_on_submit() and change_email_form.submit_new_email.data:
+        user.email = change_email_form.email.data
+        db.session.commit()
+        flash('Email изменен')
+        return redirect(url_for('main.profile'))
+    return render_template('profile.html',\
+                            reset_password_request_form = reset_password_request_form,\
+                            change_email_form = change_email_form)
 
 #for documentation
 @bp.route('/documentation')
