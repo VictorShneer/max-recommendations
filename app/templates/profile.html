@@ -2,7 +2,7 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 
 {% block app_content %}
-<h1>Привет, {{current_user.email}}</h1>
+<h1>Добрый день, {{current_user.email}}!</h1>
 	  <div class="row" id="reset_password_request_form">
       <div class="col-md-4">
           {{ wtf.quick_form(reset_password_request_form) }}
