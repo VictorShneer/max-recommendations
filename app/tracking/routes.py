@@ -24,7 +24,7 @@ def support_jsonp(f):
     return decorated_function
 
 # then in your view
-@bp.route('/tracking/test', methods=['GET'])
+@bp.route('/tracking/test', methods=['GET', 'POST'])
 @support_jsonp
 def test():
     print('try me!!!!!!!!')
