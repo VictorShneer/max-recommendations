@@ -17,11 +17,13 @@ from flask_admin import Admin
 from rq import Queue
 import rq
 from redis import Redis
+from flask_cors import CORS
 
 db = SQLAlchemy()
 bootstrap = Bootstrap()
 login = LoginManager()
 migrate = Migrate()
+cors = CORS()
 login.login_view = 'auth.login'
 login.login_message = "Please login to view that page."
 
@@ -34,7 +36,7 @@ def create_app(adminFlag=True,config_class=Config):
     migrate.init_app(app,db)
     bootstrap.init_app(app)
     login.init_app(app)
-
+    cors.init_app(app, resources={r"/tracking/*": {"origins": "*"}})
     #ADMIN PANEL
     if (adminFlag):
         from app.admin.admin_security import MyModelView, MyAdminIndexView
