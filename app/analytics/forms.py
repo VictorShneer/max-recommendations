@@ -17,7 +17,7 @@ class AnalyticsBar(FlaskForm):
     MobilePhoneModel = SelectMultipleField('Модель мобильного устроства', default = 'Не выбрано')
     Browser = SelectMultipleField('Браузер', default = 'Не выбрано')
     clause_visits = SelectField('После/До/Равно', choices=[(0,'Не выбрано'), (1,'После'), (2,'До'), (3,'Равно')], coerce=int, default =0)
-    Date = DateField('Дата последнего визита', format='%d.%m.%Y')
+    Date = DateField('Дата последнего визита', format='%Y-%m-%d')
     GoalsID = SelectMultipleField('Цели', default = 'Не выбрано')
     clause_visits_from_to = SelectField('Больше/Меньше/Равно', choices=[(0,'Не выбрано'), (1,'Больше'), (2,'Меньше'), (3,'Равно')], coerce=int, default=0)
     amount_of_visits = IntegerField('Количество визитов', default = '0')

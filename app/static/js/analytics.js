@@ -182,6 +182,7 @@ $(document).ready(function(){
           },
           error: function(xhr) {console.log("error. see details below.");
               console.log(xhr.status + ": " + xhr.responseText);
+              document.getElementById('search_count').innerHTML = `<span style="color:red;">Ошибка в запросе</span>`;
           },
       }).done(function() {
         console.log('Done! Search table ready.');

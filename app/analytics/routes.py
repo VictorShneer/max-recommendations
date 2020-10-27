@@ -11,7 +11,8 @@ import requests
 from app.analytics.utils import current_user_own_integration, \
                                 create_url_for_query, \
                                 send_request_to_clickhouse, \
-                                validate_external_segment_name
+                                validate_external_segment_name, \
+                                validate_analytics_form
 from app.grhub.grmonster import GrMonster
 import traceback
 from pprint import pprint
@@ -27,6 +28,7 @@ import binascii
 from app.analytics.analytics_consts import COLUMNS, INITIAL_QUERY,INITIAL_QUERY_COLUMNS
 from app.metrika.utils import get_metrika_goals
 import json
+from flask import jsonify
 
 # send search contacs to GR campaing by http API
 @bp.route('/analytics/send_search_contacts/<integration_id>', methods=['POST'])
@@ -107,7 +109,6 @@ def generate_values(integration_id):
         initial_response = initial_response_raw.text
         file_from_string = StringIO(initial_response)
         inital_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names=INITIAL_QUERY_COLUMNS)
-
         # get goals
         counter_id = integration.metrika_counter_id
         metrika_key = integration.metrika_key
@@ -163,14 +164,14 @@ def process_values():
             #geting the dict from the form
             dict_raw = request.form.to_dict(flat=False)
             integration_id = request.form["integration_id"]
-            dict_of_requests = {value: dict_raw[value] for value in dict_raw if dict_raw[value] not in ([''], ['0'],['Не выбрано']) if value != 'csrf_token'}
-
+            dict_of_requests = {value: dict_raw[value] for value in dict_raw if dict_raw[value] not in ([''], ['0'],['Не выбрано']) and value != 'csrf_token'}
+            if not validate_analytics_form(dict_of_requests):
+                return jsonify(message='bad request'),400
             #changing the values for the query
             dict_of_requests = {value: '>=' if dict_of_requests[value] == ['1'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
                                 '<=' if dict_of_requests[value] == ['2'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
                                 '==' if dict_of_requests[value] == ['3'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
                                 dict_of_requests[value] for value in dict_of_requests}
-            #trying to concat the fucking query
             #TO DO: last value
             where = "WHERE has(v.WatchIDs, h.WatchID) = 1 AND"
             having = "HAVING"
@@ -188,7 +189,7 @@ def process_values():
 
             for index, i in enumerate(dict_of_requests):
                 if i == 'clause_visits_from_to':
-                    print(i)
+                    # print(i)
                     having = having + ' count(v.VisitID) ' + str(dict_of_requests[i]).strip("''")
                 elif i in ('amount_of_visits'):
                     having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
@@ -228,8 +229,8 @@ def process_values():
             columns_df = columns_df.dropna(subset=['Email'])
             columns_df = columns_df.drop_duplicates(subset=['Email'])
             count = columns_df.count()
-            print(count)
-            pprint(columns_df)
+            # print(count)
+            # pprint(columns_df)
             front_end_df= columns_df.astype(str)
             json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
             json_to_return =json.loads(json_to_return)
