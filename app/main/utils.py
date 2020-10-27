@@ -6,9 +6,23 @@ from datetime import date, datetime, timedelta
 from flask import url_for, redirect, flash
 from app.models import Task, Integration
 from app import db
+from app.utils import represents_int
 from flask_login import current_user
 from app.grhub.grmonster import GrMonster
 import math
+
+def check_if_input_legal(date, goals):
+    if not check_if_date_legal(date):
+        return False
+    if goals and not check_if_goals_legal(goals):
+        return False
+    return True
+def check_if_goals_legal(goals):
+    for goal in goals.split(','):
+        if not represents_int(goal):
+            return False
+    else:
+        return True
 
 def check_if_date_legal(user_date):
     today = str(date.today())

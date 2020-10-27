@@ -15,7 +15,7 @@ from app.grhub.grmonster import GrMonster
 from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
 from app.metrika.metrika_sql_queries import TIME_SERIES_QUERY, VISITS_RAW_QUERY,TIME_SERIES_DF_COLUMNS, COLUMNS
-from app.main.utils import check_if_date_legal
+from app.main.utils import check_if_input_legal
 from app.metrika.utils import request_min_max_visits_dates,get_metrika_goals, get_df_from_CH
 from app.metrika.metrika_report import MetrikaReport
 from app.analytics.utils import current_user_own_integration
@@ -30,8 +30,8 @@ def metrika_get_data(integration_id):
     # retrieve args and validate them
     request_start_date = request.args.get('start_date')
     request_goals = request.args.get('goals') # TODO: validate goals
-    if not check_if_date_legal(request_start_date):
-        print('Illigal start date')
+    if not check_if_input_legal(request_start_date,request_goals):
+        print('Illigal user input')
         abort(404)
     goals_filter_array=[]
     if request_goals:
