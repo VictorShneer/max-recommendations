@@ -22,7 +22,7 @@ def test():
     return res
 
 @bp.route('/tracking/dev', methods=['GET', 'POST'])
-def test():
+def teststst():
     print('DEV NO CORS')
     req = request.get_json()
     print(req)
