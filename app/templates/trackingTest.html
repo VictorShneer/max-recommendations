@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
+{% block app_content %}
+
+HELLO
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+  function submit_message() {
+
+      const data = { clientID: '1234567543',
+                    email: 'hello@mail.ru'};
+
+      fetch(`${window.origin}/tracking/11`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(data),
+        cache: "no-cache",
+        headers: new Headers({
+          "content-type": "application/json"
+        })
+      })
+        .then(function (response) {
+          if (response.status !== 200) {
+            console.log(`Looks like there was a problem. Status code: ${response.status}`);
+            return;
+          }
+          response.json().then(function (data) {
+            console.log(data);
+          });
+        })
+        .catch(function (error) {
+          console.log("Fetch error: " + error);
+        });
+
+    }
+    submit_message();
+</script>
+
+{% endblock %}

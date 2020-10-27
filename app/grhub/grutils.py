@@ -1,5 +1,5 @@
 """
-This GrUtils mostly looks like 
+This GrUtils mostly looks like
 implementation of GR API reference functions
 also it can do some stuff with GR FTP server
 """
@@ -11,7 +11,7 @@ import math
 
 class GrUtils(GrConnector):
     hash_email_custom_field_id = None
-    ftp_host = 'ftp.getresponse360.com'
+    ftp_host = 'ftp.getresponse360.pl'
 
     def __init__(self,api_key, ftp_login, ftp_pass):
         super().__init__(api_key)
@@ -54,7 +54,7 @@ class GrUtils(GrConnector):
         ftp_obj = FTP(host = self.ftp_host)
         login = ftp_obj.login(self.ftp_login,self.ftp_pass)
         ftpResponse = ftp_obj.mkd(dir_path);
-        print(ftpResponse);    
+        print(ftpResponse);
         ftp_obj.quit()
 
 

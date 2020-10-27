@@ -27,7 +27,7 @@ class Config(object):
     KEY = 'u0bwk7n5i3u9w2g2hndz8yn346x361g0'
 
     #GR FTP
-    GR_FTP_HOST = 'ftp.getresponse360.com'
+    GR_FTP_HOST = 'ftp.getresponse360.pl'
 
     ADMIN_ROLE_TITLE = 'admin'
 
@@ -59,4 +59,3 @@ class Config(object):
     # CALLBACKS
     CALLBACK_URL = '/metrika/callback_add_custom_field/'
     ADMINS = ['implixgr360@gmail.com']
-
