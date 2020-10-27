@@ -28,7 +28,13 @@ def support_jsonp(f):
 @support_jsonp
 def test():
     print('try me!!!!!!!!')
-    return jsonify({"foo":"bar"})
+    req = request.get_json()
+    print(req)
+
+    res = make_response(jsonify({"message": "OK"}), 200)
+
+    return res
+    # return jsonify({"foo":"bar"})
 
 # @bp.route('/tracking/<integration_id>', methods=['POST','GET'])
 # @current_user_own_integration
