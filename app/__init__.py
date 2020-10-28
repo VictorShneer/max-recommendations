@@ -40,7 +40,7 @@ def create_app(adminFlag=True,config_class=Config):
     #ADMIN PANEL
     if (adminFlag):
         from app.admin.admin_security import MyModelView, MyAdminIndexView
-        from app.models import User, Integration, Role, Task, Notification, Message
+        from app.models import User, Integration, Role, Task, Notification, Message, SavedSearch
         from sqlalchemy import inspect
         admin=Admin()
         admin.init_app(app,index_view = MyAdminIndexView())
@@ -50,6 +50,7 @@ def create_app(adminFlag=True,config_class=Config):
         admin.add_view(MyModelView(Task, db.session))
         admin.add_view(MyModelView(Notification, db.session))
         admin.add_view(MyModelView(Message, db.session))
+        admin.add_view(MyModelView(SavedSearch, db.session))
 
     app.redis = Redis.from_url(app.config['REDISTOGO_URL'])
     app.task_queue = rq.Queue('max-tasks', connection=app.redis, default_timeout=1200)

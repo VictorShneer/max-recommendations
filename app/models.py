@@ -156,6 +156,7 @@ class Integration(UserMixin,db.Model):
     callback_url = db.Column(db.String(100))
     ftp_login = db.Column(db.String(100))
     ftp_pass = db.Column(db.String(100))
+    saved_searched = db.relationship('SavedSearch', backref='integration', lazy='dynamic')
 
     def __repr__(self):
         return '<Integration {}>'.format(self.integration_name)
@@ -177,3 +178,8 @@ class Role(db.Model, RoleMixin):
     description = db.Column(db.String(256))
 
 
+class SavedSearch(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    ch_query = db.Column(db.String(10000))
+    integration_id = db.Column(db.Integer, db.ForeignKey('integration.id'))
