@@ -91,7 +91,7 @@
             </div>
         
           <div class="col-sm-6">
-            <p style="margin-top: 70px;">Выберите список из GetResponse, куда импортировать контакты:</p>
+            <p style="margin-top: 70px;">Выберите список GR, куда вы хотите экспортировать контакты:</p>
             <select id="gr_campaigns" class="form-control select-gr-campaigns">
               {% for gr_campaign in gr_campaigns %}
                 <option value="{{ gr_campaign[0] }}">{{ gr_campaign[1] }}</option>
@@ -103,10 +103,15 @@
           </div> 
 
           <div class="col-sm-6">
-            <p style="margin-top: 70px;">Название нового внешнего семента GR</p>
-            <input id="external_name_input" type="text" size="40">
-            <div id='newexternal'></div> 
-            <a class="btn btn-default grmax-btn" id="sendGRFtp" name="sendGRFtp" type="sendGRFtp">Отправить в GR</a>
+            <p style="margin-top: 70px;">Выберите сохраненный поиск, который вы хотите обновить или создайте новый:</p>
+              <select id="saved_searches" class="form-control select-gr-campaigns">
+                {% for saved_search in saved_searches %}
+                  <option value="{{ saved_search.name }}">{{ saved_search.name }}</option>
+                {% endfor %}
+              </select>
+            <a id="create_saved_search" class="grmax-justlink" href=''>Создать новый</a>
+            <div id='newsavedsearch'></div>
+            <a class="btn btn-default grmax-btn" id="sendGRFtp" name="sendGRFtp" type="sendGRFtp">Сохранить поиск и отправить внешний сегмент в GR</a>
           </div>
 
       </div>

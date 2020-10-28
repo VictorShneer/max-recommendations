@@ -163,7 +163,7 @@ class GrMonster(GrUtils):
             if custom['name']==self.hashed_email_custom_field_name:
                 self.hash_email_custom_field_id = custom['customFieldId']
 
-    def store_external_segment_from_list(self, search_contacts_list, external_name):
+    def store_external_segment_from_list(self, search_contacts_list, external_name, method):
         #data frame
         df = pd.DataFrame(search_contacts_list, columns=[external_name])
         rec = df.to_string(index=False)
@@ -172,7 +172,8 @@ class GrMonster(GrUtils):
         # set buffer start point at the begining
         s_buf = io.BytesIO(df_bytes)
         s_buf.seek(0)
-        url = "/sync_external_segments/insert/" + self.get_user_email() + ".csv"
+        url = f"/sync_external_segments/{method}/" + self.get_user_email() + ".csv"
+        print(url)
         self.store_external_segment(url, s_buf)
 
     def upsert_every_email_with_hashed_email(self, id_email_dic_list):

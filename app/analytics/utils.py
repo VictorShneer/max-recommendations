@@ -108,38 +108,38 @@ def request_ch_for_initial_data(crypto,integration_id, query_template):
 def build_where_clause(dict_of_requests):
     #TODO: remove loop with more readable design 
     where = "WHERE has(v.WatchIDs, h.WatchID) AND"
-    for index, i in enumerate(dict_of_requests):
-        if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity', 'MobilePhone', 'MobilePhoneModel', 'Browser'):
-            where = where + ' h.' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') AND'
-        elif i in ('clause_visits'):
-            where = where + ' h.Date ' + str(dict_of_requests[i]).strip("''")
-        elif i in ('Date'):
-            where = where + ' ' + str(dict_of_requests[i]).strip('['']') + ' AND'
-        elif i in ('GoalsID'):
-            for j in dict_of_requests[i]:
-                where = where + ' has(h.GoalsID,' + str(j) + ') !=0 or'
+    for key, value in dict_of_requests.items():
+        if key in ('DeviceCategory', 'OperatingSystem', 'RegionCity', 'MobilePhone', 'MobilePhoneModel', 'Browser'):
+            where += ' h.' + key + ' IN (' + str(value).strip('[]') + ') AND'
+        elif key in ('clause_visits'):
+            where += ' h.Date ' + str(value).strip("''")
+        elif key in ('Date'):
+            where += ' ' + str(value).strip('['']') + ' AND'
+        elif key in ('GoalsID'):
+            for j in value:
+                where += ' has(h.GoalsID,' + str(j) + ') !=0 or'
     where = where[:-3]
     return where
 
 def build_having_clause(dict_of_requests):
     having = "HAVING"
-    for index, i in enumerate(dict_of_requests):
-        if i == 'clause_visits_from_to':
-            having = having + ' count(v.VisitID) ' + str(dict_of_requests[i]).strip("''")
-        elif i in ('amount_of_visits'):
-            having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
-        elif i in ('clause_goals'):
-            having = having + ' sum(length(h.GoalsID)) ' + str(dict_of_requests[i]).strip("''")
-        elif i in ('amount_of_goals'):
-            having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
-        elif i in ('URL'):
-            for j in dict_of_requests['URL']:
+    for key, value in dict_of_requests.items():
+        if key == 'clause_visits_from_to':
+            having += ' count(v.VisitID) ' + str(value).strip("''")
+        elif key in ('amount_of_visits'):
+            having += ' ' + str(value).strip("'['']'") + ' AND'
+        elif key in ('clause_goals'):
+            having += ' sum(length(h.GoalsID)) ' + str(value).strip("''")
+        elif key in ('amount_of_goals'):
+            having += ' ' + str(value).strip("'['']'") + ' AND'
+        elif key == 'URL':
+            for j in value:
                 if str(dict_of_requests['clause_url']).strip("'['']'") == '1':
                     string = f"%{j}%"
-                    having = having + " arrayStringConcat(groupArray(h.URL)) like CAST(unhex('" + string.encode("utf-8").hex() + "'), 'String') OR "
+                    having += " arrayStringConcat(groupArray(h.URL)) like CAST(unhex('" + string.encode("utf-8").hex() + "'), 'String') OR "
                 elif str(dict_of_requests['clause_url']).strip("'['']'") == '2':
                     string = f"{j}"
-                    having = having + " has(groupArray(cutQueryString(h.URL)), CAST(unhex('" + string.encode("utf-8").hex() + "'), 'String')) OR "
+                    having += " has(groupArray(cutQueryString(h.URL)), CAST(unhex('" + string.encode("utf-8").hex() + "'), 'String')) OR "
 
     if having == 'HAVING':
         having = having[:-6]

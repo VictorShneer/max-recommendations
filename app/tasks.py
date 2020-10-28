@@ -28,10 +28,10 @@ app = create_app(adminFlag=False)
 app.app_context().push()
 
 
-def send_search_contacts_to_gr_ftp(contacts_list, external_name, grmonster, user_id):
+def send_search_contacts_to_gr_ftp(contacts_list, external_name, method ,grmonster, user_id):
     _set_task_progress(0)
-    grmonster.store_external_segment_from_list(contacts_list, external_name)
-    _set_task_progress(100, 'hey ftp done', user_id)
+    grmonster.store_external_segment_from_list(contacts_list, external_name, method)
+    _set_task_progress(100, 'Вешний сегмент загружен в GR', user_id)
 
 def assign_crypto_to_user_id(admin_user_id, user_id, crypto):
     print(type(user_id))

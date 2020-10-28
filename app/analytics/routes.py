@@ -4,7 +4,9 @@ analytics routes
 
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
-from app.models import User, Integration
+from app.models import User,\
+                       Integration,\
+                       SavedSearch
 from app import db
 from app.analytics import bp
 import requests
@@ -49,7 +51,7 @@ def send_search_contacts(integration_id):
                                     current_user.id)
         db.session.commit()
     except:
-        return {'status':'<400>'}
+        return abort(404)
     return {'status':'<200>'}
 
 # send search contacs to GR campaing by FTP
@@ -57,7 +59,28 @@ def send_search_contacts(integration_id):
 @current_user_own_integration
 @login_required
 def ftp_search_contacts(integration_id):
-    integration = Integration.query.filter_by(id = integration_id).first_or_404()
+    print(request.form['contactsList'].split(','))
+    print(request.form['external_name'])
+    form_dic=request.form.to_dict(flat=False)
+    query = translate_form_dict_to_query(form_dic,integration_id)
+    query_url = create_url_for_query(query,current_user.crypto)
+    integration = Integration.query.get(integration_id)
+    # if saved search not present create it else rewrite it query
+    if request.form['external_name'] not in [saved_search.name for saved_search in integration.saved_searched]:        
+        print('new saved_search')
+        saved_search = SavedSearch(name=request.form['external_name'], \
+                                    ch_query = query_url, \
+                                    integration_id=integration_id)
+        db.session.add(saved_search)
+        db.session.commit()
+        method = 'insert'
+    else:
+        print('saved_searche already exists')
+        saved_search = [saved_search for saved_search in integration.saved_searched \
+                            if saved_search.name == request.form['external_name']][0]
+        saved_search.ch_query = query_url
+        db.session.commit()
+        method = 'insert'
     grmonster = GrMonster(integration.api_key,\
                           ftp_login = integration.ftp_login, \
                           ftp_pass = integration.ftp_pass)
@@ -68,11 +91,12 @@ def ftp_search_contacts(integration_id):
                                     'Загрузка контактов в GR FTP, прогресс: ', \
                                     request.form['contactsList'].split(','), \
                                     request.form['external_name'],\
+                                    method,\
                                     grmonster,\
                                     current_user.id)
         db.session.commit()
     except:
-        return {'status':'<400>'}
+        abort(404)
     return {'status':'<200>'}
 
 # this route hande POST new GR campaign by http API
@@ -103,7 +127,8 @@ def generate_values(integration_id):
     inital_data_df = build_df_from_CH_response(initial_response_raw, INITIAL_QUERY_COLUMNS)
     goals = get_metrika_goals(integration.metrika_key,integration.metrika_counter_id)
     grmonster = GrMonster(integration.api_key)
-    gr_campaigns = grmonster.get_gr_campaigns()      
+    gr_campaigns = grmonster.get_gr_campaigns()
+    saved_searches = integration.saved_searched.all()      
     # get unique values for every choice
     uniqueOpSys = inital_data_df['OperatingSystem'].unique()
     uniqueRegCyt = inital_data_df['RegionCity'].unique()
@@ -127,6 +152,7 @@ def generate_values(integration_id):
                             form=form,\
                             filters_form=filters_form,\
                             gr_campaigns = gr_campaigns,\
+                            saved_searches = saved_searches,\
                             start_date=start_date,\
                             end_date=end_date,\
                             total_unique_emails=total_unique_emails,
@@ -143,8 +169,8 @@ def process_values():
     integration_id = request.form["integration_id"]
     form_dic=request.form.to_dict(flat=False)
     query = translate_form_dict_to_query(form_dic,integration_id)
-    create_url = create_url_for_query(query,current_user.crypto)
-    ch_response = send_request_to_clickhouse(create_url)
+    query_url = create_url_for_query(query,current_user.crypto)
+    ch_response = send_request_to_clickhouse(query_url)
     analytics_search_df = build_df_from_CH_response(ch_response, COLUMNS)
     json_to_return = build_analytics_search_json(analytics_search_df)
     return json_to_return

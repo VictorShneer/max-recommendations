@@ -8,7 +8,7 @@ from wtforms import StringField, SubmitField, TextAreaField, IntegerField, Selec
 from wtforms.fields.html5 import DateField
 from wtforms.validators import DataRequired, ValidationError
 from app.models import User, Integration
-# 'DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url'
+
 class AnalyticsBar(FlaskForm):
     DeviceCategory = SelectMultipleField('Тип устройства', choices=[(1, "Десктоп"), (2, "Мобильный телефон"), (3, 'Планшет'), (4, 'ТВ')], default = 'Не выбрано')
     OperatingSystem = SelectMultipleField('Операционная система', default = 'Не выбрано')

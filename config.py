@@ -27,7 +27,7 @@ class Config(object):
     KEY = 'u0bwk7n5i3u9w2g2hndz8yn346x361g0'
 
     #GR FTP
-    GR_FTP_HOST = 'ftp.getresponse360.pl'
+    GR_FTP_HOST = 'ftp.getresponse360.com'
 
     ADMIN_ROLE_TITLE = 'admin'
 

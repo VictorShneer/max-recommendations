@@ -2,6 +2,8 @@ $(document).ready(function(){
 
   const create_campaign_link = document.getElementById('create_campaign');
   create_campaign_link.addEventListener('click', drop_down_input_create_campaign);
+  const create_saved_search_link = document.getElementById('create_saved_search');
+  create_saved_search_link.addEventListener('click', drop_down_input_create_external);
   const send_gr_button = document.getElementById('sendGR');
   send_gr_button.addEventListener('click', send_to_gr_handler);
   const send_gr_ftp_button = document.getElementById('sendGRFtp');
@@ -50,29 +52,63 @@ $(document).ready(function(){
 
   function send_ftp_gr_handler(event){
     event.preventDefault()
-    $noformsuccess = $('<p id="newexternal" style="color:green;">Загрузка внешнего сегмента в GetResponse<p>')
-    $noformfail = $('<p id="newexternal" style="color:red;">Что-то пошло не так.. Проверьте имя для сегмента. Допускаются только латинские буквы, цифры и нижнее подчеркивание<p>')
+    $noformsuccess = $('<p id="newsavedsearch" style="color:green;">Загрузка внешнего сегмента в GetResponse<p>')
+    $noformfail = $('<p id="newsavedsearch" style="color:red;">Что-то пошло не так.. Проверьте имя для сегмента. Допускаются только латинские буквы, цифры и нижнее подчеркивание<p>')
     // get search contacts
     var contactsList = [];
     $('#react-table-mount table tbody tr td:nth-child(2)').each(function() {
         contactsList.push($( this ).text());
     });
     if(contactsList.length == 0){
-      $('#newexternal').replaceWith('<p id="newexternal" style="color:red">Сперва отфильтруйте контакты для импорта</p>')
+      $('#newsavedsearch').replaceWith('<p id="newsavedsearch" style="color:red">Для начала отфильтруйте контакты для импорта</p>')
       return -1
     };
     // get external segment name id
-    external_name = $('#external_name_input').val()
+    external_name = $('#newsavedsearchname').val()
+    if(!external_name){
+      external_name = $('#saved_searches').val()
+    }
+    if(!external_name){
+      $('#newsavedsearch').replaceWith('<p id="newsavedsearch" style="color:red">Для начала выберите сохраненый поиск или создайте новый</p>')
+      return -1
+    }
+    formData = getContactFormData('analyticsform');
+
     //send it to backend
     integration_id = window.location.href.split('/').pop()
-    $.post('/analytics/ftp_search_contacts/' + integration_id, {
-        external_name : external_name,
-        contactsList : contactsList.join(),
-      }).done(function(response) {
-          $('#newexternal').replaceWith($noformsuccess);
-      }).fail(function() {
-          $('#newexternal').replaceWith($noformfail);
-      });
+
+    var form = $('#analyticsform');
+    var form_id = 'analyticsform';
+    var url = `/analytics/ftp_search_contacts/${integration_id}`;
+    var type = 'post';
+    var formData = getContactFormData(form_id);
+    formData.append('external_name', external_name);
+    formData.append('contactsList', contactsList.join());
+    _paq.push(['trackEvent', 'Analytics', 'Submit']);
+    console.log('heeey')
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: formData,
+        processData: false,
+        contentType: false,
+        beforeSend: function() {
+            // show the preloader
+            // document.getElementById('search_count').innerHTML = 'Отправка...';
+        },
+        complete: function () {
+            // hide the preloader (progress bar)
+            // $('#search_count').html("");
+        },
+        success: function ( data ){
+          $('#newsavedsearch').replaceWith($noformsuccess);
+        },
+        error: function(xhr) {console.log("error. see details below.");
+          $('#newsavedsearch').replaceWith($noformfail);
+        },
+    }).done(function() {
+      console.log('Done! External rock and roll!');
+    });
   }
   
   // http API GR interface
@@ -92,10 +128,12 @@ $(document).ready(function(){
       $('#newcampaingform').replaceWith('<p id="newexternal" style="color:red">Контактов больше 1200. Рекомендуем использовать FTP через форму справа</p>')
       return -1
     };
+
     // get campaign id
     campaingId = $('#gr_campaigns').val()
     //send it to backend
     integration_id = window.location.href.split('/').pop()
+
     $.post('/analytics/send_search_contacts/' + integration_id, {
         campaignId : campaingId,
         contactsList : contactsList.join(),
@@ -125,7 +163,6 @@ $(document).ready(function(){
       // creates a FormData object and adds chips text
       var formData = new FormData(document.getElementById(form));
       formData.append('integration_id', document.URL.split('/').pop());
-      console.log(formData);
       // for (var [key, value] of formData.entries()) { console.log('formData', key, value);}
       return formData
   }
@@ -210,6 +247,17 @@ $(document).ready(function(){
       });
 
     }
+
+  function drop_down_input_create_external(event){
+    event.preventDefault();
+    $('#saved_searches').hide();
+    $form = $("<form id='create_external_form'></form>");
+    $noformsuccess = $('<p id="newexternalform" style="color:green;">Успех! Сегмент создан и отправлен в GR. Сегмент будет обновляться раз в день<p>')
+    $noformfail = $('<p id="newexternalform" style="color:red;">Не удалось создать сегмент. Имя должно состоять из только латинских букв в нижнем регистре, цифр и нижнего подчеркивания<p>')
+    inputs = '<input id="newsavedsearchname" class="form-control analytics-create-external" type="text" placeholder="Название">';
+    $form.append(inputs);
+    $('#newsavedsearch').replaceWith($form);
+  }
 
   function create_gr_campaign(campaign_name){
     integration_id = window.location.href.split('/').pop()
