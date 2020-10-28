@@ -1,5 +1,5 @@
 """
-sub function
+sub functions for various bp needs
 pretty every blueprint has such module
 """
 from app.models import User, Integration
@@ -11,6 +11,13 @@ from alphabet_detector import AlphabetDetector
 from app.utils import represents_int
 from datetime import datetime
 import validators
+from io import StringIO
+import pandas as pd
+
+def build_df_from_CH_response(ch_response, columns):
+    ch_response_text = ch_response.text
+    file_from_string = StringIO(ch_response_text)
+    return pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names=columns)
 
 # decoration to check if user owns integration he try to access
 def current_user_own_integration(function):
@@ -77,6 +84,15 @@ validate_dictionary = {
 # ,
 #     'URL' : validators.url
 
+def request_ch_for_initial_data(crypto,integration_id, query_template):
+    # build CH table names    
+    visits_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'visits', integration_id)
+    hits_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'hits', integration_id)
+    # query all stuff - dropdown chices, dates and email visitors
+    query = query_template.format(hits_table_name=hits_table_name,\
+                                    visits_table_name=visits_table_name)
+    create_url = create_url_for_query(query, current_user.crypto)
+    return send_request_to_clickhouse(create_url)
 
 def validate_analytics_form(analitics_form_dic):
     print(analitics_form_dic)

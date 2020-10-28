@@ -11,6 +11,8 @@ import requests
 from app.analytics.utils import current_user_own_integration, \
                                 create_url_for_query, \
                                 send_request_to_clickhouse, \
+                                request_ch_for_initial_data, \
+                                build_df_from_CH_response, \
                                 validate_external_segment_name, \
                                 validate_analytics_form
 from app.grhub.grmonster import GrMonster
@@ -26,7 +28,7 @@ import numpy as np
 import concurrent.futures
 import binascii
 from app.analytics.analytics_consts import COLUMNS, INITIAL_QUERY,INITIAL_QUERY_COLUMNS
-from app.metrika.utils import get_metrika_goals
+from app.utils import get_metrika_goals
 import json
 from flask import jsonify
 
@@ -92,57 +94,33 @@ def generate_values(integration_id):
     form = AnalyticsBar()
     filters_form = Filters()
     integration = Integration.query.filter_by(id=integration_id).first_or_404()
-    # TODO make several try catches instead of one
-    try:    
-        # build CH table names    
-        visits_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'visits', integration_id)
-        hits_table_name = '{}.{}_raw_{}'.format(current_user.crypto, 'hits', integration_id)
-
-        # query all stuff - dropdown chices, dates and email visitors
-        query = INITIAL_QUERY.format(hits_table_name=hits_table_name,\
-                                        visits_table_name=visits_table_name)
-        create_url = create_url_for_query(query, current_user.crypto)
-        initial_response_raw = send_request_to_clickhouse(create_url)
-        if not initial_response_raw.ok:
-            flash('Ошибка или создание интеграции не завершено')
-            return redirect(url_for('main.user_integrations'))
-        initial_response = initial_response_raw.text
-        file_from_string = StringIO(initial_response)
-        inital_data_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names=INITIAL_QUERY_COLUMNS)
-        # get goals
-        counter_id = integration.metrika_counter_id
-        metrika_key = integration.metrika_key
-        goals = get_metrika_goals(metrika_key,counter_id)
-        # get gr campaigns
-        grmonster = GrMonster(integration.api_key, callback_url=integration.callback_url)
-        gr_campaigns = grmonster.get_gr_campaigns()
-        
-        # get unique values for every choice
-        uniqueOpSys = inital_data_df['OperatingSystem'].unique()
-        uniqueRegCyt = inital_data_df['RegionCity'].unique()
-        uniqueURL = inital_data_df['cutQueryString(URL)'].unique()
-        uniquePh = inital_data_df['MobilePhone'].unique()
-        uniquePhM = inital_data_df['MobilePhoneModel'].unique()
-        uniqueBro = inital_data_df['Browser'].unique()
-
-        # get initial summary data
-        start_date = inital_data_df['Date'].min()
-        end_date = inital_data_df['Date'].max()
-        total_unique_emails = len(inital_data_df['mxm'].unique())
-
-        # Adding choices to the forms
-        form.OperatingSystem.choices = list(zip(uniqueOpSys,uniqueOpSys))
-        form.RegionCity.choices = list(zip(uniqueRegCyt,uniqueRegCyt))
-        form.URL.choices = list(zip(uniqueURL,uniqueURL))
-        form.GoalsID.choices = goals
-        form.MobilePhone.choices = list(zip(uniquePh,uniquePh))
-        form.MobilePhoneModel.choices = list(zip(uniquePhM,uniquePhM))
-        form.Browser.choices = list(zip(uniqueBro,uniqueBro))
-
-    except Exception as e:
-        traceback.print_exc()
-        flash('{} Ошибки в настройках интеграции!'.format(integration.integration_name))
+    initial_response_raw =request_ch_for_initial_data(current_user.crypto, integration_id, INITIAL_QUERY)
+    if not initial_response_raw.ok:
+        flash('Ошибка или создание интеграции не завершено')
         return redirect(url_for('main.user_integrations'))
+    inital_data_df = build_df_from_CH_response(initial_response_raw, INITIAL_QUERY_COLUMNS)
+    goals = get_metrika_goals(integration.metrika_key,integration.metrika_counter_id)
+    grmonster = GrMonster(integration.api_key)
+    gr_campaigns = grmonster.get_gr_campaigns()      
+    # get unique values for every choice
+    uniqueOpSys = inital_data_df['OperatingSystem'].unique()
+    uniqueRegCyt = inital_data_df['RegionCity'].unique()
+    uniqueURL = inital_data_df['cutQueryString(URL)'].unique()
+    uniquePh = inital_data_df['MobilePhone'].unique()
+    uniquePhM = inital_data_df['MobilePhoneModel'].unique()
+    uniqueBro = inital_data_df['Browser'].unique()
+    # get initial summary data
+    start_date = inital_data_df['Date'].min()
+    end_date = inital_data_df['Date'].max()
+    total_unique_emails = len(inital_data_df['mxm'].unique())
+    # Adding choices to the forms
+    form.OperatingSystem.choices = list(zip(uniqueOpSys,uniqueOpSys))
+    form.RegionCity.choices = list(zip(uniqueRegCyt,uniqueRegCyt))
+    form.URL.choices = list(zip(uniqueURL,uniqueURL))
+    form.GoalsID.choices = goals
+    form.MobilePhone.choices = list(zip(uniquePh,uniquePh))
+    form.MobilePhoneModel.choices = list(zip(uniquePhM,uniquePhM))
+    form.Browser.choices = list(zip(uniqueBro,uniqueBro))
     return render_template('analytics.html',\
                             form=form,\
                             filters_form=filters_form,\

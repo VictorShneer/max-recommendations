@@ -9,7 +9,8 @@ from app.metrika.sql_query_builder import generate_filter_goals_sql_clause
 import requests
 from io import StringIO
 import pandas as pd
-
+from app.analytics.utils import create_url_for_query, \
+                                send_request_to_clickhouse
 # build pandas df from CH SQL template and filter statements
 def get_df_from_CH(crypto, integration_id, query_template, goals_filter_array, request_start_date, columns):
     clickhouse_table_name = generate_full_CH_table_name(crypto, 'visits_raw', integration_id)  
@@ -41,12 +42,6 @@ def generate_df_from_query(query_url, columns):
     file_from_string = StringIO(response_with_data.text)
     return pd.read_csv(file_from_string,sep='\t',lineterminator='\n', names=columns)
 
-def get_metrika_goals(metrika_key,counter_id):
-    headers = {'Authorization':'OAuth {}'.format(metrika_key)}
-    ROOT = 'https://api-metrika.yandex.net/'
-    url = ROOT+'management/v1/counter/{}/goals'.format(counter_id)
-    r = requests.get(url, headers=headers)
-    return [(goal['id'],goal['name']) for goal in r.json()['goals']]
 
 def request_min_max_visits_dates(crypto,integration_id):
     try:

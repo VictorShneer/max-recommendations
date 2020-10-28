@@ -16,7 +16,8 @@ from app.utils import decode_this_string,encode_this_string
 from operator import itemgetter
 from app.metrika.metrika_sql_queries import TIME_SERIES_QUERY, VISITS_RAW_QUERY,TIME_SERIES_DF_COLUMNS, COLUMNS
 from app.main.utils import check_if_input_legal
-from app.metrika.utils import request_min_max_visits_dates,get_metrika_goals, get_df_from_CH
+from app.metrika.utils import request_min_max_visits_dates, get_df_from_CH
+from app.utils import get_metrika_goals
 from app.metrika.metrika_report import MetrikaReport
 from app.analytics.utils import current_user_own_integration
 
