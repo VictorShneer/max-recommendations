@@ -70,13 +70,13 @@ function drawTimeSeriesChart(timeSeriesData){
 
 }
 
-function drawChart(goals_no_email_count, goals_has_email_count, goals_from_email_count) {
+function drawChart(goals_no_email_count, goals_associate_with_email_count, goals_from_email_count) {
 
   //диаграмма
   var data_diag = google.visualization.arrayToDataTable([
     ['Источник', 'Количество выполненных целей'],
     ['Целей выполнено - email неизвестен',     parseInt(goals_no_email_count)],
-    ['Целей выполнено - email известен',      parseInt(goals_has_email_count)],
+    ['Целей выполнено - ассоциировано с email',      parseInt(goals_associate_with_email_count)],
     ['Целей выполнено - прямой переход из письма',      parseInt(goals_from_email_count)],
   ]);
 

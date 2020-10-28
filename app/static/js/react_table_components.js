@@ -161,7 +161,7 @@ class FilterableVisitsTable extends React.Component {
           // for graph
           drawChart(
             data.goals_no_email_count,
-            data.goals_has_email_count,
+            data.goals_associate_with_email_count,
             data.goals_from_email_count
           );
           // for time series
