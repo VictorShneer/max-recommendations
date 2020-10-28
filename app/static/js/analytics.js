@@ -119,15 +119,13 @@ $(document).ready(function(){
       _paq.push(['trackEvent', 'Analytics', 'Submit']);
       // submit form via AJAX
       send_form(form, form_id, url, type, modular_ajax, formData);
-
-
-
   });
 
   function getContactFormData(form) {
       // creates a FormData object and adds chips text
       var formData = new FormData(document.getElementById(form));
       formData.append('integration_id', document.URL.split('/').pop());
+      console.log(formData);
       // for (var [key, value] of formData.entries()) { console.log('formData', key, value);}
       return formData
   }
@@ -143,7 +141,7 @@ $(document).ready(function(){
 
       }
       else {
-        console.log('hui')
+        console.log('hey')
       }
   }
 

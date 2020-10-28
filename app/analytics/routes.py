@@ -13,8 +13,10 @@ from app.analytics.utils import current_user_own_integration, \
                                 send_request_to_clickhouse, \
                                 request_ch_for_initial_data, \
                                 build_df_from_CH_response, \
+                                translate_form_dict_to_query, \
                                 validate_external_segment_name, \
-                                validate_analytics_form
+                                validate_analytics_form, \
+                                build_analytics_search_json
 from app.grhub.grmonster import GrMonster
 import traceback
 from pprint import pprint
@@ -135,88 +137,14 @@ def generate_values(integration_id):
 # that meet conditions choosed by user in /analytics/<integration_id> route 
 @bp.route('/analytics/getdata', methods = ['GET','POST'])
 @login_required
-# @current_user_own_integration
 def process_values():
-    if request.method == 'POST':
-        try:
-            #geting the dict from the form
-            dict_raw = request.form.to_dict(flat=False)
-            integration_id = request.form["integration_id"]
-            dict_of_requests = {value: dict_raw[value] for value in dict_raw if dict_raw[value] not in ([''], ['0'],['Не выбрано']) and value != 'csrf_token'}
-            if not validate_analytics_form(dict_of_requests):
-                return jsonify(message='bad request'),400
-            #changing the values for the query
-            dict_of_requests = {value: '>=' if dict_of_requests[value] == ['1'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
-                                '<=' if dict_of_requests[value] == ['2'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
-                                '==' if dict_of_requests[value] == ['3'] and value not in ('DeviceCategory', 'amount_of_visits', 'amount_of_goals', 'clause_url') else
-                                dict_of_requests[value] for value in dict_of_requests}
-            #TO DO: last value
-            where = "WHERE has(v.WatchIDs, h.WatchID) = 1 AND"
-            having = "HAVING"
-            for index, i in enumerate(dict_of_requests):
-                if i in ('DeviceCategory', 'OperatingSystem', 'RegionCity', 'MobilePhone', 'MobilePhoneModel', 'Browser'):
-                    where = where + ' h.' + i + ' IN (' + str(dict_of_requests[i]).strip('[]') + ') AND'
-                elif i in ('clause_visits'):
-                    where = where + ' h.Date ' + str(dict_of_requests[i]).strip("''")
-                elif i in ('Date'):
-                    where = where + ' ' + str(dict_of_requests[i]).strip('['']') + ' AND'
-                elif i in ('GoalsID'):
-                    for j in dict_of_requests[i]:
-                        where = where + ' has(h.GoalsID,' + str(j) + ') !=0 or'
-            where = where[:-3]
-
-            for index, i in enumerate(dict_of_requests):
-                if i == 'clause_visits_from_to':
-                    # print(i)
-                    having = having + ' count(v.VisitID) ' + str(dict_of_requests[i]).strip("''")
-                elif i in ('amount_of_visits'):
-                    having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
-                elif i in ('clause_goals'):
-                    having = having + ' sum(length(h.GoalsID)) ' + str(dict_of_requests[i]).strip("''")
-                elif i in ('amount_of_goals'):
-                    having = having + ' ' + str(dict_of_requests[i]).strip("'['']'") + ' AND'
-                elif i in ('URL'):
-                    for j in dict_of_requests['URL']:
-                        if str(dict_of_requests['clause_url']).strip("'['']'") == '1':
-                            string = f"%{j}%"
-                            having = having + " arrayStringConcat(groupArray(h.URL)) like CAST(unhex('" + string.encode("utf-8").hex() + "'), 'String') OR "
-                        elif str(dict_of_requests['clause_url']).strip("'['']'") == '2':
-                            string = f"{j}"
-                            having = having + " has(groupArray(cutQueryString(h.URL)), CAST(unhex('" + string.encode("utf-8").hex() + "'), 'String')) OR "
-
-            if having == 'HAVING':
-                having = having[:-6]
-            else:
-                having = having[:-3]
-
-            whole = f"""
-            SELECT h.ClientID, base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails, OperatingSystem, RegionCity, MobilePhone, MobilePhoneModel, Browser
-            FROM {current_user.crypto}.hits_raw_{integration_id} h
-            JOIN {current_user.crypto}.visits_raw_{integration_id} v on v.ClientID = h.ClientID
-            {where}
-            GROUP BY emails, ClientID, OperatingSystem, RegionCity, MobilePhone, MobilePhoneModel, Browser
-            {having};"""
-            #getting the answer from the db
-            create_url = create_url_for_query(whole,current_user.crypto)
-            print(create_url)
-            get_data = send_request_to_clickhouse(create_url).text
-
-            #doing magic with the data
-            file_from_string = StringIO(get_data)
-            columns_df = pd.read_csv(file_from_string,sep='\t',lineterminator='\n', header=None, names = COLUMNS)
-            columns_df = columns_df.dropna(subset=['Email'])
-            columns_df = columns_df.drop_duplicates(subset=['Email'])
-            count = columns_df.count()
-            # print(count)
-            # pprint(columns_df)
-            front_end_df= columns_df.astype(str)
-            json_to_return = front_end_df.to_json(default_handler=str, orient='table', index=False)
-            json_to_return =json.loads(json_to_return)
-
-            return json_to_return
-        except Exception as err:
-            print(err)
-        return render_template('index.html')
-    elif request.method == 'GET':
-        print("last hui")
-    return render_template('after_analytics.html')
+    # TODO check if current_us owns integration
+    #geting the dict from the form
+    integration_id = request.form["integration_id"]
+    form_dic=request.form.to_dict(flat=False)
+    query = translate_form_dict_to_query(form_dic,integration_id)
+    create_url = create_url_for_query(query,current_user.crypto)
+    ch_response = send_request_to_clickhouse(create_url)
+    analytics_search_df = build_df_from_CH_response(ch_response, COLUMNS)
+    json_to_return = build_analytics_search_json(analytics_search_df)
+    return json_to_return
