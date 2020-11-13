@@ -109,6 +109,10 @@ def create_integration():
     if current_user.crypto is None:
         flash('Настройка вашего аккаунта еще не закончена')
         return redirect(url_for('main.user_integrations'))
+    if current_user.get_task_in_progress('init_clickhouse_tables'):
+        flash('Нельзя запускать создание больше одной интеграции одновременно!')
+        db.session.rollback()
+        return redirect(url_for('main.user_integrations'))
     form = EditIntegration()
     if form.validate_on_submit():
         integration = Integration(
@@ -124,6 +128,7 @@ def create_integration():
         db.session.add(integration)
         db.session.flush()
         integration.set_callback_url(request.url_root)
+
 
         try:
             run_integration_setup(integration, form.start_date.data)

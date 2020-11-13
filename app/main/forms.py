@@ -44,9 +44,9 @@ class CustomValidators(object):
             raise ValidationError(('Нет контакта с Yandex Метрикой. Проверьте ключ и счетчик'))
 
     def validate_ftp_pass(self, ftp_pass):
-        grmonster = GrMonster(api_key = '',\
-                                 ftp_login = self.ftp_login.data, \
-                                 ftp_pass = self.ftp_pass.data)
+        # for SMB
+        if not any([ftp_pass.data,self.ftp_login.data]):
+            return True
         try:
             grmonster = GrMonster(api_key = '',\
                                      ftp_login = self.ftp_login.data, \
@@ -59,8 +59,8 @@ class CustomValidators(object):
 class EditIntegration(FlaskForm,CustomValidators):
     integration_name = StringField("Название интеграции", validators=[DataRequired()])
     api_key = StringField('API ключ GetResponse', validators=[DataRequired()])
-    ftp_login = StringField('Логин GR FTP', validators=[DataRequired()])
-    ftp_pass = StringField('Пароль GR FTP', validators=[DataRequired()])
+    ftp_login = StringField('Логин GR FTP')
+    ftp_pass = StringField('Пароль GR FTP')
     metrika_key = StringField('Ключ Яндекс Метрики', validators=[DataRequired()])
     metrika_counter_id = StringField('ID счетчика Яндекс Метрики', validators=[DataRequired()])
     start_date = DateField('От', validators=[DataRequired()])

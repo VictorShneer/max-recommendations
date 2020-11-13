@@ -165,7 +165,6 @@ def set_ftp(integration_obj,user_obj):
     _set_task_progress(0)
     try:
         grmonster = GrMonster(api_key=integration_obj.api_key, \
-                                callback_url=integration_obj.callback_url, \
                                 ftp_login = integration_obj.ftp_login, \
                                 ftp_pass = integration_obj.ftp_pass)
         grmonster.init_ftp_folders()

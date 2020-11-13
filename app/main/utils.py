@@ -41,6 +41,9 @@ def check_if_date_legal(user_date):
 # it splits GR contacts into 100k chunks
 # and runs separate task for every chunk
 def plan_init_gr_contacts(integration_obj, user):
+    # throw away regular smb tasks
+    if not any([integration_obj.ftp_login,integration_obj.ftp_pass]):
+        return True
     grmonster = GrMonster(api_key=integration_obj.api_key,\
                             ftp_login=integration_obj.ftp_login,\
                             ftp_pass=integration_obj.ftp_pass)
@@ -79,25 +82,23 @@ def run_integration_setup(integration,start_date):
     timing.append('-end_date={}'.format(str(end_date)))
     params = ['-source=hits', *timing]
     params_2 = ['-source=visits', *timing]
-    if current_user.get_task_in_progress('init_clickhouse_tables'):
-        flash('Нельзя запускать создание больше одной интеграции одновременно!')
-        db.session.rollback()
-    else:
-        current_user.launch_task('init_clickhouse_tables', \
-                                # I need this to check futher if integration is ready
-                                (f'Создание базы данных для {integration.integration_name}:{integration.id}'), \
-                                integration,
-                                {'user_id':current_user.id, 'user_crypto':current_user.crypto},
-                                [params,params_2])
-        db.session.commit()
-        current_user.launch_task('set_callback',\
-                                ('Создание callback уведомления'),\
-                                integration,\
-                                {'user_id':current_user.id, 'user_crypto':current_user.crypto})
-        db.session.commit()
-        current_user.launch_task('set_ftp',\
-                                ('Создание FTP директорий'),\
-                                integration,\
-                                {'user_id':current_user.id, 'user_crypto':current_user.crypto})
-        db.session.commit()
-        plan_init_gr_contacts(integration, current_user)
+    current_user.launch_task('init_clickhouse_tables', \
+                            # I need this to check futher if integration is ready
+                            (f'Создание базы данных для {integration.integration_name}'), \
+                            integration,
+                            {'user_id':current_user.id, 'user_crypto':current_user.crypto},
+                            [params,params_2])
+    db.session.commit()
+    current_user.launch_task('set_callback',\
+                            ('Создание callback уведомления'),\
+                            integration,\
+                            {'user_id':current_user.id, 'user_crypto':current_user.crypto})
+    db.session.commit()
+    if not any([integration.ftp_login,integration.ftp_pass]):
+        return True
+    current_user.launch_task('set_ftp',\
+                            ('Создание FTP директорий'),\
+                            integration,\
+                            {'user_id':current_user.id, 'user_crypto':current_user.crypto})
+    db.session.commit()
+    plan_init_gr_contacts(integration, current_user)
