@@ -17,7 +17,7 @@ class GrUtils(GrConnector):
         super().__init__(api_key)
         self.ftp_login = ftp_login
         self.ftp_pass = ftp_pass
-        if ftp_login:    
+        if ftp_login or ftp_pass:    
             self.ftp_obj = FTP(host = self.ftp_host)
             self.ftp_login_obj = self.ftp_obj.login(self.ftp_login,self.ftp_pass)
 
@@ -54,6 +54,7 @@ class GrUtils(GrConnector):
         print(ftpResponse);
 
     def ftp_list_files(self, target_dir):
+        print('ftp_list_files')
         self.ftp_obj.cwd(target_dir)
         dir_list = self.ftp_obj.nlst()
         self.ftp_obj.cwd('')

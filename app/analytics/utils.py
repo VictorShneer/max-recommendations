@@ -3,6 +3,7 @@ sub functions for various bp needs
 pretty every blueprint has such module
 """
 from app.models import User, Integration
+from app.grhub.grmonster import GrMonster
 from flask_login import current_user
 from flask import abort
 import requests
@@ -14,10 +15,12 @@ import validators
 from io import StringIO
 import pandas as pd
 import json
+from app import db
 from app.utils import generate_full_CH_table_name
 from app.analytics.analytics_consts import ANALITICS_SEARCH_QUERY,\
                                             INT_COMPARISON_DIC,\
-                                            COMPARISON_FIELDS
+                                            COMPARISON_FIELDS,\
+                                            COLUMNS
 def build_analytics_search_json(analytics_search_df):
     analytics_search_df.dropna(subset=['Email'], inplace=True)
     analytics_search_df.drop_duplicates(subset=['Email'], inplace=True)
@@ -180,3 +183,27 @@ def validate_analytics_form(analitics_form_dic):
             if not validate_dictionary[key](value):
                 return False
     return True
+
+def update_user_external_segments(user):
+    user_integrations=Integration.query.filter_by(user_id=user.id).all()
+    for integration in user_integrations:
+        saved_searches = integration.saved_searched.all()
+        if saved_searches:
+            grmonster = GrMonster(api_key=integration.api_key,\
+                                    ftp_login = integration.ftp_login,\
+                                    ftp_pass = integration.ftp_pass)
+        for saved_search in saved_searches:
+            ch_response = send_request_to_clickhouse(saved_search.ch_query)
+            if ch_response.ok:
+                analytics_search_df = build_df_from_CH_response(ch_response,COLUMNS)
+                analytics_search_df.dropna(subset=['Email'], inplace=True)
+                analytics_search_df.drop_duplicates(subset=['Email'], inplace=True)
+                emails_to_load = analytics_search_df['Email'].values
+                user.launch_task('send_search_contacts_to_gr_ftp', \
+                                                    'Загрузка контактов в GR FTP, прогресс: ', \
+                                                    emails_to_load, \
+                                                    saved_search.name,\
+                                                    'replace',\
+                                                    grmonster,\
+                                                    user.id)
+                db.session.commit()

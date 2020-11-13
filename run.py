@@ -15,13 +15,14 @@ from app.clickhousehub.clickhouse_custom_request import give_user_grant
 from app.clickhousehub.clickhouse_custom_request import request_iam
 from app.utils import represents_int
 from app.main.utils import plan_init_gr_contacts
-
+from app.analytics.utils import update_user_external_segments 
 app = create_app()
 
 
 @app.shell_context_processor
 def make_shell_context():
     return {'db': db, 'User': User, 'Integration': Integration, 'Notification': Notification}
+
 
 
 @app.cli.command()
@@ -64,6 +65,13 @@ def regular_gr_contacts_init():
         user_integrations=Integration.query.filter_by(user_id=user.id).all()
         for integration in user_integrations:
             plan_init_gr_contacts(integration, user)
+
+@app.cli.command()
+def regular_external_segments_update():
+    users = User.query.filter_by(active=True).all()
+    for user in users:
+        update_user_external_segments(user)
+
 
 @app.cli.command()
 def regular_load_to_clickhouse():
