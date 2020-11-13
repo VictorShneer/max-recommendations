@@ -124,6 +124,7 @@ def create_integration():
         db.session.add(integration)
         db.session.flush()
         integration.set_callback_url(request.url_root)
+
         try:
             run_integration_setup(integration, form.start_date.data)
         except Exception as err:

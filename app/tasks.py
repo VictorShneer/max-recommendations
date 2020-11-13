@@ -169,18 +169,28 @@ def set_ftp(integration_obj,user_obj):
                                 ftp_login = integration_obj.ftp_login, \
                                 ftp_pass = integration_obj.ftp_pass)
         grmonster.init_ftp_folders()
-    except:
+    except Exception as err:
+        print(err)
         _set_task_progress(100, f'Создание FTP директорий - Ошибка' ,user_obj['user_id'])
     else:
         _set_task_progress(100, f'Создание FTP директорий - Успех' ,user_obj['user_id'])       
 
 
-def init_gr_contacts_chunk(grmonster,user_obj, chunk_size=100):
+def init_gr_contacts_chunk(integration_obj,user_obj, chunk_size=100):
     _set_task_progress(0)
+    # get hash field id if exists else create and get
+    # TODO NEED REFACTORING SO BAD
+    grmonster = GrMonster(api_key = integration_obj.api_key, \
+                        ftp_pass = integration_obj.ftp_pass, \
+                        ftp_login= integration_obj.ftp_login)
+    hash_field_id = grmonster.get_hash_field_id()
+    campaigns = grmonster.get_gr_campaigns()
+    campaigns_ids_list = [c[0] for c in campaigns]
+    search_contacts_total_pages_count = grmonster.get_search_contacts_total_pages_count(hash_field_id, campaigns_ids_list)
     empty_contacts_chunk = grmonster.get_contacts_field_not_assigned_chunk(chunk_size)
     email_cid_df = pd.DataFrame(empty_contacts_chunk, columns=['email','campaign_id'])
     campaigns = grmonster.get_gr_campaigns()
-    campaigns_df = pd.DataFrame(campaigns, columns=['campaignId', 'name'])    
+    campaigns_df = pd.DataFrame(campaigns, columns=['campaignId', 'name'])  
     email_cname = email_cid_df.merge(campaigns_df, left_on='campaign_id',right_on='campaignId')[['email','name']]
     email_cname[grmonster.hashed_email_custom_field_name] = email_cname['email'].apply(lambda x: encode_this_string(x))
     unique_campaign_names = email_cname['name'].unique()
@@ -198,7 +208,7 @@ def init_gr_contacts_chunk(grmonster,user_obj, chunk_size=100):
     attempts = 5
     cur_attempt = 0
     for campaign_name,string_buffer in ready_campaign_string_buffers.items():
-        ftp_files_list = grmonster.ftp_list_files('sync_contacts/update/')
+        ftp_files_list = grmonster.ftp_list_files('/sync_contacts/update/')
         print('Files in sync_contacts/update/ \n',ftp_files_list, f'{campaign_name}.csv', f'{campaign_name}.csv' in ftp_files_list)
         while f'{campaign_name}.csv' in ftp_files_list:
             if cur_attempt >= attempts:
@@ -208,12 +218,12 @@ def init_gr_contacts_chunk(grmonster,user_obj, chunk_size=100):
             ftp_files_list = grmonster.ftp_list_files('sync_contacts/update/')
             print('Files in sync_contacts/update/ \n',ftp_files_list, f'\n Current attempt: {cur_attempt}')
             cur_attempt += 1
-        grmonster.ftp_gr(f'sync_contacts/update/{campaign_name}.csv',string_buffer)
+        grmonster.ftp_gr(f'/sync_contacts/update/{campaign_name}.csv',string_buffer)
     
     # continue only after all files dissapear from ftp folder
     print('continue only after all files dissapear from ftp folder')
     cur_attempt = 0
-    ftp_files_set = set(grmonster.ftp_list_files('sync_contacts/update/'))
+    ftp_files_set = set(grmonster.ftp_list_files('/sync_contacts/update/'))
     print('ftp_files_set', ftp_files_set)
     loaded_campaigns = set(ready_campaign_string_buffers.keys())
     loaded_campaigns_names_set = {campaign + '.csv' for campaign in loaded_campaigns}
@@ -226,5 +236,5 @@ def init_gr_contacts_chunk(grmonster,user_obj, chunk_size=100):
         cur_attempt+=1
         print(f'{len(loaded_campaigns_names_set)} files on load. Waiting {len(loaded_campaigns_names_set)} minutes. \t attempt № ', cur_attempt)
         time.sleep(len(loaded_campaigns_names_set)*60)
-        ftp_files_set = set(grmonster.ftp_list_files('sync_contacts/update/'))
+        ftp_files_set = set(grmonster.ftp_list_files('/sync_contacts/update/'))
     _set_task_progress(100, 'Проставление служебного поля контактам GR завершена успешно', user_obj['user_id'])  

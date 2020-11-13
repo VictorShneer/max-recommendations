@@ -11,12 +11,15 @@ import math
 
 class GrUtils(GrConnector):
     hash_email_custom_field_id = None
-    ftp_host = 'ftp.getresponse360.com'
+    ftp_host = 'ftp.getresponse360.pl'
 
     def __init__(self,api_key, ftp_login, ftp_pass):
         super().__init__(api_key)
         self.ftp_login = ftp_login
         self.ftp_pass = ftp_pass
+        if ftp_login:    
+            self.ftp_obj = FTP(host = self.ftp_host)
+            self.ftp_login_obj = self.ftp_obj.login(self.ftp_login,self.ftp_pass)
 
     def create_custom_field(self, name):
         return self.request_gr('post', 'custom-fields', json={'name':name,\
@@ -40,30 +43,20 @@ class GrUtils(GrConnector):
         return self.request_gr('delete', 'accounts/callbacks')
 
     def ftp_gr(self, url, file_buffer):
-        ftp = FTP(host = self.ftp_host)
-        login = ftp.login(self.ftp_login,self.ftp_pass)
         try:
-            operation_response = ftp.storlines(f'STOR {url}', file_buffer)
+            operation_response = self.ftp_obj.storlines(f'STOR {url}', file_buffer)
             print(operation_response)
-            ftp.quit()
         except ftplib.error_perm as err:
-            ftp.quit()
             raise ConnectionRefusedError((f'Ошибка при попытке FTP загрузки\n{err}'))
 
     def ftp_create_dir(self, dir_path):
-        ftp_obj = FTP(host = self.ftp_host)
-        login = ftp_obj.login(self.ftp_login,self.ftp_pass)
-        ftpResponse = ftp_obj.mkd(dir_path);
+        ftpResponse = self.ftp_obj.mkd(dir_path);
         print(ftpResponse);
-        ftp_obj.quit()
-
 
     def ftp_list_files(self, target_dir):
-        ftp_obj = FTP(host = self.ftp_host)
-        login = ftp_obj.login(self.ftp_login,self.ftp_pass)
-        ftp_obj.cwd(target_dir)
-        dir_list = ftp_obj.nlst()
-        ftp_obj.quit()
+        self.ftp_obj.cwd(target_dir)
+        dir_list = self.ftp_obj.nlst()
+        self.ftp_obj.cwd('')
         return dir_list
 
     def get_callbacks(self):
@@ -101,7 +94,6 @@ class GrUtils(GrConnector):
     def post_contact_to_list(self, email, campaign_id):
         return self.request_gr('post', 'contacts/', \
                             json = {'email':email, 'campaign': {'campaignId':campaign_id}})
-
 
     def get_user_details(self):
         return self.request_gr('get', 'accounts/').json()

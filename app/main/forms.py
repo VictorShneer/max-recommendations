@@ -44,11 +44,15 @@ class CustomValidators(object):
             raise ValidationError(('Нет контакта с Yandex Метрикой. Проверьте ключ и счетчик'))
 
     def validate_ftp_pass(self, ftp_pass):
-        # ftp object
-        ftp = FTP(host = current_app.config['GR_FTP_HOST'])
+        grmonster = GrMonster(api_key = '',\
+                                 ftp_login = self.ftp_login.data, \
+                                 ftp_pass = self.ftp_pass.data)
         try:
-            ftp.login(self.ftp_login.data, self.ftp_pass.data)
-        except:
+            grmonster = GrMonster(api_key = '',\
+                                     ftp_login = self.ftp_login.data, \
+                                     ftp_pass = self.ftp_pass.data)
+        except Exception as err:
+            print(err)
             raise ValidationError(('Нет контакта с FTP. Проверьте логин и пароль'))
 
 # this form class handles the both - C and U integration

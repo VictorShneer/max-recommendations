@@ -130,9 +130,11 @@ class GrMonster(GrUtils):
 
     def init_ftp_folders(self):
         if self.external_segments_root_dir not in self.ftp_list_files(''):
+            print('Creating external_segments_root_dir')
             self.ftp_create_dir(self.external_segments_root_dir)
         for method_dir in self.external_segments_method_dirs:
-            if method_dir not in self.ftp_list_files(self.external_segments_root_dir):
+            print(f'Creating {method_dir}')
+            if method_dir not in self.ftp_list_files(f'/{self.external_segments_root_dir}'):
                 self.ftp_create_dir(self.external_segments_root_dir+'/'+method_dir)
 
     def if_custom_field_exists(self, custom_field_name):
