@@ -28,8 +28,11 @@ app = create_app(adminFlag=False)
 app.app_context().push()
 
 
-def send_search_contacts_to_gr_ftp(contacts_list, external_name, method ,grmonster, user_id):
+def send_search_contacts_to_gr_ftp(contacts_list, external_name, method ,integration, user_id):
     _set_task_progress(0)
+    grmonster = GrMonster(api_key = integration.api_key,\
+                            ftp_login = integration.ftp_login,\
+                            ftp_pass = integration.ftp_pass)
     grmonster.store_external_segment_from_list(contacts_list, external_name, method)
     _set_task_progress(100, 'Вешний сегмент загружен в GR', user_id)
 

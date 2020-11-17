@@ -67,8 +67,10 @@ def check_if_date_legal(user_date):
 def validate_external_segment_name(external_segment_name):
     ad = AlphabetDetector()
     if not all([ch.isalnum() or ch=='_' for ch in external_segment_name]):
+        print('not_all_alnum')
         return False
     elif not ad.only_alphabet_chars(external_segment_name, "LATIN"):
+        print('not_latin')
         return False
     else:
         return True
@@ -168,12 +170,10 @@ def translate_form_dict_to_query(form_dict, integration_id):
                                     visits_table_name=visits_table_name,\
                                     where_clause = where,\
                                     having_clause = having)
-
-    print(query)
     return query    
 
 def validate_analytics_form(analitics_form_dic):
-    print(analitics_form_dic)
+    # print(analitics_form_dic)
     for key, values_list in analitics_form_dic.items():
         # print(key)
         if key not in validate_dictionary.keys():
@@ -188,10 +188,6 @@ def update_user_external_segments(user):
     user_integrations=Integration.query.filter_by(user_id=user.id).all()
     for integration in user_integrations:
         saved_searches = integration.saved_searched.all()
-        if saved_searches:
-            grmonster = GrMonster(api_key=integration.api_key,\
-                                    ftp_login = integration.ftp_login,\
-                                    ftp_pass = integration.ftp_pass)
         for saved_search in saved_searches:
             ch_response = send_request_to_clickhouse(saved_search.ch_query)
             if ch_response.ok:
@@ -204,6 +200,6 @@ def update_user_external_segments(user):
                                                     emails_to_load, \
                                                     saved_search.name,\
                                                     'replace',\
-                                                    grmonster,\
+                                                    integration,\
                                                     user.id)
                 db.session.commit()

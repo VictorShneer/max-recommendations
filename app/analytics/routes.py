@@ -59,8 +59,8 @@ def send_search_contacts(integration_id):
 @current_user_own_integration
 @login_required
 def ftp_search_contacts(integration_id):
-    print(request.form['contactsList'].split(','))
-    print(request.form['external_name'])
+    if not validate_external_segment_name(request.form['external_name']):
+        abort(404)
     form_dic=request.form.to_dict(flat=False)
     query = translate_form_dict_to_query(form_dic,integration_id)
     query_url = create_url_for_query(query,current_user.crypto)
@@ -80,22 +80,21 @@ def ftp_search_contacts(integration_id):
                             if saved_search.name == request.form['external_name']][0]
         saved_search.ch_query = query_url
         db.session.commit()
-        method = 'insert'
+        method = 'replace'
     grmonster = GrMonster(integration.api_key,\
                           ftp_login = integration.ftp_login, \
                           ftp_pass = integration.ftp_pass)
-    if not validate_external_segment_name(request.form['external_name']):
-        abort(404)
     try:
         current_user.launch_task('send_search_contacts_to_gr_ftp', \
                                     'Загрузка контактов в GR FTP, прогресс: ', \
                                     request.form['contactsList'].split(','), \
                                     request.form['external_name'],\
                                     method,\
-                                    grmonster,\
+                                    integration,\
                                     current_user.id)
         db.session.commit()
-    except:
+    except Exception as err:
+        print(err)
         abort(404)
     return {'status':'<200>'}
 

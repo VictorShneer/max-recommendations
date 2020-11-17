@@ -54,10 +54,10 @@ class GrUtils(GrConnector):
         print(ftpResponse);
 
     def ftp_list_files(self, target_dir):
-        print('ftp_list_files')
         self.ftp_obj.cwd(target_dir)
         dir_list = self.ftp_obj.nlst()
         self.ftp_obj.cwd('')
+        print(f'ftp_list_files\n{dir_list}')
         return dir_list
 
     def get_callbacks(self):
