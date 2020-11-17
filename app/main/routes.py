@@ -38,6 +38,10 @@ def delete_integration():
         current_app.logger.info('Callback already disabled')
         pass
     # heroku db delete
+    saved_searches = integration.saved_searched.all()
+    print(saved_searches)
+    for saved_search in saved_searches:
+        saved_search.delete_myself()
     integration.delete_myself()
     # clickhouse db delete
     drop_integration(current_user.crypto, integration_id)

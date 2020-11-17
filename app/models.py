@@ -183,3 +183,7 @@ class SavedSearch(db.Model):
     name = db.Column(db.String(100))
     ch_query = db.Column(db.String(10000))
     integration_id = db.Column(db.Integer, db.ForeignKey('integration.id'))
+    
+    def delete_myself(self):
+        db.session.delete(self)
+        db.session.commit()
