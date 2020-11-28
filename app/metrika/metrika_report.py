@@ -19,7 +19,7 @@ class MetrikaReport(object):
         clientid_convers_df = clientid_convers_df.loc[clientid_convers_df['Email'].apply(type) == str]
         clientid_convers_df = clientid_convers_df.dropna(subset= ['Email'])
         no_email_mask = self.clientid_convers_df['Email'].str.contains(self.no_email_regex)
-        no_email_mask = no_email_mask.apply(lambda x: x if isinstance(x, bool) else False)
+        no_email_mask = no_email_mask.apply(lambda x: x if isinstance(x, bool) else True)
         self.email_visits_slice_df = self.clientid_convers_df[~no_email_mask]
         self.no_email_visits_slice_df = self.clientid_convers_df[no_email_mask]
         print(clientid_convers_df.info)
@@ -28,7 +28,7 @@ class MetrikaReport(object):
         print(clientid_convers_df.head())
         print(email_visits_slice_df.head())
         print(no_email_visits_slice_df.head())
-        
+
     def generate_joined_json_for_time_series(self, time_series_df, messages_df):
         time_series_df_raw = time_series_df[['Date','total_goals','goals_with_email','goals_just_after_email']]
         if messages_df.shape[0] == 0:
