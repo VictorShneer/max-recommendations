@@ -19,8 +19,14 @@ class MetrikaReport(object):
         clientid_convers_df = clientid_convers_df.loc[clientid_convers_df['Email'].apply(type) == str]
         clientid_convers_df = clientid_convers_df.dropna(subset= ['Email'])
         no_email_mask = self.clientid_convers_df['Email'].str.contains(self.no_email_regex)
+        print('------')
+        print('ne bool do')
         print(no_email_mask[no_email_mask.apply(type) != bool])
         no_email_mask = no_email_mask[no_email_mask.apply(lambda x: isinstance(x, bool))]
+        print('------')
+        print('ne bool posle')
+        print(no_email_mask[no_email_mask.apply(type) != bool])
+        print('-----dsd------')
         self.email_visits_slice_df = self.clientid_convers_df[~no_email_mask]
         self.no_email_visits_slice_df = self.clientid_convers_df[self.clientid_convers_df['Email'].str.contains(self.no_email_regex)]
 
