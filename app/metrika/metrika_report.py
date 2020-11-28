@@ -17,12 +17,11 @@ class MetrikaReport(object):
         self.clientid_convers_df = clientid_convers_df
         self.time_series_goals_df = time_series_goals_df
         clientid_convers_df = clientid_convers_df.loc[clientid_convers_df['Email'].apply(type) == str]
-        clientid_convers_df.dropna(subset= ['Email'], inplace=True)
-        no_email_mask = self.clientid_convers_df['Email'].str.contains(self.no_email_regex, na=True)
+        clientid_convers_df = clientid_convers_df.dropna(subset= ['Email'])
+        no_email_mask = self.clientid_convers_df['Email'].str.contains(self.no_email_regex)
         print(no_email_mask[no_email_mask.apply(type) != bool])
         no_email_mask = no_email_mask[no_email_mask.apply(lambda x: isinstance(x, bool))]
-        print(no_email_mask)
-        self.email_visits_slice_df = self.clientid_convers_df[no_email_mask]
+        self.email_visits_slice_df = self.clientid_convers_df[~no_email_mask]
         self.no_email_visits_slice_df = self.clientid_convers_df[self.clientid_convers_df['Email'].str.contains(self.no_email_regex)]
 
     def generate_joined_json_for_time_series(self, time_series_df, messages_df):
