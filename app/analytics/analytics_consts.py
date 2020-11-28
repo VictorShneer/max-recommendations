@@ -22,7 +22,7 @@ INITIAL_QUERY = '''
 
 ANALITICS_SEARCH_QUERY = '''
   SELECT h.ClientID, 
-         base64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails, 
+         tryBase64Decode(extractURLParameter(v.StartURL, 'mxm')) as emails, 
          OperatingSystem, 
          RegionCity, 
          MobilePhone, 

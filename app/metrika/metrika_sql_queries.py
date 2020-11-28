@@ -53,7 +53,7 @@ VISITS_RAW_QUERY = \
         FROM {clickhouse_table_name} as base
             left join (select ClientID, 
                               any(case when notEmpty(extractURLParameter(StartURL, 'mxm'))
-                                       then base64Decode(extractURLParameter(StartURL, 'mxm'))
+                                       then tryBase64Decode(extractURLParameter(StartURL, 'mxm'))
                                        else Null end) as shit
             FROM {clickhouse_table_name} 
             group by ClientID) as id_email_table on 
