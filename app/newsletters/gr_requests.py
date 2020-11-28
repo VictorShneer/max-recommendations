@@ -11,7 +11,6 @@ import datetime
 from bs4 import BeautifulSoup
 import re
 from urllib.parse import urlparse,parse_qsl,urlencode,urlunparse, unquote_plus
-
 ugly_editor_dic = {'getresponse':'getresponse', 'html2':'html2','editor_v3':'getresponse'}
 
 def wrap_links(links):
@@ -35,7 +34,7 @@ def replace_link_in_content(content, links):
     soup = BeautifulSoup(content['html'],"lxml");
     for a in soup.findAll('a'):
         for link,w_link in wrapped_links_dic.items():
-            if link in a['href']:
+            if link == a['href']:
                 a['href'] = a['href'].replace(link, w_link)
                 break
     return str(soup)

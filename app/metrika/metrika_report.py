@@ -19,6 +19,7 @@ class MetrikaReport(object):
         print(clientid_convers_df.loc[clientid_convers_df['Email'].apply(type) != str])
         clientid_convers_df = clientid_convers_df.loc[clientid_convers_df['Email'].apply(type) == str]
         print(clientid_convers_df.loc[clientid_convers_df['Email'].apply(type) != str])
+        print(~self.clientid_convers_df['Email'].str.contains(self.no_email_regex))
         self.email_visits_slice_df = self.clientid_convers_df[~self.clientid_convers_df['Email'].str.contains(self.no_email_regex)]
         self.no_email_visits_slice_df = self.clientid_convers_df[self.clientid_convers_df['Email'].str.contains(self.no_email_regex)]
 
