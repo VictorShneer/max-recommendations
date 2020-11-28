@@ -30,7 +30,7 @@ class MetrikaReport(object):
         print(no_email_mask[no_email_mask.apply(type) != bool])
         print('-----dsd------')
         self.email_visits_slice_df = self.clientid_convers_df[~no_email_mask]
-        self.no_email_visits_slice_df = self.clientid_convers_df[self.clientid_convers_df['Email'].str.contains(self.no_email_regex)]
+        self.no_email_visits_slice_df = self.clientid_convers_df[no_email_mask]
 
     def generate_joined_json_for_time_series(self, time_series_df, messages_df):
         time_series_df_raw = time_series_df[['Date','total_goals','goals_with_email','goals_just_after_email']]
