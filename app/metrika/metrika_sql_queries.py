@@ -39,7 +39,7 @@ VISITS_RAW_QUERY = \
 '''
     select * from(
         SELECT
-            CASE  when id_email_table.shit != ''
+            CASE when isNotNull(id_email_table.shit)
                   then id_email_table.shit
                   else concat('no-email',toString(ClientID)) 
                   end as email,
@@ -54,7 +54,7 @@ VISITS_RAW_QUERY = \
             left join (select ClientID, 
                               any(case when notEmpty(extractURLParameter(StartURL, 'mxm'))
                                        then tryBase64Decode(extractURLParameter(StartURL, 'mxm'))
-                                       else '' end) as shit
+                                       else Null end) as shit
             FROM {clickhouse_table_name} 
             group by ClientID) as id_email_table on 
                 id_email_table.ClientID = base.ClientID

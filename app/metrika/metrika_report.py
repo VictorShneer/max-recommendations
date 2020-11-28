@@ -16,18 +16,12 @@ class MetrikaReport(object):
     def __init__(self, clientid_convers_df, time_series_goals_df = pd.DataFrame()):
         self.clientid_convers_df = clientid_convers_df
         self.time_series_goals_df = time_series_goals_df
-        clientid_convers_df = clientid_convers_df.loc[clientid_convers_df['Email'].apply(type) == str]
-        clientid_convers_df = clientid_convers_df.dropna(subset= ['Email'])
+        # clientid_convers_df = clientid_convers_df.loc[clientid_convers_df['Email'].apply(type) == str]
+        # clientid_convers_df = clientid_convers_df.dropna(subset= ['Email'])
         no_email_mask = self.clientid_convers_df['Email'].str.contains(self.no_email_regex)
         no_email_mask = no_email_mask.apply(lambda x: x if isinstance(x, bool) else False)
         self.email_visits_slice_df = self.clientid_convers_df[~no_email_mask]
         self.no_email_visits_slice_df = self.clientid_convers_df[no_email_mask]
-        print(clientid_convers_df.info())
-        print(self.email_visits_slice_df.info())
-        print(self.no_email_visits_slice_df.info())
-        print(clientid_convers_df.head())
-        print(self.email_visits_slice_df.head())
-        print(self.no_email_visits_slice_df.head())
 
     def generate_joined_json_for_time_series(self, time_series_df, messages_df):
         time_series_df_raw = time_series_df[['Date','total_goals','goals_with_email','goals_just_after_email']]
@@ -55,7 +49,8 @@ class MetrikaReport(object):
         # calc pie numbers
         goals_no_email_count = self.no_email_visits_slice_df['Всего целей выполнено'].sum()  
         goals_from_email_count = self.clientid_convers_df['Кол-во целей после прямого перехода из email'].sum() 
-        goals_has_email_count =  self.email_visits_slice_df['Всего целей выполнено'].sum()         
+        goals_has_email_count =  self.email_visits_slice_df['Всего целей выполнено'].sum()
+        print(goals_no_email_count,goals_from_email_count,goals_has_email_count)         
         # store pie data
         self.report_json['goals_no_email_count'] = str(goals_no_email_count)
         self.report_json['goals_associate_with_email_count'] = str(goals_has_email_count - goals_from_email_count)
