@@ -23,11 +23,11 @@ class MetrikaReport(object):
         self.email_visits_slice_df = self.clientid_convers_df[~no_email_mask]
         self.no_email_visits_slice_df = self.clientid_convers_df[no_email_mask]
         print(clientid_convers_df.info)
-        print(email_visits_slice_df.info)
-        print(no_email_visits_slice_df.info)
+        print(self.email_visits_slice_df.info)
+        print(self.no_email_visits_slice_df.info)
         print(clientid_convers_df.head())
-        print(email_visits_slice_df.head())
-        print(no_email_visits_slice_df.head())
+        print(self.email_visits_slice_df.head())
+        print(self.no_email_visits_slice_df.head())
 
     def generate_joined_json_for_time_series(self, time_series_df, messages_df):
         time_series_df_raw = time_series_df[['Date','total_goals','goals_with_email','goals_just_after_email']]
