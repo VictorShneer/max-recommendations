@@ -15,6 +15,7 @@ import validators
 from io import StringIO
 import pandas as pd
 import json
+from flask import jsonify
 from app import db
 from app.utils import generate_full_CH_table_name
 from app.analytics.analytics_consts import ANALITICS_SEARCH_QUERY,\
@@ -82,7 +83,7 @@ validate_dictionary = {
     'integration_id' : represents_int,
     'DeviceCategory' : represents_int,
     'OperatingSystem' : validate_external_segment_name, # external_segment_name has the same reqs as OperatingSystem
-    'RegionCity' : validate_external_segment_name, # external_segment_name has the same reqs as RegionCity (except _ and numbers allowed)
+    # 'RegionCity' : validate_external_segment_name, # external_segment_name has the same reqs as RegionCity (except _ and numbers allowed)
     'MobilePhone' : validate_external_segment_name, # external_segment_name has the same reqs as RegionCity (except _ and numbers allowed)
     'MobilePhoneModel' : validate_mobile_phone_model,
     'Browser': validate_external_segment_name, # external_segment_name has the same reqs as Browser
